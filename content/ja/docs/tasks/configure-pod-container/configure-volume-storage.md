@@ -1,10 +1,10 @@
 ---
 title: ストレージにボリュームを使用するPodを構成する
-content_template: templates/task
-weight: 50
+content_type: task
+weight: 80
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 このページでは、ストレージにボリュームを使用するPodを構成する方法を示します。
 
@@ -13,15 +13,16 @@ weight: 50
 コンテナに依存しない、より一貫したストレージを実現するには、[ボリューム](/docs/concepts/storage/volumes/)を使用できます。
 これは、キーバリューストア(Redisなど)やデータベースなどのステートフルアプリケーションにとって特に重要です。
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Podのボリュームを構成する
 
@@ -29,7 +30,7 @@ weight: 50
 今回作成するPodには、コンテナが終了して再起動した場合でもPodの寿命が続く[emptyDir](/docs/concepts/storage/volumes/#emptydir)タイプのボリュームがあります。
 これがPodの設定ファイルです:
 
-{{< codenew file="pods/storage/redis.yaml" >}}
+{{% codenew file="pods/storage/redis.yaml" %}}
 
 1. Podを作成します:
 
@@ -45,7 +46,7 @@ weight: 50
 
     出力は次のようになります:
 
-    ```shell
+    ```console
     NAME      READY     STATUS    RESTARTS   AGE
     redis     1/1       Running   0          13s
     ```
@@ -73,7 +74,7 @@ weight: 50
 
     出力はこのようになります:
 
-    ```shell
+    ```console
     USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
     redis        1  0.1  0.1  33308  3828 ?        Ssl  00:46   0:00 redis-server *:6379
     root        12  0.0  0.0  20228  3020 ?        Ss   00:47   0:00 /bin/bash
@@ -86,11 +87,11 @@ weight: 50
     root@redis:/data/redis# kill <pid>
     ```
 
-    ここで`<pid>`はRedisプロセスID（PID）です。
+    ここで`<pid>`はRedisプロセスID(PID)です。
 
 1. 元の端末で、Redis Podへの変更を監視します。最終的には、このようなものが表示されます:
 
-    ```shell
+    ```console
     NAME      READY     STATUS     RESTARTS   AGE
     redis     1/1       Running    0          13s
     redis     0/1       Completed  0         6m
@@ -120,9 +121,10 @@ weight: 50
     kubectl delete pod redis
     ```
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * [Volume](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/#volume-v1-core)参照
 
@@ -130,6 +132,6 @@ weight: 50
 
 * `emptyDir`によって提供されるローカルディスクストレージに加えて、Kubernetesは、GCEのPDやEC2のEBSなど、さまざまなネットワーク接続ストレージソリューションをサポートします。これらは、重要なデータに好ましく、ノード上のデバイスのマウントやアンマウントなどの詳細を処理します。詳細は[ボリューム](/docs/concepts/storage/volumes/)を参照してください。
 
-{{% /capture %}}
+
 
 

@@ -1,19 +1,20 @@
 ---
+draft: True
 title: Certificati
-content_template: templates/concept
+content_type: concept
 weight: 20
 ---
 
 
-{{% capture overview %}}
+<!-- overview -->
 
 Quando si utilizza l'autenticazione del certificato client, è possibile generare certificati
-manualmente tramite `easyrsa`,` openssl` o `cfssl`.
-
-{{% /capture %}}
+manualmente tramite `easyrsa`, `openssl` o `cfssl`.
 
 
-{{% capture body %}}
+
+
+<!-- body -->
 
 ### easyrsa
 
@@ -21,7 +22,7 @@ manualmente tramite `easyrsa`,` openssl` o `cfssl`.
 
 1. Scaricare, decomprimere e inizializzare la versione patched di easyrsa3.
 
-        curl -LO https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz
+        curl -LO  https://dl.k8s.io/easy-rsa/easy-rsa.tar.gz
         tar xzf easy-rsa.tar.gz
         cd easy-rsa-master / easyrsa3
         ./easyrsa init-pki
@@ -114,7 +115,7 @@ manualmente tramite `easyrsa`,` openssl` o `cfssl`.
 
         openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key \
         -CAcreateserial -out server.crt -days 10000 \
-        -extensions v3_ext -extfile csr.conf
+        -extensions v3_ext -extfile csr.conf -sha256
 1. Visualizza il certificato:
 
         openssl x509  -noout -text -in ./server.crt
@@ -245,4 +246,4 @@ done.
 certificati x509 da utilizzare per l'autenticazione come documentato
 [here](/docs/tasks/tls/managing-tls-in-a-cluster).
 
-{{% /capture %}}
+

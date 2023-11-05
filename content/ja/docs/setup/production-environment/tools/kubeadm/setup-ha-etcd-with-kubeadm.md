@@ -1,10 +1,18 @@
 ---
 title: kubeadmを使用した高可用性etcdクラスターの作成
-content_template: templates/task
+content_type: task
 weight: 70
 ---
 
-{{% capture overview %}}
+<!-- overview -->
+
+{{< note >}}
+While kubeadm is being used as the management tool for external etcd nodes
+in this guide, please note that kubeadm does not plan to support certificate rotation
+or upgrades for such nodes. The long term plan is to empower the tool
+[etcdadm](https://github.com/kubernetes-sigs/etcdadm) to manage these
+aspects.
+{{< /note >}}
 
 Kubeadm defaults to running a single member etcd cluster in a static pod managed
 by the kubelet on the control plane node. This is not a high availability setup
@@ -13,22 +21,24 @@ becoming unavailable. This task walks through the process of creating a high
 availability etcd cluster of three members that can be used as an external etcd
 when using kubeadm to set up a kubernetes cluster.
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 * Three hosts that can talk to each other over ports 2379 and 2380. This
   document assumes these default ports. However, they are configurable through
   the kubeadm config file.
-* Each host must [have docker, kubelet, and kubeadm installed][toolbox].
+* Each host must [have docker, kubelet, and kubeadm installed](/ja/docs/setup/production-environment/tools/kubeadm/install-kubeadm/).
+* Each host should have access to the Kubernetes container image registry (`registry.k8s.io`) or list/pull the required etcd image using `kubeadm config images list/pull`. This guide will setup etcd instances as [static pods](/docs/tasks/configure-pod-container/static-pod/) managed by a kubelet.
 * Some infrastructure to copy files between hosts. For example `ssh` and `scp`
   can satisfy this requirement.
 
 [toolbox]: /docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## クラスターの構築
 
@@ -36,7 +46,7 @@ The general approach is to generate all certs on one node and only distribute
 the *necessary* files to the other nodes.
 
 {{< note >}}
-kubeadm contains all the necessary crytographic machinery to generate
+kubeadm contains all the necessary cryptographic machinery to generate
 the certificates described below; no other cryptographic tooling is required for
 this example.
 {{< /note >}}
@@ -51,7 +61,8 @@ this example.
     cat << EOF > /etc/systemd/system/kubelet.service.d/20-etcd-service-manager.conf
     [Service]
     ExecStart=
-    ExecStart=/usr/bin/kubelet --address=127.0.0.1 --pod-manifest-path=/etc/kubernetes/manifests
+    #  Replace "systemd" with the cgroup driver of your container runtime. The default value in the kubelet is "cgroupfs".
+    ExecStart=/usr/bin/kubelet --address=127.0.0.1 --pod-manifest-path=/etc/kubernetes/manifests --cgroup-driver=systemd
     Restart=always
     EOF
 
@@ -80,7 +91,7 @@ this example.
     HOST=${ETCDHOSTS[$i]}
     NAME=${NAMES[$i]}
     cat << EOF > /tmp/${HOST}/kubeadmcfg.yaml
-    apiVersion: "kubeadm.k8s.io/v1beta1"
+    apiVersion: "kubeadm.k8s.io/v1beta2"
     kind: ClusterConfiguration
     etcd:
         local:
@@ -231,8 +242,8 @@ this example.
 
     ```sh
     root@HOST0 $ kubeadm init phase etcd local --config=/tmp/${HOST0}/kubeadmcfg.yaml
-    root@HOST1 $ kubeadm init phase etcd local --config=/home/ubuntu/kubeadmcfg.yaml
-    root@HOST2 $ kubeadm init phase etcd local --config=/home/ubuntu/kubeadmcfg.yaml
+    root@HOST1 $ kubeadm init phase etcd local --config=$HOME/kubeadmcfg.yaml
+    root@HOST2 $ kubeadm init phase etcd local --config=$HOME/kubeadmcfg.yaml
     ```
 
 1. Optional: Check the cluster health
@@ -240,25 +251,28 @@ this example.
     ```sh
     docker run --rm -it \
     --net host \
-    -v /etc/kubernetes:/etc/kubernetes quay.io/coreos/etcd:${ETCD_TAG} etcdctl \
-    --cert-file /etc/kubernetes/pki/etcd/peer.crt \
-    --key-file /etc/kubernetes/pki/etcd/peer.key \
-    --ca-file /etc/kubernetes/pki/etcd/ca.crt \
-    --endpoints https://${HOST0}:2379 cluster-health
+    -v /etc/kubernetes:/etc/kubernetes registry.k8s.io/etcd:${ETCD_TAG} etcdctl \
+    --cert /etc/kubernetes/pki/etcd/peer.crt \
+    --key /etc/kubernetes/pki/etcd/peer.key \
+    --cacert /etc/kubernetes/pki/etcd/ca.crt \
+    --endpoints https://${HOST0}:2379 endpoint health --cluster
     ...
-    cluster is healthy
+    https://[HOST0 IP]:2379 is healthy: successfully committed proposal: took = 16.283339ms
+    https://[HOST1 IP]:2379 is healthy: successfully committed proposal: took = 19.44402ms
+    https://[HOST2 IP]:2379 is healthy: successfully committed proposal: took = 35.926451ms
     ```
-    - Set `${ETCD_TAG}` to the version tag of your etcd image. For example `v3.2.24`.
+    - Set `${ETCD_TAG}` to the version tag of your etcd image. For example `3.4.3-0`. To see the etcd image and tag that kubeadm uses execute `kubeadm config images list --kubernetes-version ${K8S_VERSION}`, where `${K8S_VERSION}` is for example `v1.17.0`
     - Set `${HOST0}`to the IP address of the host you are testing.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 Once you have a working 3 member etcd cluster, you can continue setting up a
 highly available control plane using the [external etcd method with
 kubeadm](/ja/docs/setup/production-environment/tools/kubeadm/high-availability/).
 
-{{% /capture %}}
+
 
 

@@ -1,14 +1,14 @@
 ---
 title: Proxies in Kubernetes
-content_template: templates/concept
-weight: 90
+content_type: concept
+weight: 100
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 This page explains proxies used with Kubernetes.
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Proxies
 
@@ -23,7 +23,7 @@ There are several different proxies you may encounter when using Kubernetes:
     - locates apiserver
     - adds authentication headers
 
-1.  The [apiserver proxy](/docs/tasks/access-application-cluster/access-cluster/#discovering-builtin-services):
+1.  The [apiserver proxy](/docs/tasks/access-application-cluster/access-cluster-services/#discovering-builtin-services):
 
     - is a bastion built into the apiserver
     - connects a user outside of the cluster to cluster IPs which otherwise might not be reachable
@@ -39,7 +39,7 @@ There are several different proxies you may encounter when using Kubernetes:
     - proxies UDP, TCP and SCTP
     - does not understand HTTP
     - provides load balancing
-    - is just used to reach services
+    - is only used to reach services
 
 1.  A Proxy/Load-balancer in front of apiserver(s):
 
@@ -56,12 +56,12 @@ There are several different proxies you may encounter when using Kubernetes:
     - implementation varies by cloud provider.
 
 Kubernetes users will typically not need to worry about anything other than the first two types.  The cluster admin
-will typically ensure that the latter types are setup correctly.
+will typically ensure that the latter types are set up correctly.
 
 ## Requesting redirects
 
 Proxies have replaced redirect capabilities.  Redirects have been deprecated.
 
-{{% /capture %}}
+
 
 

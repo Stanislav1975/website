@@ -1,30 +1,30 @@
 ---
-title: Składniki Kubernetes
-content_template: templates/concept
+title: Składniki Kubernetesa
+content_type: concept
+description: >
+  Klaster Kubernetesa tworzą: komponenty warstwy sterowania
+  oraz zbiór maszyn nazywanych węzłami.
 weight: 20
 card: 
   name: concepts
   weight: 20
 ---
 
-{{% capture overview %}}
-W wyniku instalacji Kubernetes otrzymujesz klaster.
+<!-- overview -->
+W wyniku instalacji Kubernetesa otrzymujesz klaster.
 
-{{< glossary_definition term_id="cluster" length="all" prepend="Klaster to">}}
+{{< glossary_definition term_id="cluster" length="all" prepend="Klaster Kubernetes to">}}
 
-W tym dokumencie opisujemy składniki niezbędne do zbudowania kompletnego, poprawnie działającego klastra Kubernetes.
+W tym dokumencie opisujemy składniki niezbędne do zbudowania kompletnego, poprawnie działającego klastra Kubernetesa.
 
-Poniższy rysunek przedstawia klaster Kubernetes i powiązania pomiędzy jego różnymi częściami składowymi.
+{{< figure src="/images/docs/components-of-kubernetes.svg" alt="Składniki Kubernetesa" caption="Części składowe klastra Kubernetes" class="diagram-large" >}}
 
-![Składniki Kubernetes](/images/docs/components-of-kubernetes.png)
-{{% /capture %}}
+<!-- body -->
+## Części składowe warstwy sterowania
 
-{{% capture body %}}
-## Master — częsci składowe
+Komponenty warstwy sterowania podejmują ogólne decyzje dotyczące klastra (np. zlecanie zadań), a także wykrywają i reagują na zdarzenia w klastrze (przykładowo, start nowego {{< glossary_tooltip text="poda" term_id="pod">}}, kiedy wartość `replicas` dla deploymentu nie zgadza się z faktyczną liczbą replik).
 
-Komponenty *master* odpowiadają za warstwę sterowania klastra. Podejmują ogólne decyzje dotyczące klastra (np. zlecanie zadań), wykrywają i reagują na zdarzenia w klastrze (przykładowo, start nowego {{< glossary_tooltip text="poda" term_id="pod">}}, kiedy wartość `replicas` dla deploymentu nie zgadza się z faktyczną liczbą replik).
-
-Komponenty *master* mogą być uruchomione na dowolnej maszynie w klastrze. Dla uproszczenia skrypty instalacyjne zazwyczaj startują wszystkie składniki na tej samej maszynie i jednocześnie nie pozwalają na uruchamianie na niej kontenerów użytkowników. Na stronie [Tworzenie Wysoko Dostępnych Klastrów](/docs/admin/high-availability/) jest więcej informacji o konfiguracji typu *multi-master-VM*.
+Komponenty warstwy sterowania mogą być uruchomione na dowolnej maszynie w klastrze. Dla uproszczenia jednak skrypty instalacyjne zazwyczaj startują wszystkie składniki na tej samej maszynie, a jednocześnie nie pozwalają na uruchamianie na niej kontenerów użytkowników. Na stronie [Creating Highly Available clusters with kubeadm](/docs/setup/production-environment/tools/kubeadm/high-availability/) znajdziesz opis konfiguracji warstwy sterowania działającej na wielu maszynach.
 
 ### kube-apiserver
 
@@ -42,27 +42,31 @@ Komponenty *master* mogą być uruchomione na dowolnej maszynie w klastrze. Dla 
 
 {{< glossary_definition term_id="kube-controller-manager" length="all" >}}
 
-Kontrolerami są:
+Przykładowe kontrolery:
 
-* Node Controller: Odpowiada za rozpoznawanie i reagowanie na sytuacje, kiedy węzeł staje się z jakiegoś powodu niedostępny.
-* Replication Controller: Odpowiada za utrzymanie prawidłowej liczby podów dla każdego obiektu typu *ReplicationController* w systemie.
-* Endpoints Controller: Dostarcza informacji do obiektów typu *Endpoints* (tzn. łączy ze sobą Serwisy i Pody).
-* Service Account & Token Controllers: Tworzy domyślne konta i tokeny dostępu API dla nowych przestrzeni nazw (*namespaces*).
+* Node controller: Odpowiada za rozpoznawanie i reagowanie na sytuacje, kiedy węzeł staje się z jakiegoś powodu niedostępny.
+* Job controller: Czeka na obiekty typu *Job*, które definiują zadania uruchamiane jednorazowo
+  i startuje Pody, odpowiadające za ich wykonanie tych zadań.
+* Endpoints controller: Dostarcza informacji do obiektów typu *Endpoints* (tzn. łączy ze sobą Serwisy i Pody).
+* Service Account & Token controllers: Tworzy domyślne konta i tokeny dostępu API dla nowych przestrzeni nazw (*namespaces*).
 
 ### cloud-controller-manager
 
-[cloud-controller-manager](/docs/tasks/administer-cluster/running-cloud-controller/) uruchamia kontroler, który komunikuje się z usługami dostawcy chmury, na których zbudowany jest klaster. Oprogramowanie cloud-controller-manager, wprowadzone w Kubernetes 1.6 ma status rozwojowy beta.
+{{< glossary_definition term_id="cloud-controller-manager" length="short" >}}
 
-cloud-controller-manager wykonuje tylko pętle sterowania konkretnych dostawców usług chmurowych. Wykonywanie tych pętli sterowania musi być wyłączone w kube-controller-manager. Wyłączenie następuje poprzez ustawienie opcji `--cloud-provider` jako `external` przy starcie kube-controller-manager.
+cloud-controller-manager uruchamia jedynie kontrolery właściwe dla konkretnego dostawcy usług chmurowych.
+Jeśli uruchamiasz Kubernetesa we własnym centrum komputerowym lub w środowisku szkoleniowym na swoim
+komputerze, klaster nie będzie miał cloud controller managera.
 
-cloud-controller-manager umożliwia rozwój oprogramowania dostawców usług chmurowych niezależnie od samego oprogramowania Kubernetes. W poprzednich wersjach, główny kod Kubernetes był zależny od kodu dostarczonego przez zewnętrznych dostawców różnych usług chmurowych. W przyszłych wydaniach, oprogramowanie związane z dostawcami chmurowymi będzie utrzymywane przez nich samych i podłączane do cloud-controller-managera w trakcie uruchamiana Kubernetes.
+Podobnie jak w przypadku kube-controller-manager, cloud-controller-manager łączy w jednym pliku binarnym
+kilka niezależnych pętli sterowania. Można go skalować horyzontalnie
+(uruchomić więcej niż jedną instancję), aby poprawić wydajność lub zwiększyć odporność na awarie.
 
-Następujące kontrolery zależą od dostawców usług chmurowych:
+Następujące kontrolery mogą zależeć od dostawców usług chmurowych:
 
-  * Node Controller: Aby sprawdzić u dostawcy usługi chmurowej, czy węzeł został skasowany po tym, jak przestał odpowiadać
-  * Route Controller: Aby ustawić trasy *(routes)* w niższych warstwach infrastruktury chmurowej
-  * Service Controller: Aby tworzyć, aktualizować i kasować *cloud load balancers*
-  * Volume Controller: Aby tworzyć, podłączać i montować woluminy oraz zarządzać nimi przez dostawcę usług chmurowych
+* Node controller: Aby sprawdzić u dostawcy usługi chmurowej, czy węzeł został skasowany po tym, jak przestał odpowiadać
+* Route controller: Aby ustawić trasy *(routes)* w niższych warstwach infrastruktury chmurowej
+* Service controller: Aby tworzyć, aktualizować i kasować *cloud load balancers*
 
 ## Składniki węzłów
 
@@ -76,7 +80,7 @@ Składniki węzłów uruchomiane są na każdym węźle. Utrzymują pody w dzia�
 
 {{< glossary_definition term_id="kube-proxy" length="all" >}}
 
-### Container Runtime
+### Container runtime
 
 {{< glossary_definition term_id="container-runtime" length="all" >}}
 
@@ -100,16 +104,15 @@ Kontenery uruchomione przez Kubernetes automatycznie przeszukują ten serwer DNS
 
 ### Monitorowanie zasobów w kontenerach
 
-[Container Resource Monitoring](/docs/tasks/debug-application-cluster/resource-usage-monitoring/) zapisuje serie czasowe podstawowych metryk kontenerów w centralnej bazie danych i oferuje interfejs użytkownika do przeglądania tych danych.
+[Container Resource Monitoring](/docs/tasks/debug/debug-cluster/resource-usage-monitoring/) zapisuje serie czasowe podstawowych metryk kontenerów w centralnej bazie danych i oferuje interfejs użytkownika do przeglądania tych danych.
 
 ### Logowanie na poziomie klastra
 
 Mechanizm [logowania na poziomie klastra](/docs/concepts/cluster-administration/logging/) odpowiada za zapisywanie logów pochodzących z poszczególnych kontenerów do wspólnego magazynu, który posiada interfejs do przeglądania i przeszukiwania.
 
-{{% /capture %}}
-{{% capture whatsnext %}}
+## {{% heading "whatsnext" %}}
+
 * Więcej o [Węzłach](/docs/concepts/architecture/nodes/)
 * Więcej o [Kontrolerach](/docs/concepts/architecture/controller/)
-* Więcej o [kube-scheduler](/docs/concepts/scheduling/kube-scheduler/)
+* Więcej o [kube-scheduler](/docs/concepts/scheduling-eviction/kube-scheduler/)
 * Oficjalna [dokumentacja](https://etcd.io/docs/) etcd
-{{% /capture %}}

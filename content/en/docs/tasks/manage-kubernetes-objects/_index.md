@@ -1,4 +1,5 @@
 ---
 title: "Manage Kubernetes Objects"
-weight: 25
+description: Declarative and imperative paradigms for interacting with the Kubernetes API.
+weight: 50
 ---

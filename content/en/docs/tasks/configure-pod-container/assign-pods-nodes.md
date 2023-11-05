@@ -1,25 +1,26 @@
 ---
 title: Assign Pods to Nodes
-content_template: templates/task
-weight: 120
+content_type: task
+weight: 150
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 This page shows how to assign a Kubernetes Pod to a particular node in a
 Kubernetes cluster.
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Add a label to a node
 
-1. List the nodes in your cluster, along with their labels:
+1. List the {{< glossary_tooltip term_id="node" text="nodes" >}} in your cluster, along with their labels:
 
     ```shell
     kubectl get nodes --show-labels
@@ -33,7 +34,7 @@ Kubernetes cluster.
     worker1   Ready     <none>   1d      v1.13.0        ...,kubernetes.io/hostname=worker1
     worker2   Ready     <none>   1d      v1.13.0        ...,kubernetes.io/hostname=worker2
     ```
-1. Chose one of your nodes, and add a label to it:
+1. Choose one of your nodes, and add a label to it:
 
     ```shell
     kubectl label nodes <your-node-name> disktype=ssd
@@ -65,7 +66,7 @@ This pod configuration file describes a pod that has a node selector,
 `disktype: ssd`. This means that the pod will get scheduled on a node that has
 a `disktype=ssd` label.
 
-{{< codenew file="pods/pod-nginx.yaml" >}}
+{{% code_sample file="pods/pod-nginx.yaml" %}}
 
 1. Use the configuration file to create a pod that will get scheduled on your
    chosen node:
@@ -90,14 +91,15 @@ a `disktype=ssd` label.
 
 You can also schedule a pod to one specific node via setting `nodeName`.
 
-{{< codenew file="pods/pod-nginx-specific-node.yaml" >}}
+{{% code_sample file="pods/pod-nginx-specific-node.yaml" %}}
 
 Use the configuration file to create a pod that will get scheduled on `foo-node` only.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
-Learn more about
-[labels and selectors](/docs/concepts/overview/working-with-objects/labels/).
-{{% /capture %}}
+
+## {{% heading "whatsnext" %}}
+
+* Learn more about [labels and selectors](/docs/concepts/overview/working-with-objects/labels/).
+* Learn more about [nodes](/docs/concepts/architecture/nodes/).
+
 

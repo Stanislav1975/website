@@ -1,5 +1,6 @@
 ---
 title: "Configure Pods and Containers"
-weight: 20
+description: Perform common configuration tasks for Pods and containers.
+weight: 30
 ---
 

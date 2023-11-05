@@ -3,6 +3,7 @@ layout: blog
 title: "Kubernetes 1.15: Extensibility and Continuous Improvement"
 date: 2019-06-19
 slug: kubernetes-1-15-release-announcement
+evergreen: true
 ---
 **Authors:** The 1.15 [Release Team](https://github.com/kubernetes/sig-release/blob/master/releases/release-1.15/release_team.md)
 
@@ -89,7 +90,7 @@ Volume cloning enables users to specify another PVC as a "DataSource" when provi
 - ExecutionHook API [designed to trigger hook commands](https://github.com/kubernetes/enhancements/issues/962) in the containers for different use cases is now Alpha.
 - Continued deprecation of extensions/v1beta1, apps/v1beta1, and apps/v1beta2 APIs; these extensions will be retired in 1.16!
 
-Check the [release notes](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.15.md#kubernetes-v115-release-notes) for a complete list of notable features and fixes.
+Check the [release notes](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.15.md#kubernetes-v115-release-notes) for a complete list of notable features and fixes.
 
 **Availability**
 

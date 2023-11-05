@@ -1,10 +1,11 @@
 ---
 title: Configure Quotas for API Objects
-content_template: templates/task
+content_type: task
+weight: 130
 ---
 
 
-{{% capture overview %}}
+<!-- overview -->
 
 This page shows how to configure quotas for API objects, including
 PersistentVolumeClaims and Services. A quota restricts the number of
@@ -13,17 +14,18 @@ You specify quotas in a
 [ResourceQuota](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/#resourcequota-v1-core)
 object.
 
-{{% /capture %}}
 
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
-{{% /capture %}}
 
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Create a namespace
 
@@ -38,7 +40,7 @@ kubectl create namespace quota-object-example
 
 Here is the configuration file for a ResourceQuota object:
 
-{{< codenew file="admin/resource/quota-objects.yaml" >}}
+{{% code_sample file="admin/resource/quota-objects.yaml" %}}
 
 Create the ResourceQuota:
 
@@ -72,7 +74,7 @@ status:
 
 Here is the configuration file for a PersistentVolumeClaim object:
 
-{{< codenew file="admin/resource/quota-objects-pvc.yaml" >}}
+{{% code_sample file="admin/resource/quota-objects-pvc.yaml" %}}
 
 Create the PersistentVolumeClaim:
 
@@ -88,7 +90,7 @@ kubectl get persistentvolumeclaims --namespace=quota-object-example
 
 The output shows that the PersistentVolumeClaim exists and has status Pending:
 
-```shell
+```
 NAME             STATUS
 pvc-quota-demo   Pending
 ```
@@ -97,7 +99,7 @@ pvc-quota-demo   Pending
 
 Here is the configuration file for a second PersistentVolumeClaim:
 
-{{< codenew file="admin/resource/quota-objects-pvc-2.yaml" >}}
+{{% code_sample file="admin/resource/quota-objects-pvc-2.yaml" %}}
 
 Attempt to create the second PersistentVolumeClaim:
 
@@ -122,7 +124,7 @@ by quotas:
 <table>
 <tr><th>String</th><th>API Object</th></tr>
 <tr><td>"pods"</td><td>Pod</td></tr>
-<tr><td>"services</td><td>Service</td></tr>
+<tr><td>"services"</td><td>Service</td></tr>
 <tr><td>"replicationcontrollers"</td><td>ReplicationController</td></tr>
 <tr><td>"resourcequotas"</td><td>ResourceQuota</td></tr>
 <tr><td>"secrets"</td><td>Secret</td></tr>
@@ -140,23 +142,24 @@ Delete your namespace:
 kubectl delete namespace quota-object-example
 ```
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 ### For cluster administrators
 
-* [Configure Default Memory Requests and Limits for a Namespace](/docs/tasks/administer-cluster/memory-default-namespace/)
+* [Configure Default Memory Requests and Limits for a Namespace](/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/)
 
-* [Configure Default CPU Requests and Limits for a Namespace](/docs/tasks/administer-cluster/cpu-default-namespace/)
+* [Configure Default CPU Requests and Limits for a Namespace](/docs/tasks/administer-cluster/manage-resources/cpu-default-namespace/)
 
-* [Configure Minimum and Maximum Memory Constraints for a Namespace](/docs/tasks/administer-cluster/memory-constraint-namespace/)
+* [Configure Minimum and Maximum Memory Constraints for a Namespace](/docs/tasks/administer-cluster/manage-resources/memory-constraint-namespace/)
 
-* [Configure Minimum and Maximum CPU Constraints for a Namespace](/docs/tasks/administer-cluster/cpu-constraint-namespace/)
+* [Configure Minimum and Maximum CPU Constraints for a Namespace](/docs/tasks/administer-cluster/manage-resources/cpu-constraint-namespace/)
 
-* [Configure Memory and CPU Quotas for a Namespace](/docs/tasks/administer-cluster/quota-memory-cpu-namespace/)
+* [Configure Memory and CPU Quotas for a Namespace](/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/)
 
-* [Configure a Pod Quota for a Namespace](/docs/tasks/administer-cluster/quota-pod-namespace/)
+* [Configure a Pod Quota for a Namespace](/docs/tasks/administer-cluster/manage-resources/quota-pod-namespace/)
 
 ### For app developers
 
@@ -167,7 +170,7 @@ kubectl delete namespace quota-object-example
 * [Configure Quality of Service for Pods](/docs/tasks/configure-pod-container/quality-service-pod/)
 
 
-{{% /capture %}}
+
 
 
 

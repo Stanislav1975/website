@@ -1,10 +1,10 @@
 ---
 title: Configurer un pod en utilisant un volume pour le stockage
-content_template: templates/task
+content_type: task
 weight: 50
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Cette page montre comment configurer un Pod pour utiliser un Volume pour le stockage.
 
@@ -12,15 +12,16 @@ Le système de fichiers d'un conteneur ne vit que tant que le conteneur vit. Ain
 [Volume](/fr/docs/concepts/storage/volumes/).
 C'est particulièrement important pour les applications Stateful, telles que les key-value stores (comme par exemple Redis) et les bases de données.
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Configurer un volume pour un Pod
 
@@ -28,7 +29,7 @@ Dans cet exercice, vous créez un pod qui contient un seul conteneur. Ce Pod a u
 [emptyDir](/fr/docs/concepts/storage/volumes/#emptydir) qui dure toute la vie du Pod, même si le conteneur se termine et redémarre.
 Voici le fichier de configuration du Pod :
 
-{{< codenew file="pods/storage/redis.yaml" >}}
+{{% codenew file="pods/storage/redis.yaml" %}}
 
 1. Créez le Pod :
 
@@ -44,7 +45,7 @@ Voici le fichier de configuration du Pod :
 
     La sortie ressemble à ceci :
 
-    ```shell
+    ```console
     NAME      READY     STATUS    RESTARTS   AGE
     redis     1/1       Running   0          13s
     ```
@@ -72,7 +73,7 @@ Voici le fichier de configuration du Pod :
 
     La sortie ressemble à ceci :
 
-    ```shell
+    ```console
     USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
     redis        1  0.1  0.1  33308  3828 ?        Ssl  00:46   0:00 redis-server *:6379
     root        12  0.0  0.0  20228  3020 ?        Ss   00:47   0:00 /bin/bash
@@ -90,7 +91,7 @@ Voici le fichier de configuration du Pod :
 1. Dans votre terminal initial, surveillez les changements apportés au Pod de Redis. Éventuellement,
 vous verrez quelque chose comme ça :
 
-    ```shell
+    ```console
     NAME      READY     STATUS     RESTARTS   AGE
     redis     1/1       Running    0          13s
     redis     0/1       Completed  0         6m
@@ -120,9 +121,10 @@ fixé à `Always`.
     kubectl delete pod redis
     ```
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * Voir [Volume](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/#volume-v1-core).
 
@@ -130,6 +132,6 @@ fixé à `Always`.
 
 * En plus du stockage sur disque local fourni par `emptyDir`, Kubernetes supporte de nombreuses solutions de stockage connectées au réseau, y compris PD sur GCE et EBS sur EC2, qui sont préférés pour les données critiques et qui s'occuperont des autres détails tels que le montage et le démontage sur les nœuds. Voir [Volumes](/fr/docs/concepts/storage/volumes/) pour plus de détails.
 
-{{% /capture %}}
+
 
 

@@ -1,65 +1,82 @@
 ---
 title: Using Source IP
-content_template: templates/tutorial
+content_type: tutorial
+min-kubernetes-server-version: v1.5
+weight: 40
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Applications running in a Kubernetes cluster find and communicate with each
 other, and the outside world, through the Service abstraction. This document
 explains what happens to the source IP of packets sent to different types
 of Services, and how you can toggle this behavior according to your needs.
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
 
-{{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
+## {{% heading "prerequisites" %}}
 
-## Terminology
+
+### Terminology
 
 This document makes use of the following terms:
 
-* [NAT](https://en.wikipedia.org/wiki/Network_address_translation): network address translation
-* [Source NAT](https://en.wikipedia.org/wiki/Network_address_translation#SNAT): replacing the source IP on a packet, usually with a node's IP
-* [Destination NAT](https://en.wikipedia.org/wiki/Network_address_translation#DNAT): replacing the destination IP on a packet, usually with a pod IP
-* [VIP](/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies): a virtual IP, such as the one assigned to every Kubernetes Service
-* [Kube-proxy](/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies): a network daemon that orchestrates Service VIP management on every node
+{{< comment >}}
+If localizing this section, link to the equivalent Wikipedia pages for
+the target localization.
+{{< /comment >}}
 
+[NAT](https://en.wikipedia.org/wiki/Network_address_translation)
+: network address translation
 
-## Prerequisites
+[Source NAT](https://en.wikipedia.org/wiki/Network_address_translation#SNAT)
+: replacing the source IP on a packet; in this page, that usually means replacing with the IP address of a node.
 
-You must have a working Kubernetes 1.5 cluster to run the examples in this
-document. The examples use a small nginx webserver that echoes back the source
+[Destination NAT](https://en.wikipedia.org/wiki/Network_address_translation#DNAT)
+: replacing the destination IP on a packet; in this page, that usually means replacing with the IP address of a {{< glossary_tooltip term_id="pod" >}}
+
+[VIP](/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies)
+: a virtual IP address, such as the one assigned to every {{< glossary_tooltip text="Service" term_id="service" >}} in Kubernetes
+
+[kube-proxy](/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies)
+: a network daemon that orchestrates Service VIP management on every node
+
+### Prerequisites
+
+{{< include "task-tutorial-prereqs.md" >}}
+
+The examples use a small nginx webserver that echoes back the source
 IP of requests it receives through an HTTP header. You can create it as follows:
 
-```console
-kubectl create deployment source-ip-app --image=k8s.gcr.io/echoserver:1.4
+```shell
+kubectl create deployment source-ip-app --image=registry.k8s.io/echoserver:1.4
 ```
 The output is:
 ```
 deployment.apps/source-ip-app created
 ```
 
-{{% /capture %}}
 
-{{% capture objectives %}}
+
+## {{% heading "objectives" %}}
+
 
 * Expose a simple application through various types of Services
 * Understand how each Service type handles source IP NAT
 * Understand the tradeoffs involved in preserving source IP
 
-{{% /capture %}}
 
 
-{{% capture lessoncontent %}}
 
-## Source IP for Services with Type=ClusterIP
+<!-- lessoncontent -->
+
+## Source IP for Services with `Type=ClusterIP`
 
 Packets sent to ClusterIP from within the cluster are never source NAT'd if
-you're running kube-proxy in [iptables mode](/docs/concepts/services-networking/service/#proxy-mode-iptables),
-which is the default since Kubernetes 1.2. Kube-proxy exposes its mode through
-a `proxyMode` endpoint:
+you're running kube-proxy in
+[iptables mode](/docs/reference/networking/virtual-ips/#proxy-mode-iptables),
+(the default). You can query the kube-proxy mode by fetching
+`http://localhost:10249/proxyMode` on the node where kube-proxy is running.
 
 ```console
 kubectl get nodes
@@ -71,9 +88,11 @@ kubernetes-node-6jst   Ready      <none>   2h      v1.13.0
 kubernetes-node-cx31   Ready      <none>   2h      v1.13.0
 kubernetes-node-jj1t   Ready      <none>   2h      v1.13.0
 ```
-Get the proxy mode on one of the node
-```console
-kubernetes-node-6jst $ curl localhost:10249/proxyMode
+
+Get the proxy mode on one of the nodes (kube-proxy listens on port 10249):
+```shell
+# Run this in a shell on the node you want to query.
+curl http://localhost:10249/proxyMode
 ```
 The output is:
 ```
@@ -82,14 +101,14 @@ iptables
 
 You can test source IP preservation by creating a Service over the source IP app:
 
-```console
+```shell
 kubectl expose deployment source-ip-app --name=clusterip --port=80 --target-port=8080
 ```
 The output is:
 ```
 service/clusterip exposed
 ```
-```console
+```shell
 kubectl get svc clusterip
 ```
 The output is similar to:
@@ -100,15 +119,22 @@ clusterip    ClusterIP   10.0.170.92   <none>        80/TCP    51s
 
 And hitting the `ClusterIP` from a pod in the same cluster:
 
-```console
-kubectl run busybox -it --image=busybox --restart=Never --rm
+```shell
+kubectl run busybox -it --image=busybox:1.28 --restart=Never --rm
 ```
 The output is similar to this:
 ```
 Waiting for pod default/busybox to be running, status is Pending, pod ready: false
 If you don't see a command prompt, try pressing enter.
 
-# ip addr
+```
+You can then run a command inside that Pod:
+
+```shell
+# Run this inside the terminal from "kubectl run"
+ip addr
+```
+```
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
@@ -121,21 +147,28 @@ If you don't see a command prompt, try pressing enter.
        valid_lft forever preferred_lft forever
     inet6 fe80::188a:84ff:feb0:26a5/64 scope link
        valid_lft forever preferred_lft forever
+```
 
-# wget -qO - 10.0.170.92
+…then use `wget` to query the local webserver
+```shell
+# Replace "10.0.170.92" with the IPv4 address of the Service named "clusterip"
+wget -qO - 10.0.170.92
+```
+```
 CLIENT VALUES:
 client_address=10.244.3.8
 command=GET
 ...
 ```
-The client_address is always the client pod's IP address, whether the client pod and server pod are in the same node or in different nodes.
+The `client_address` is always the client pod's IP address, whether the client pod and server pod are in the same node or in different nodes.
 
-## Source IP for Services with Type=NodePort
+## Source IP for Services with `Type=NodePort`
 
-As of Kubernetes 1.5, packets sent to Services with [Type=NodePort](/docs/concepts/services-networking/service/#nodeport)
+Packets sent to Services with
+[`Type=NodePort`](/docs/concepts/services-networking/service/#type-nodeport)
 are source NAT'd by default. You can test this by creating a `NodePort` Service:
 
-```console
+```shell
 kubectl expose deployment source-ip-app --name=nodeport --port=80 --target-port=8080 --type=NodePort
 ```
 The output is:
@@ -143,17 +176,17 @@ The output is:
 service/nodeport exposed
 ```
 
-```console
+```shell
 NODEPORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services nodeport)
-NODES=$(kubectl get nodes -o jsonpath='{ $.items[*].status.addresses[?(@.type=="ExternalIP")].address }')
+NODES=$(kubectl get nodes -o jsonpath='{ $.items[*].status.addresses[?(@.type=="InternalIP")].address }')
 ```
 
-If you're running on a cloudprovider, you may need to open up a firewall-rule
+If you're running on a cloud provider, you may need to open up a firewall-rule
 for the `nodes:nodeport` reported above.
 Now you can try reaching the Service from outside the cluster through the node
 port allocated above.
 
-```console
+```shell
 for node in $NODES; do curl -s $node:$NODEPORT | grep -i client_address; done
 ```
 The output is similar to:
@@ -174,31 +207,22 @@ Note that these are not the correct client IPs, they're cluster internal IPs. Th
 
 Visually:
 
-```
-          client
-             \ ^
-              \ \
-               v \
-   node 1 <--- node 2
-    | ^   SNAT
-    | |   --->
-    v |
- endpoint
-```
+{{< figure src="/docs/images/tutor-service-nodePort-fig01.svg" alt="source IP nodeport figure 01" class="diagram-large" caption="Figure. Source IP Type=NodePort using SNAT" link="https://mermaid.live/edit#pako:eNqNkV9rwyAUxb-K3LysYEqS_WFYKAzat9GHdW9zDxKvi9RoMIZtlH732ZjSbE970cu5v3s86hFqJxEYfHjRNeT5ZcUtIbXRaMNN2hZ5vrYRqt52cSXV-4iMSuwkZiYtyX739EqWaahMQ-V1qPxDVLNOvkYrO6fj2dupWMR2iiT6foOKdEZoS5Q2hmVSStoH7w7IMqXUVOefWoaG3XVftHbGeZYVRbH6ZXJ47CeL2-qhxvt_ucTe1SUlpuMN6CX12XeGpLdJiaMMFFr0rdAyvvfxjHEIDbbIgcVSohKDCRy4PUV06KQIuJU6OA9MCdMjBTEEt_-2NbDgB7xAGy3i97VJPP0ABRmcqg" >}}
 
 
-To avoid this, Kubernetes has a feature to preserve the client source IP
-[(check here for feature availability)](/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip).
-Setting `service.spec.externalTrafficPolicy` to the value `Local` will only
-proxy requests to local endpoints, never forwarding traffic to other nodes
-and thereby preserving the original source IP address. If there are no
-local endpoints, packets sent to the node are dropped, so you can rely
-on the correct source-ip in any packet processing rules you might apply a
-packet that make it through to the endpoint.
+To avoid this, Kubernetes has a feature to
+[preserve the client source IP](/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip).
+If you set `service.spec.externalTrafficPolicy` to the value `Local`,
+kube-proxy only proxies proxy requests to local endpoints, and does not
+forward traffic to other nodes. This approach preserves the original
+source IP address. If there are no local endpoints, packets sent to the
+node are dropped, so you can rely on the correct source-ip in any packet
+processing rules you might apply a packet that make it through to the
+endpoint.
 
 Set the `service.spec.externalTrafficPolicy` field as follows:
 
-```console
+```shell
 kubectl patch svc nodeport -p '{"spec":{"externalTrafficPolicy":"Local"}}'
 ```
 The output is:
@@ -208,12 +232,12 @@ service/nodeport patched
 
 Now, re-run the test:
 
-```console
+```shell
 for node in $NODES; do curl --connect-timeout 1 -s $node:$NODEPORT | grep -i client_address; done
 ```
-The output is:
+The output is similar to:
 ```
-client_address=104.132.1.79
+client_address=198.51.100.79
 ```
 
 Note that you only got one reply, with the *right* client IP, from the one node on which the endpoint pod
@@ -228,32 +252,22 @@ This is what happens:
 
 Visually:
 
-```
-        client
-       ^ /   \
-      / /     \
-     / v       X
-   node 1     node 2
-    ^ |
-    | |
-    | v
- endpoint
-```
 
+{{< figure src="/docs/images/tutor-service-nodePort-fig02.svg" alt="source IP nodeport figure 02" class="diagram-large" caption="Figure. Source IP Type=NodePort preserves client source IP address" link="" >}}
 
+## Source IP for Services with `Type=LoadBalancer`
 
-## Source IP for Services with Type=LoadBalancer
-
-As of Kubernetes 1.5, packets sent to Services with [Type=LoadBalancer](/docs/concepts/services-networking/service/#loadbalancer) are
-source NAT'd by default, because all schedulable Kubernetes nodes in the
-`Ready` state are eligible for loadbalanced traffic. So if packets arrive
+Packets sent to Services with
+[`Type=LoadBalancer`](/docs/concepts/services-networking/service/#loadbalancer)
+are source NAT'd by default, because all schedulable Kubernetes nodes in the
+`Ready` state are eligible for load-balanced traffic. So if packets arrive
 at a node without an endpoint, the system proxies it to a node *with* an
 endpoint, replacing the source IP on the packet with the IP of the node (as
 described in the previous section).
 
-You can test this by exposing the source-ip-app through a loadbalancer
+You can test this by exposing the source-ip-app through a load balancer:
 
-```console
+```shell
 kubectl expose deployment source-ip-app --name=loadbalancer --port=80 --target-port=8080 --type=LoadBalancer
 ```
 The output is:
@@ -261,18 +275,20 @@ The output is:
 service/loadbalancer exposed
 ```
 
-Print IPs of the Service:
+Print out the IP addresses of the Service:
 ```console
 kubectl get svc loadbalancer
 ```
 The output is similar to this:
 ```
 NAME           TYPE           CLUSTER-IP    EXTERNAL-IP       PORT(S)   AGE
-loadbalancer   LoadBalancer   10.0.65.118   104.198.149.140   80/TCP    5m
+loadbalancer   LoadBalancer   10.0.65.118   203.0.113.140     80/TCP    5m
 ```
 
-```console
-curl 104.198.149.140
+Next, send a request to this Service's external-ip:
+
+```shell
+curl 203.0.113.140
 ```
 The output is similar to this:
 ```
@@ -288,83 +304,78 @@ deliberately failing health checks.
 
 Visually:
 
-```
-                      client
-                        |
-                      lb VIP
-                     / ^
-                    v /
-health check --->   node 1   node 2 <--- health check
-        200  <---   ^ |             ---> 500
-                    | V
-                 endpoint
-```
+![Source IP with externalTrafficPolicy](/images/docs/sourceip-externaltrafficpolicy.svg)
 
 You can test this by setting the annotation:
 
-```console
+```shell
 kubectl patch svc loadbalancer -p '{"spec":{"externalTrafficPolicy":"Local"}}'
 ```
 
 You should immediately see the `service.spec.healthCheckNodePort` field allocated
 by Kubernetes:
 
-```console
+```shell
 kubectl get svc loadbalancer -o yaml | grep -i healthCheckNodePort
 ```
 The output is similar to this:
-```
+```yaml
   healthCheckNodePort: 32122
 ```
 
 The `service.spec.healthCheckNodePort` field points to a port on every node
 serving the health check at `/healthz`. You can test this:
 
-```console
-kubectl get pod -o wide -l run=source-ip-app
+```shell
+kubectl get pod -o wide -l app=source-ip-app
 ```
 The output is similar to this:
 ```
 NAME                            READY     STATUS    RESTARTS   AGE       IP             NODE
 source-ip-app-826191075-qehz4   1/1       Running   0          20h       10.180.1.136   kubernetes-node-6jst
 ```
-Curl the `/healthz` endpoint on different nodes.
-```console
-kubernetes-node-6jst $ curl localhost:32122/healthz
+
+Use `curl` to fetch the `/healthz` endpoint on various nodes:
+```shell
+# Run this locally on a node you choose
+curl localhost:32122/healthz
 ```
-The output is similar to this:
 ```
 1 Service Endpoints found
 ```
-```console
-kubernetes-node-jj1t $ curl localhost:32122/healthz
+
+On a different node you might get a different result:
+```shell
+# Run this locally on a node you choose
+curl localhost:32122/healthz
 ```
-The output is similar to this:
 ```
 No Service Endpoints Found
 ```
 
-A service controller running on the master is responsible for allocating the cloud
-loadbalancer, and when it does so, it also allocates HTTP health checks
-pointing to this port/path on each node. Wait about 10 seconds for the 2 nodes
-without endpoints to fail health checks, then curl the lb ip:
+A controller running on the
+{{< glossary_tooltip text="control plane" term_id="control-plane" >}} is
+responsible for allocating the cloud load balancer. The same controller also
+allocates HTTP health checks pointing to this port/path on each node. Wait
+about 10 seconds for the 2 nodes without endpoints to fail health checks,
+then use `curl` to query the IPv4 address of the load balancer:
 
-```console
-curl 104.198.149.140
+```shell
+curl 203.0.113.140
 ```
 The output is similar to this:
 ```
 CLIENT VALUES:
-client_address=104.132.1.79
+client_address=198.51.100.79
 ...
 ```
 
-__Cross platform support__
+## Cross-platform support
 
-As of Kubernetes 1.5, support for source IP preservation through Services
-with Type=LoadBalancer is only implemented in a subset of cloudproviders
-(GCP and Azure). The cloudprovider you're running on might fulfill the
-request for a loadbalancer in a few different ways:
+Only some cloud providers offer support for source IP preservation through
+Services with `Type=LoadBalancer`.
+The cloud provider you're running on might fulfill the request for a loadbalancer
+in a few different ways:
 
 1. With a proxy that terminates the client connection and opens a new connection
 to your nodes/endpoints. In such cases the source IP will always be that of the
@@ -374,35 +385,36 @@ cloud LB, not that of the client.
 loadbalancer VIP end up at the node with the source IP of the client, not
 an intermediate proxy.
 
-Loadbalancers in the first category must use an agreed upon
+Load balancers in the first category must use an agreed upon
 protocol between the loadbalancer and backend to communicate the true client IP
-such as the HTTP [X-FORWARDED-FOR](https://en.wikipedia.org/wiki/X-Forwarded-For)
-header, or the [proxy protocol](http://www.haproxy.org/download/1.5/doc/proxy-protocol.txt).
-Loadbalancers in the second category can leverage the feature described above
-by simply creating an HTTP health check pointing at the port stored in
+such as the HTTP [Forwarded](https://tools.ietf.org/html/rfc7239#section-5.2)
+or [X-FORWARDED-FOR](https://en.wikipedia.org/wiki/X-Forwarded-For)
+headers, or the
+[proxy protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt).
+Load balancers in the second category can leverage the feature described above
+by creating an HTTP health check pointing at the port stored in
 the `service.spec.healthCheckNodePort` field on the Service.
 
-{{% /capture %}}
 
-{{% capture cleanup %}}
+
+## {{% heading "cleanup" %}}
+
 
 Delete the Services:
 
-```console
-kubectl delete svc -l run=source-ip-app
+```shell
+kubectl delete svc -l app=source-ip-app
 ```
 
 Delete the Deployment, ReplicaSet and Pod:
 
-```console
+```shell
 kubectl delete deployment source-ip-app
 ```
 
-{{% /capture %}}
-
-{{% capture whatsnext %}}
-* Learn more about [connecting applications via services](/docs/concepts/services-networking/connect-applications-service/)
-* Learn more about [loadbalancing](/docs/user-guide/load-balancer)
-{{% /capture %}}
 
 
+## {{% heading "whatsnext" %}}
+
+* Learn more about [connecting applications via services](/docs/tutorials/services/connect-applications-service/)
+* Read how to [Create an External Load Balancer](/docs/tasks/access-application-cluster/create-external-load-balancer/)

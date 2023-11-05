@@ -1,20 +1,20 @@
 ---
 title: Traduction de la documentation Kubernetes
-content_template: templates/concept
+content_type: concept
 card:
   name: contribute
   weight: 30
   title: Translating the docs
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 La documentation de Kubernetes est disponible dans plusieurs langues.
 Nous vous encourageons à ajouter de nouvelles [traductions](https://blog.mozilla.org/l10n/2011/12/14/i18n-vs-l10n-whats-the-diff/)!
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Commencer
 
@@ -45,7 +45,7 @@ cd website
 ```
 
 {{< note >}}
-Les contributeurs de `k/website` doivent [créer un fork](/docs/contribute/start/#improve-existing-content) à partir duquel les pull requests seront ouvertes.
+Les contributeurs de `kubernetes/website` doivent [créer un fork](/docs/contribute/start/#improve-existing-content) à partir duquel les pull requests seront ouvertes.
 Pour les localisations, nous demandons en outre que :
 
 1. Les approbateurs d'équipe ouvrent des branches de développement directement à partir de https://github.com/kubernetes/website.
@@ -64,13 +64,13 @@ Par exemple, le code à deux lettres pour l'allemand est `de`.
 These instructions use the [ISO 639-1](https://www.loc.gov/standards/iso639-2/php/code_list.php) language code for German (`de`) as an example.
 {{< /note >}}
 
-### Modify the site configuration
+### Modifier la configuration du site
 
 Le site web de Kubernetes utilise Hugo comme son web framework.
-La configuration Hugo du site Web se trouve dans le fichier [`config.toml`](https://github.com/kubernetes/website/tree/master/config.toml).
-Pour prendre en charge une nouvelle localisation, vous devrez modifier `config.toml`.
+La configuration Hugo du site Web se trouve dans le fichier [`hugo.toml`](https://github.com/kubernetes/website/tree/master/hugo.toml).
+Pour prendre en charge une nouvelle localisation, vous devrez modifier `hugo.toml`.
 
-Ajoutez un bloc de configuration pour la nouvelle langue dans `config.toml`, sous le bloc `[languages]` existant.
+Ajoutez un bloc de configuration pour la nouvelle langue dans `hugo.toml`, sous le bloc `[languages]` existant.
 Le bloc allemand, par exemple, ressemble à :
 
 ```toml
@@ -86,7 +86,7 @@ Lors de l'attribution d'un paramètre de `weight` à votre bloc, trouvez le bloc
 
 Pour plus d'informations sur le support multilingue de Hugo, voir "[Multilingual Mode](https://gohugo.io/content-management/multilingual/)".
 
-### Add a new localization directory
+### Ajouter un nouveau répertoire de localisation
 
 Ajoutez un sous-répertoire spécifique à la langue dans le répertoire [`content`](https://github.com/kubernetes/website/tree/master/content) du dépôt.
 Par exemple, le code à deux lettres pour l'allemand est "de" :
@@ -97,7 +97,7 @@ mkdir content/de
 
 ### Ajouter un README localisé
 
-Pour guider les autres contributeurs à la localisation, ajoutez un nouveau [`README-**.md`](https://help.github.com/articles/about-readmes/) au plus haut niveau de k/website, où `**` est le code de langue à deux lettres.
+Pour guider les autres contributeurs à la localisation, ajoutez un nouveau [`README-**.md`](https://help.github.com/articles/about-readmes/) au plus haut niveau de kubernetes/website, où `**` est le code de langue à deux lettres.
 Par exemple, un fichier README allemand serait `README-de.md`.
 
 Fournir des conseils aux contributeurs à la localisation dans le fichier localisé `README-**.md`.
@@ -147,7 +147,7 @@ La dernière version est **{{< latest-version >}}**, donc la branche de la relea
 
 ### Chaînes de sites en i18n/
 
-Les localisations doivent inclure le contenu des éléments suivants [`i18n/en.toml`](https://github.com/kubernetes/website/blob/master/i18n/en.toml) dans un nouveau fichier spécifique à la langue.
+Les localisations doivent inclure le contenu des éléments suivants [`i18n/en.toml`](https://github.com/kubernetes/website/blob/main/i18n/en.toml) dans un nouveau fichier spécifique à la langue.
 Prenons l'allemand comme exemple : `i18n/de.toml`.
 
 Ajouter un nouveau fichier de localisation dans `i18n/`. Par exemple, avec l'allemand (de) :
@@ -192,7 +192,7 @@ Pour collaborer sur une branche de développement:
 
     `dev-<source version>-<language code>.<team milestone>`
 
-    Par exemple, un approbateur d'une équipe de localisation allemande ouvre la branche développement `dev-1.12-de.1` directement contre le dépôt k/website, basé sur la branche source pour Kubernetes v1.12.
+    Par exemple, un approbateur d'une équipe de localisation allemande ouvre la branche développement `dev-1.12-de.1` directement contre le dépôt kubernetes/website, basé sur la branche source pour Kubernetes v1.12.
 
 2. Les contributeurs individuels ouvrent des branches de fonctionnalités basées sur la branche de développement.
 
@@ -221,13 +221,12 @@ Pour plus d'informations sur le travail à partir de forks ou directement à par
 
 SIG Docs souhaite la bienvenue aux [contributions et corrections upstream](/docs/contribute/intermediate#localize-content) à la source anglaise.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 Une fois qu'une traduction répond aux exigences de logistique et à une couverture admissible, le SIG docs se chargera des taches suivantes:
 
 - Activer la sélection de la langue sur le site Web
 - Publier la disponibilité de la traduction via les canaux de la [Cloud Native Computing Foundation](https://www.cncf.io/), y compris sur le blog de [Kubernetes](https://kubernetes.io/blog/).
-
-{{% /capture %}}

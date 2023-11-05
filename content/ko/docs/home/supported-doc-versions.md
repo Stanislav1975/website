@@ -1,28 +1,17 @@
 ---
-title: 쿠버네티스 문서의 버전 지원
-content_template: templates/concept
+title: 가용 문서 버전
+content_type: custom
+layout: supported-versions
 card:
   name: about
   weight: 10
-  title: 문서의 버전 지원
+  title: 가용 문서 버전
 ---
 
-{{% capture overview %}}
+이 웹사이트에서는 쿠버네티스 현재 버전 및
+이전 4개 버전에 대한 문서를 제공하고 있다.
 
-이 웹 사이트에는 현재 버전의 쿠버네티스와 이전 4개 버전의
-쿠버네티스에 대한 문서가 포함되어 있습니다.
-
-{{% /capture %}}
-
-{{% capture body %}}
-
-## 현재 버전
-
-현재 버전은
-[{{< param "version" >}}](/).
-
-## 이전 버전
-
-{{< versions-other >}}
-
-{{% /capture %}}
+쿠버네티스 버전에 따른 문서 제공 여부는
+현재 해당 릴리즈를 지원하는 것과 별개이다.
+[지원 기간](/releases/patch-releases/#support-period)에서
+공식적으로 지원하는 쿠버네티스 버전과 지원 기간을 알 수 있다.

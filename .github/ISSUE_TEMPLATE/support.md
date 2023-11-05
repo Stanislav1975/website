@@ -2,7 +2,7 @@
 name: Support Request
 about: Support request or question relating to Kubernetes Website project
 labels:
-- triage/support
+- kind/support
 ---
 **This is Support**
 
@@ -11,7 +11,7 @@ STOP -- PLEASE READ!
 
 GitHub is not the right place for support requests.
 
-If you're looking for help, check [Stack Overflow](https://stackoverflow.com/questions/tagged/kubernetes)
+If you're looking for help, check [Server Fault](https://serverfault.com/questions/tagged/kubernetes).
 
 You can also post your question on the [Kubernetes Slack](http://slack.k8s.io/) or the [Discuss Kubernetes](https://discuss.kubernetes.io/) forum.
 

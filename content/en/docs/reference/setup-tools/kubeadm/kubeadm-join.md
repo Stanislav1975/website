@@ -3,14 +3,13 @@ reviewers:
 - luxas
 - jbeda
 title: kubeadm join
-content_template: templates/concept
+content_type: concept
 weight: 30
 ---
-{{% capture overview %}}
+<!-- overview -->
 This command initializes a Kubernetes worker node and joins it to the cluster.
-{{% /capture %}}
 
-{{% capture body %}}
+<!-- body -->
 {{< include "generated/kubeadm_join.md" >}}
 
 ### The join workflow {#join-workflow}
@@ -42,8 +41,6 @@ For control-plane nodes additional steps are performed:
 
 1. Adding new local etcd member.
 
-1. Adding this node to the ClusterStatus of the kubeadm cluster.
-
 ### Using join phases with kubeadm {#join-phases}
 
 Kubeadm allows you join a node to the cluster in phases using `kubeadm join phase`.
@@ -59,13 +56,17 @@ kubeadm join phase kubelet-start --help
 ```
 
 Similar to the [kubeadm init phase](/docs/reference/setup-tools/kubeadm/kubeadm-init/#init-phases)
-command, `kubadm join phase` allows you to skip a list of phases using the `--skip-phases` flag.
+command, `kubeadm join phase` allows you to skip a list of phases using the `--skip-phases` flag.
 
 For example:
 
 ```shell
 sudo kubeadm join --skip-phases=preflight --config=config.yaml
 ```
+
+{{< feature-state for_k8s_version="v1.22" state="beta" >}}
+
+Alternatively, you can use the `skipPhases` field in `JoinConfiguration`.
 
 ### Discovering what cluster CA to trust
 
@@ -80,7 +81,12 @@ the cluster configuration (including root CA) and validates it using the token
 as well as validating that the root CA public key matches the provided hash and
 that the API server certificate is valid under the root CA.
 
-The CA key hash has the format `sha256:<hex_encoded_hash>`. By default, the hash value is returned in the `kubeadm join` command printed at the end of `kubeadm init` or in the output of `kubeadm token create --print-join-command`. It is in a standard format (see [RFC7469](https://tools.ietf.org/html/rfc7469#section-2.4)) and can also be calculated by 3rd party tools or provisioning systems. For example, using the OpenSSL CLI:
+The CA key hash has the format `sha256:<hex_encoded_hash>`.
+By default, the hash value is printed at the end of the `kubeadm init` command or
+in the output from the `kubeadm token create --print-join-command` command.
+It is in a standard format (see [RFC7469](https://tools.ietf.org/html/rfc7469#section-2.4))
+and can also be calculated by 3rd party tools or provisioning systems.
+For example, using the OpenSSL CLI:
 
 ```shell
 openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
@@ -105,18 +111,18 @@ if the `kubeadm init` command was called with `--upload-certs`.
 
 **Advantages:**
 
- - Allows bootstrapping nodes to securely discover a root of trust for the
-   control-plane node even if other worker nodes or the network are compromised.
+- Allows bootstrapping nodes to securely discover a root of trust for the
+  control-plane node even if other worker nodes or the network are compromised.
 
- - Convenient to execute manually since all of the information required fits
-   into a single `kubeadm join` command that is easy to copy and paste.
+- Convenient to execute manually since all of the information required fits
+  into a single `kubeadm join` command.
 
 **Disadvantages:**
 
- - The CA hash is not normally known until the control-plane node has been provisioned,
-   which can make it more difficult to build automated provisioning tools that
-   use kubeadm. By generating your CA in beforehand, you may workaround this
-   limitation.
+- The CA hash is not normally known until the control-plane node has been provisioned,
+  which can make it more difficult to build automated provisioning tools that
+  use kubeadm. By generating your CA in beforehand, you may workaround this
+  limitation.
 
 #### Token-based discovery without CA pinning
 
@@ -134,18 +140,18 @@ kubeadm join --token abcdef.1234567890abcdef --discovery-token-unsafe-skip-ca-ve
 
 **Advantages:**
 
- - Still protects against many network-level attacks.
+- Still protects against many network-level attacks.
 
- - The token can be generated ahead of time and shared with the control-plane node and
-   worker nodes, which can then bootstrap in parallel without coordination. This
-   allows it to be used in many provisioning scenarios.
+- The token can be generated ahead of time and shared with the control-plane node and
+  worker nodes, which can then bootstrap in parallel without coordination. This
+  allows it to be used in many provisioning scenarios.
 
 **Disadvantages:**
 
- - If an attacker is able to steal a bootstrap token via some vulnerability,
-   they can use that token (along with network-level access) to impersonate the
-   control-plane node to other bootstrapping nodes. This may or may not be an appropriate
-   tradeoff in your environment.
+- If an attacker is able to steal a bootstrap token via some vulnerability,
+  they can use that token (along with network-level access) to impersonate the
+  control-plane node to other bootstrapping nodes. This may or may not be an appropriate
+  tradeoff in your environment.
 
 #### File or HTTPS-based discovery
 
@@ -158,21 +164,39 @@ In case the discovery file does not contain credentials, the TLS discovery token
 
 **Example `kubeadm join` commands:**
 
- - `kubeadm join --discovery-file path/to/file.conf` (local file)
+- `kubeadm join --discovery-file path/to/file.conf` (local file)
 
- - `kubeadm join --discovery-file https://url/file.conf` (remote HTTPS URL)
+- `kubeadm join --discovery-file https://url/file.conf` (remote HTTPS URL)
 
 **Advantages:**
 
- - Allows bootstrapping nodes to securely discover a root of trust for the
-   control-plane node even if the network or other worker nodes are compromised.
+- Allows bootstrapping nodes to securely discover a root of trust for the
+  control-plane node even if the network or other worker nodes are compromised.
 
 **Disadvantages:**
 
- - Requires that you have some way to carry the discovery information from
-   the control-plane node to the bootstrapping nodes. If the discovery file contains credentials
-   you must keep it secret and transfer it over a secure channel. This might be possible with your
-   cloud provider or provisioning tool.
+- Requires that you have some way to carry the discovery information from
+  the control-plane node to the bootstrapping nodes. If the discovery file contains credentials
+  you must keep it secret and transfer it over a secure channel. This might be possible with your
+  cloud provider or provisioning tool.
+
+#### Use of custom kubelet credentials with `kubeadm join`
+
+To allow `kubeadm join` to use predefined kubelet credentials and skip client TLS bootstrap 
+and CSR approval for a new node:
+
+1. From a working control plane node in the cluster that has `/etc/kubernetes/pki/ca.key`
+   execute `kubeadm kubeconfig user --org system:nodes --client-name system:node:$NODE > kubelet.conf`.
+   `$NODE` must be set to the name of the new node.
+2. Modify the resulted `kubelet.conf` manually to adjust the cluster name and the server endpoint,
+   or run `kubeadm kubeconfig user --config` (it accepts `InitConfiguration`).
+
+If your cluster does not have the `ca.key` file, you must sign the embedded certificates in 
+the `kubelet.conf` externally.
+
+1. Copy the resulting `kubelet.conf` to `/etc/kubernetes/kubelet.conf` on the new node.
+2. Execute `kubeadm join` with the flag
+   `--ignore-preflight-errors=FileAvailable--etc-kubernetes-kubelet.conf` on the new node.
 
 ### Securing your installation even more {#securing-more}
 
@@ -191,35 +215,48 @@ kubectl delete clusterrolebinding kubeadm:node-autoapprove-bootstrap
 
 After that, `kubeadm join` will block until the admin has manually approved the CSR in flight:
 
-```shell
-kubectl get csr
-```
-The output is similar to this:
-```
-NAME                                                   AGE       REQUESTOR                 CONDITION
-node-csr-c69HXe7aYcqkS1bKmH4faEnHAWxn6i2bHZ2mD04jZyQ   18s       system:bootstrap:878f07   Pending
-```
+1. Using `kubectl get csr`, you can see that the original CSR is in the Pending state.
 
-```shell
-kubectl certificate approve node-csr-c69HXe7aYcqkS1bKmH4faEnHAWxn6i2bHZ2mD04jZyQ
-```
-The output is similar to this:
-```
-certificatesigningrequest "node-csr-c69HXe7aYcqkS1bKmH4faEnHAWxn6i2bHZ2mD04jZyQ" approved
-```
+   ```shell
+   kubectl get csr
+   ```
 
-```shell
-kubectl get csr
-```
-The output is similar to this:
-```
-NAME                                                   AGE       REQUESTOR                 CONDITION
-node-csr-c69HXe7aYcqkS1bKmH4faEnHAWxn6i2bHZ2mD04jZyQ   1m        system:bootstrap:878f07   Approved,Issued
-```
+   The output is similar to this:
+
+   ```
+   NAME                                                   AGE       REQUESTOR                 CONDITION
+   node-csr-c69HXe7aYcqkS1bKmH4faEnHAWxn6i2bHZ2mD04jZyQ   18s       system:bootstrap:878f07   Pending
+   ```
+
+2. `kubectl certificate approve` allows the admin to approve CSR.This action tells a certificate signing
+   controller to issue a certificate to the requestor with the attributes requested in the CSR.
+
+   ```shell
+   kubectl certificate approve node-csr-c69HXe7aYcqkS1bKmH4faEnHAWxn6i2bHZ2mD04jZyQ
+   ```
+
+   The output is similar to this:
+
+   ```
+   certificatesigningrequest "node-csr-c69HXe7aYcqkS1bKmH4faEnHAWxn6i2bHZ2mD04jZyQ" approved
+   ```
+
+3. This would change the CRS resource to Active state.
+
+   ```shell
+   kubectl get csr
+   ```
+
+   The output is similar to this:
+
+   ```
+   NAME                                                   AGE       REQUESTOR                 CONDITION
+   node-csr-c69HXe7aYcqkS1bKmH4faEnHAWxn6i2bHZ2mD04jZyQ   1m        system:bootstrap:878f07   Approved,Issued
+   ```
 
 This forces the workflow that `kubeadm join` will only succeed if `kubectl certificate approve` has been run.
 
-#### Turning off public access to the cluster-info ConfigMap
+#### Turning off public access to the `cluster-info` ConfigMap
 
 In order to achieve the joining flow using the token as the only piece of validation information, a
  ConfigMap with some data needed for validation of the control-plane node's identity is exposed publicly by
@@ -230,10 +267,12 @@ it off regardless. Doing so will disable the ability to use the `--discovery-tok
 * Fetch the `cluster-info` file from the API Server:
 
 ```shell
-kubectl -n kube-public get cm cluster-info -o yaml | grep "kubeconfig:" -A11 | grep "apiVersion" -A10 | sed "s/    //" | tee cluster-info.yaml
+kubectl -n kube-public get cm cluster-info -o jsonpath='{.data.kubeconfig}' | tee cluster-info.yaml
 ```
+
 The output is similar to this:
-```
+
+```yaml
 apiVersion: v1
 kind: Config
 clusters:
@@ -266,20 +305,20 @@ The config file is still considered beta and may change in future versions.
 It's possible to configure `kubeadm join` with a configuration file instead of command
 line flags, and some more advanced features may only be available as
 configuration file options. This file is passed using the `--config` flag and it must
-contain a `JoinConfiguration` structure.
+contain a `JoinConfiguration` structure. Mixing `--config` with others flags may not be
+allowed in some cases.
 
-To print the default values of `JoinConfiguration` run the following command:
+The default configuration can be printed out using the
+[kubeadm config print](/docs/reference/setup-tools/kubeadm/kubeadm-config/#cmd-config-print) command.
 
-```shell
-kubeadm config print join-defaults
-```
+If your configuration is not using the latest version it is **recommended** that you migrate using
+the [kubeadm config migrate](/docs/reference/setup-tools/kubeadm/kubeadm-config/#cmd-config-migrate) command.
 
-For details on individual fields in `JoinConfiguration` see [the godoc](https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm#JoinConfiguration).
+For more information on the fields and usage of the configuration you can navigate to our
+[API reference](/docs/reference/config-api/kubeadm-config.v1beta3/).
 
-{{% /capture %}}
+## {{% heading "whatsnext" %}}
 
-{{% capture whatsnext %}}
-* [kubeadm init](/docs/reference/setup-tools/kubeadm/kubeadm-init/) to bootstrap a Kubernetes control-plane node
-* [kubeadm token](/docs/reference/setup-tools/kubeadm/kubeadm-token/) to manage tokens for `kubeadm join`
-* [kubeadm reset](/docs/reference/setup-tools/kubeadm/kubeadm-reset/) to revert any changes made to this host by `kubeadm init` or `kubeadm join`
-{{% /capture %}}
+* [kubeadm init](/docs/reference/setup-tools/kubeadm/kubeadm-init/) to bootstrap a Kubernetes control-plane node.
+* [kubeadm token](/docs/reference/setup-tools/kubeadm/kubeadm-token/) to manage tokens for `kubeadm join`.
+* [kubeadm reset](/docs/reference/setup-tools/kubeadm/kubeadm-reset/) to revert any changes made to this host by `kubeadm init` or `kubeadm join`.

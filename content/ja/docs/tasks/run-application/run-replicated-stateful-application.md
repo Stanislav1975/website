@@ -1,46 +1,48 @@
 ---
 title: レプリカを持つステートフルアプリケーションを実行する
-content_template: templates/tutorial
+content_type: tutorial
 weight: 30
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 このページでは、[StatefulSet](/ja/docs/concepts/workloads/controllers/statefulset/)
 コントローラーを使用して、レプリカを持つステートフルアプリケーションを実行する方法を説明します。
-ここでの例は、非同期レプリケーションを行う複数のスレーブを持つ、単一マスターのMySQLです。
+ここでの例は、非同期レプリケーションを行う複数のスレーブを持つ、単一マスターのMySQLです。
 
 **この例は本番環境向けの構成ではない**ことに注意してください。
 具体的には、MySQLの設定が安全ではないデフォルトのままとなっています。
 これはKubernetesでステートフルアプリケーションを実行するための一般的なパターンに焦点を当てるためです。
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 * {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 * {{< include "default-storage-class-prereqs.md" >}}
-* このチュートリアルは、あなたが[PersistentVolume](/docs/concepts/storage/persistent-volumes/)
+* このチュートリアルは、あなたが[PersistentVolume](/ja/docs/concepts/storage/persistent-volumes/)
   と[StatefulSet](/ja/docs/concepts/workloads/controllers/statefulset/)、
-  さらには[Pod](/ja/docs/concepts/workloads/pods/pod/)、
-  [Service](/docs/concepts/services-networking/service/)、
-  [ConfigMap](/docs/tasks/configure-pod-container/configure-pod-configmap/)などの
+  さらには[Pod](/ja/docs/concepts/workloads/pods/)、
+  [Service](/ja/docs/concepts/services-networking/service/)、
+  [ConfigMap](/ja/docs/tasks/configure-pod-container/configure-pod-configmap/)などの
   他のコアな概念に精通していることを前提としています。
 * MySQLに関する知識は記事の理解に役立ちますが、
   このチュートリアルは他のシステムにも役立つ一般的なパターンを提示することを目的としています。
 
-{{% /capture %}}
 
-{{% capture objectives %}}
+
+## {{% heading "objectives" %}}
+
 
 * StatefulSetコントローラーを使用して、レプリカを持つMySQLトポロジーをデプロイします。
 * MySQLクライアントトラフィックを送信します。
 * ダウンタイムに対する耐性を観察します。
 * StatefulSetをスケールアップおよびスケールダウンします。
 
-{{% /capture %}}
 
-{{% capture lessoncontent %}}
+
+<!-- lessoncontent -->
 
 ## MySQLをデプロイする
 
@@ -54,7 +56,7 @@ weight: 30
 kubectl apply -f https://k8s.io/examples/application/mysql/mysql-configmap.yaml
 ```
 
-{{< codenew file="application/mysql/mysql-configmap.yaml" >}}
+{{% codenew file="application/mysql/mysql-configmap.yaml" %}}
 
 このConfigMapは、MySQLマスターとスレーブの設定を独立して制御するために、
 それぞれの`my.cnf`を上書きする内容を提供します。
@@ -73,14 +75,14 @@ ConfigMap自体に特別なことはありませんが、ConfigMapの各部分�
 kubectl apply -f https://k8s.io/examples/application/mysql/mysql-services.yaml
 ```
 
-{{< codenew file="application/mysql/mysql-services.yaml" >}}
+{{% codenew file="application/mysql/mysql-services.yaml" %}}
 
 ヘッドレスサービスは、StatefulSetコントローラーが
-StatefulSetの一部であるPodごとに作成するDNSエントリーのベースエントリーを提供します。
-この例ではヘッドレスサービスの名前は`mysql`なので、同じKubernetesクラスタの
+StatefulSetの一部であるPodごとに作成するDNSエントリーのベースエントリーを提供します。
+この例ではヘッドレスサービスの名前は`mysql`なので、同じKubernetesクラスターの
 同じ名前空間内の他のPodは、`<pod-name>.mysql`を名前解決することでPodにアクセスできます。
 
-`mysql-read`と呼ばれるクライアントサービスは、独自のクラスタIPを持つ通常のServiceであり、
+`mysql-read`と呼ばれるクライアントサービスは、独自のクラスターIPを持つ通常のServiceであり、
 Ready状態のすべてのMySQL Podに接続を分散します。
 Serviceのエンドポイントには、MySQLマスターとすべてのスレーブが含まれる可能性があります。
 
@@ -96,7 +98,7 @@ MySQLマスターは1つしかいないため、クライアントが書き込�
 kubectl apply -f https://k8s.io/examples/application/mysql/mysql-statefulset.yaml
 ```
 
-{{< codenew file="application/mysql/mysql-statefulset.yaml" >}}
+{{% codenew file="application/mysql/mysql-statefulset.yaml" %}}
 
 次のコマンドを実行して起動の進行状況を確認できます。
 
@@ -192,7 +194,7 @@ StatefulSetがスケールアップした場合や、次のPodがPersistentVolum
 ## クライアントトラフィックを送信する
 
 テストクエリーをMySQLマスター(ホスト名 `mysql-0.mysql`)に送信するには、
-`mysql:5.7`イメージを使って一時的なコンテナーを実行し、`mysql`クライアントバイナリーを実行します。
+`mysql:5.7`イメージを使って一時的なコンテナを実行し、`mysql`クライアントバイナリを実行します。
 
 ```shell
 kubectl run mysql-client --image=mysql:5.7 -i --rm --restart=Never --\
@@ -262,7 +264,7 @@ Podを強制的にReadyではない状態にする間、上記の`SELECT @@serve
 ### Readiness Probeを壊す
 
 `mysql`コンテナに対する
-[readiness probe](/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#define-readiness-probes)
+[readiness probe](/ja/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes)
 は、`mysql -h 127.0.0.1 -e 'SELECT 1'`コマンドを実行することで、サーバーが起動していてクエリーが実行できることを確認します。
 
 このreadiness probeを失敗させる1つの方法は、そのコマンドを壊すことです。
@@ -311,7 +313,7 @@ StatefulSetコントローラーは`mysql-2` Podがもう存在しないこと�
 
 ### ノードをdrainする
 
-Kubernetesクラスタに複数のノードがある場合は、
+Kubernetesクラスターに複数のノードがある場合は、
 [drain](/docs/reference/generated/kubectl/kubectl-commands/#drain)を発行して
 ノードのダウンタイム(例えばノードのアップグレード時など)をシミュレートできます。
 
@@ -333,7 +335,7 @@ mysql-2   2/2       Running   0          15m       10.244.5.27   kubernetes-mini
 `<node-name>`は前のステップで確認したノードの名前に置き換えてください。
 
 この操作はノード上の他のアプリケーションに影響を与える可能性があるため、
-**テストクラスタでのみこの操作を実行**するのが最善です。
+**テストクラスターでのみこの操作を実行**するのが最善です。
 
 ```shell
 kubectl drain <node-name> --force --delete-local-data --ignore-daemonsets
@@ -437,9 +439,10 @@ kubectl delete pvc data-mysql-3
 kubectl delete pvc data-mysql-4
 ```
 
-{{% /capture %}}
 
-{{% capture cleanup %}}
+
+## {{% heading "cleanup" %}}
+
 
 1. `SELECT @@server_id`ループを実行している端末で**Ctrl+C**を押すか、
    別の端末から次のコマンドを実行して、ループをキャンセルします。
@@ -478,13 +481,14 @@ kubectl delete pvc data-mysql-4
    動的プロビジョニング機能を使用した場合は、PersistentVolumeClaimを削除すれば、自動的にPersistentVolumeも削除されます。
    一部の動的プロビジョナー(EBSやPDなど)は、PersistentVolumeを削除すると同時に下層にあるリソースも解放します。
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * その他のステートフルアプリケーションの例は、[Helm Charts repository](https://github.com/kubernetes/charts)を見てください。
 
-{{% /capture %}}
+
 
 
 

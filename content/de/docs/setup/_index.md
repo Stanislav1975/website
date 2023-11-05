@@ -2,22 +2,22 @@
 title: Setup
 main_menu: true
 weight: 30
-content_template: templates/concept
+content_type: concept
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Diese Sektion umfasst verschiedene Optionen zum Einrichten und Betrieb von Kubernetes.
 
-Verschiedene Kubernetes Lösungen haben verschiedene Anforderungen:  Einfache Wartung, Sicherheit, Kontrolle, verfügbare Resourcen und erforderliches Fachwissen zum Betrieb und zur Verwaltung dess folgende Diagramm zeigt die möglichen Abstraktionen eines Kubernetes-Clusters und ob eine Abstraktion selbst verwaltet oder von einem Anbieter verwaltet wird.
+Verschiedene Kubernetes Lösungen haben verschiedene Anforderungen:  Einfache Wartung, Sicherheit, Kontrolle, verfügbare Resourcen und erforderliches Fachwissen zum Betrieb und zur Verwaltung. Das folgende Diagramm zeigt die möglichen Abstraktionen eines Kubernetes-Clusters und ob eine Abstraktion selbst verwaltet oder von einem Anbieter verwaltet wird.
 
 Sie können einen Kubernetes-Cluster auf einer lokalen Maschine, Cloud, On-Prem Datacenter bereitstellen; oder wählen Sie einen verwalteten Kubernetes-Cluster. Sie können auch eine individuelle Lösung über eine grosse Auswahl an Cloud Anbietern oder Bare-Metal-Umgebungen nutzen.
 
 Noch einfacher können Sie einen Kubernetes-Cluster in einer Lern- und Produktionsumgebung erstellen.
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Lernumgebung
 
@@ -34,7 +34,7 @@ Benutzen Sie eine Docker-basierende Lösung, wenn Sie Kubernetes erlernen wollen
 |                     | [IBM Cloud Private-CE (Community Edition)](https://github.com/IBM/deploy-ibm-cloud-private) |
 |                     | [IBM Cloud Private-CE (Community Edition) on Linux Containers](https://github.com/HSBawa/icp-ce-on-linux-containers)|
 |                     | [k3s](https://k3s.io)|
-
+{{< /table >}}
 
 ## Produktionsumgebung
 
@@ -98,5 +98,6 @@ Die folgende Tabelle für Produktionsumgebungs-Lösungen listet Anbieter und der
 | [VEXXHOST](https://vexxhost.com/)         | &#x2714;             | &#x2714;      |             |      |          |
 | [VMware](https://cloud.vmware.com/) | [VMware Cloud PKS](https://cloud.vmware.com/vmware-cloud-pks)              |[VMware Enterprise PKS](https://cloud.vmware.com/vmware-enterprise-pks)        |   [VMware Enterprise PKS](https://cloud.vmware.com/vmware-enterprise-pks)          | [VMware Essential PKS](https://cloud.vmware.com/vmware-essential-pks)      |          |[VMware Essential PKS](https://cloud.vmware.com/vmware-essential-pks)
 | [Z.A.R.V.I.S.](https://zarvis.ai/) | &#x2714; | | | | | |
+{{< /table >}}
 
-{{% /capture %}}
+

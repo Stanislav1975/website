@@ -2,7 +2,7 @@
 reviewers:
 - truongnh1992
 title: Cài đặt và cấu hình kubectl
-content_template: templates/task
+content_type: task
 weight: 10
 card:
   name: tasks
@@ -10,15 +10,16 @@ card:
   title: Install kubectl
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 Công cụ command-line trong Kubernetes, [kubectl](/docs/user-guide/kubectl/), cho phép bạn thực thi các câu lệnh trong Kubernetes clusters. Bạn có thể sử dụng kubectl để triển khai các ứng dụng, theo dõi và quản lý tài nguyên của cluster, và xem log. Để biết các thao tác của kubectl, truy cập tới [Tổng quan về kubectl](/docs/reference/kubectl/overview/).
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 Bạn cần phải sử dụng phiên bản kubectl sai lệch không quá một phiên bản với version của cluster. Ví dụ, một client v1.2 nên được hoạt động với master v1.1, v1.2 và v1.3. Sử dụng phiên bản mới nhất của kubectl giúp tránh được các vấn đề không lường trước được.
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Cài đặt kubectl trên Linux
 
@@ -27,15 +28,15 @@ Bạn cần phải sử dụng phiên bản kubectl sai lệch không quá một
 1. Tải về phiên bản mới nhất với câu lệnh:
 
     ```
-    curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+    curl -LO https://dl.k8s.io/release/`curl -LS https://dl.k8s.io/release/stable.txt`/bin/linux/amd64/kubectl
     ```
 
-    Để tải về phiên bản cụ thể, hãy thay thế phần `$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)` trong câu lệnh với một phiên bản cụ thể.
+    Để tải về phiên bản cụ thể, hãy thay thế phần `$(curl -LS https://dl.k8s.io/release/stable.txt)` trong câu lệnh với một phiên bản cụ thể.
 
-    Ví dụ như, để tải về phiên bản {{< param "fullversion" >}} trên Linux, hãy nhập như sau:
+    Ví dụ như, để tải về phiên bản {{< skew currentPatchVersion >}} trên Linux, hãy nhập như sau:
     
     ```
-    curl -LO https://storage.googleapis.com/kubernetes-release/release/{{< param "fullversion" >}}/bin/linux/amd64/kubectl
+    curl -LO https://dl.k8s.io/release/v{{< skew currentPatchVersion >}}/bin/linux/amd64/kubectl
     ```
 
 2. Tạo kubectl binary thực thi.
@@ -72,7 +73,7 @@ baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
 enabled=1
 gpgcheck=1
 repo_gpgcheck=1
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOF
 yum install -y kubectl
 {{< /tab >}}
@@ -102,15 +103,15 @@ Nếu bạn đang sử dụng Ubuntu hoặc distro Linux khác hỗ trợ trình
 1. Tải về phiên bản mới nhất:
 
     ```		 
-    curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl"
+    curl -LO "https://dl.k8s.io/release/$(curl -LS https://dl.k8s.io/release/stable.txt)/bin/darwin/amd64/kubectl"
     ```
 
-    Để tải về phiên bản cụ thể, hãy thay thế phần `$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)` trong câu lệnh với phiên bản cụ thể. 
+    Để tải về phiên bản cụ thể, hãy thay thế phần `$(curl -LS https://dl.k8s.io/release/stable.txt)` trong câu lệnh với phiên bản cụ thể. 
 
-    Ví dụ, để tải về phiên bản {{< param "fullversion" >}} trên macOS, gõ:
+    Ví dụ, để tải về phiên bản {{< skew currentPatchVersion >}} trên macOS, gõ:
 		  
     ```
-    curl -LO https://storage.googleapis.com/kubernetes-release/release/{{< param "fullversion" >}}/bin/darwin/amd64/kubectl
+    curl -LO https://dl.k8s.io/release/v{{< skew currentPatchVersion >}}/bin/darwin/amd64/kubectl
     ```
 
 2. Tạo kubectl binary thực thi.
@@ -172,15 +173,15 @@ Nếu bạn đang trên macOS và sử dụng trình quản lý gói [Macports](
 
 ### Cài đặt kubectl binary với curl trên Windows
 
-1. Tải về phiên bản mới nhất {{< param "fullversion" >}} từ [đường dẫn này](https://storage.googleapis.com/kubernetes-release/release/{{< param "fullversion" >}}/bin/windows/amd64/kubectl.exe).
+1. Tải về phiên bản mới nhất {{< skew currentPatchVersion >}} từ [đường dẫn này](https://dl.k8s.io/release/v{{< skew currentPatchVersion >}}/bin/windows/amd64/kubectl.exe).
 
     Hoặc nếu bạn đã cài đặt `curl`, hãy sử dụng câu lệnh sau:
 
     ```
-    curl -LO https://storage.googleapis.com/kubernetes-release/release/{{< param "fullversion" >}}/bin/windows/amd64/kubectl.exe
+    curl -LO https://dl.k8s.io/release/v{{< skew currentPatchVersion >}}/bin/windows/amd64/kubectl.exe
     ```
 
-    Để tìm ra phiên bản ổn định mới nhất, hãy xem [https://storage.googleapis.com/kubernetes-release/release/stable.txt](https://storage.googleapis.com/kubernetes-release/release/stable.txt).
+    Để tìm ra phiên bản ổn định mới nhất, hãy xem [https://dl.k8s.io/release/stable.txt](https://dl.k8s.io/release/stable.txt).
 
 2. Đưa bản binary vào biến môi trường PATH của bạn.
 3. Kiểm tra chắn chắn phiên bản `kubectl` giống với bản đã tải về:
@@ -449,7 +450,7 @@ Nếu bạn có alias cho kubectl, bạn có thể mở rộng shell completion 
 
 ```shell
 echo 'alias k=kubectl' >>~/.zshrc
-echo 'complete -F __start_kubectl k' >>~/.zshrc
+echo 'compdef __start_kubectl k' >>~/.zshrc
 ```
     
 Sau khi tải lại shell, kubectl autocompletion sẽ hoạt động.
@@ -463,12 +464,13 @@ compinit
 {{% /tab %}}
 {{< /tabs >}}
 
-{{% /capture %}}
 
-{{% capture Tiếp theo %}}
+
+## {{% heading "whatsnext" %}}
+
 * [Cài đặt Minikube](/docs/tasks/tools/install-minikube/)
 * Xem [hướng dẫn bắt đầu](/docs/setup/) để biết thêm về việc tạo cluster.
 * [Tìm hiểu cách khởi chạy và hiển thị ứng dụng của bạn.](/docs/tasks/access-application-cluster/service-access-application-cluster/)
 * Nếu bạn cần quyền truy cập vào một cluster mà bạn không tạo, hãy xem [tài liệu Sharing Cluster Access](/docs/tasks/access-application-cluster/configure-access-multiple-clusters/).
 * Đọc [tài liệu tham khảo của kubectl](/docs/reference/kubectl/kubectl/)
-{{% /capture %}}
+

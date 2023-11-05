@@ -1,17 +1,17 @@
 ---
 title: Entender los Objetos de Kubernetes
-content_template: templates/concept
+content_type: concept
 weight: 10
 card:
   name: concepts
   weight: 40
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 Esta página explica cómo se representan los objetos de Kubernetes en la API de Kubernetes, y cómo puedes definirlos en formato `.yaml`.
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 ## Entender los Objetos de Kubernetes
 
 Los *Objetos de Kubernetes* son entidades persistentes dentro del sistema de Kubernetes. Kubernetes utiliza estas entidades para representar el estado de tu clúster. Específicamente, pueden describir:
@@ -39,7 +39,7 @@ Cuando creas un objeto en Kubernetes, debes especificar la spec del objeto que d
 
 Aquí hay un ejemplo de un archivo `.yaml` que muestra los campos requeridos y la spec del objeto Deployment de Kubernetes:
 
-{{< codenew file="application/deployment.yaml" >}}
+{{% codenew file="application/deployment.yaml" %}}
 
 Una forma de crear un Deployment utilizando un archivo `.yaml` como el indicado arriba sería ejecutar el comando
 [`kubectl apply`](/docs/reference/generated/kubectl/kubectl-commands#apply)
@@ -69,10 +69,11 @@ Por ejemplo, el formato de la `spec` para un objeto de tipo `Pod` lo puedes enco
 y el formato de la `spec` para un objeto de tipo `Deployment` lo puedes encontrar
 [aquí](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/#deploymentspec-v1-apps).
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 * Aprender más acerca de los objetos básicos más importantes de Kubernetes, como el [Pod](/docs/concepts/workloads/pods/pod-overview/).
-{{% /capture %}}
+
 
 

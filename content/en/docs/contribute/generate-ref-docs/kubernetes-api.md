@@ -1,10 +1,10 @@
 ---
 title: Generating Reference Documentation for the Kubernetes API
-content_template: templates/task
+content_type: task
 weight: 50
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 This page shows how to update the Kubernetes API reference documentation.
 
@@ -18,15 +18,16 @@ If you find bugs in the generated documentation, you need to
 If you need only to regenerate the reference documentation from the [OpenAPI](https://github.com/OAI/OpenAPI-Specification)
 spec, continue reading this page.
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "prerequisites-ref-docs.md" >}}
 
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Setting up the local repositories
 
@@ -82,16 +83,16 @@ This section shows how to generate the
 ### Setting build variables
 
 * Set `K8S_ROOT` to `<k8s-base>`.
-* Set `WEB_ROOT` to `<web-base>`.
+* Set `K8S_WEBROOT` to `<web-base>`.
 * Set `K8S_RELEASE` to the version of the docs you want to build.
-  For example, if you want to build docs for Kubernetes 1.17, set `K8S_RELEASE` to 1.17.
+  For example, if you want to build docs for Kubernetes 1.17.0, set `K8S_RELEASE` to 1.17.0.
 
 For example:
 
 ```shell
-export WEB_ROOT=$(GOPATH)/src/github.com/<your-username>/website
-export K8S_ROOT=$(GOPATH)/src/k8s.io/kubernetes
-export K8S_RELEASE=1.17
+export K8S_WEBROOT=${GOPATH}/src/github.com/<your-username>/website
+export K8S_ROOT=${GOPATH}/src/k8s.io/kubernetes
+export K8S_RELEASE=1.17.0
 ```
 
 ### Creating versioned directory and fetching Open API spec
@@ -123,8 +124,8 @@ make copyapi
 Verify that these two files have been generated:
 
 ```shell
-[ -e "<rdocs-base>/gen-apidocs/generators/build/index.html" ] && echo "index.html built" || echo "no index.html"
-[ -e "<rdocs-base>/gen-apidocs/generators/build/navData.js" ] && echo "navData.js built" || echo "no navData.js"
+[ -e "<rdocs-base>/gen-apidocs/build/index.html" ] && echo "index.html built" || echo "no index.html"
+[ -e "<rdocs-base>/gen-apidocs/build/navData.js" ] && echo "navData.js built" || echo "no navData.js"
 ```
 
 Go to the base of your local `<web-base>`, and
@@ -138,19 +139,19 @@ git status
 The output is similar to:
 
 ```
-static/docs/reference/generated/kubernetes-api/v1.17/css/bootstrap.min.css
-static/docs/reference/generated/kubernetes-api/v1.17/css/font-awesome.min.css
-static/docs/reference/generated/kubernetes-api/v1.17/css/stylesheet.css
-static/docs/reference/generated/kubernetes-api/v1.17/fonts/FontAwesome.otf
-static/docs/reference/generated/kubernetes-api/v1.17/fonts/fontawesome-webfont.eot
-static/docs/reference/generated/kubernetes-api/v1.17/fonts/fontawesome-webfont.svg
-static/docs/reference/generated/kubernetes-api/v1.17/fonts/fontawesome-webfont.ttf
-static/docs/reference/generated/kubernetes-api/v1.17/fonts/fontawesome-webfont.woff
-static/docs/reference/generated/kubernetes-api/v1.17/fonts/fontawesome-webfont.woff2
-static/docs/reference/generated/kubernetes-api/v1.17/index.html
-static/docs/reference/generated/kubernetes-api/v1.17/js/jquery.scrollTo.min.js
-static/docs/reference/generated/kubernetes-api/v1.17/js/navData.js
-static/docs/reference/generated/kubernetes-api/v1.17/js/scroll.js
+static/docs/reference/generated/kubernetes-api/{{< param "version" >}}/css/bootstrap.min.css
+static/docs/reference/generated/kubernetes-api/{{< param "version" >}}/css/font-awesome.min.css
+static/docs/reference/generated/kubernetes-api/{{< param "version" >}}/css/stylesheet.css
+static/docs/reference/generated/kubernetes-api/{{< param "version" >}}/fonts/FontAwesome.otf
+static/docs/reference/generated/kubernetes-api/{{< param "version" >}}/fonts/fontawesome-webfont.eot
+static/docs/reference/generated/kubernetes-api/{{< param "version" >}}/fonts/fontawesome-webfont.svg
+static/docs/reference/generated/kubernetes-api/{{< param "version" >}}/fonts/fontawesome-webfont.ttf
+static/docs/reference/generated/kubernetes-api/{{< param "version" >}}/fonts/fontawesome-webfont.woff
+static/docs/reference/generated/kubernetes-api/{{< param "version" >}}/fonts/fontawesome-webfont.woff2
+static/docs/reference/generated/kubernetes-api/{{< param "version" >}}/index.html
+static/docs/reference/generated/kubernetes-api/{{< param "version" >}}/js/jquery.scrollTo.min.js
+static/docs/reference/generated/kubernetes-api/{{< param "version" >}}/js/navData.js
+static/docs/reference/generated/kubernetes-api/{{< param "version" >}}/js/scroll.js
 ```
 
 ## Updating the API reference index pages
@@ -177,11 +178,12 @@ version number.
 ## Locally test the API reference
 
 Publish a local version of the API reference.
-Verify the [local preview](http://localhost:1313/docs/reference/generated/kubernetes-api/v1.17/).
+Verify the [local preview](http://localhost:1313/docs/reference/generated/kubernetes-api/{{< param "version">}}/).
 
 ```shell
 cd <web-base>
-make docker-serve
+git submodule update --init --recursive --depth 1 # if not already done
+make container-serve
 ```
 
 ## Commit the changes
@@ -189,17 +191,16 @@ make docker-serve
 In `<web-base>` run `git add` and `git commit` to commit the change.
 
 Submit your changes as a
-[pull request](/docs/contribute/start/) to the
+[pull request](/docs/contribute/new-content/open-a-pr/) to the
 [kubernetes/website](https://github.com/kubernetes/website) repository.
 Monitor your pull request, and respond to reviewer comments as needed. Continue
 to monitor your pull request until it has been merged.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+## {{% heading "whatsnext" %}}
 
 * [Generating Reference Documentation Quickstart](/docs/contribute/generate-ref-docs/quickstart/)
 * [Generating Reference Docs for Kubernetes Components and Tools](/docs/contribute/generate-ref-docs/kubernetes-components/)
 * [Generating Reference Documentation for kubectl Commands](/docs/contribute/generate-ref-docs/kubectl/)
 
-{{% /capture %}}
+

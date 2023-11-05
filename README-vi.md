@@ -1,7 +1,6 @@
 # Tài liệu Kubernetes
 
-[![Build Status](https://api.travis-ci.org/kubernetes/website.svg?branch=master)](https://travis-ci.org/kubernetes/website)
-[![GitHub release](https://img.shields.io/github/release/kubernetes/website.svg)](https://github.com/kubernetes/website/releases/latest)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/be93b718-a6df-402a-b4a4-855ba186c97d/deploy-status)](https://app.netlify.com/sites/kubernetes-io-main-staging/deploys) [![GitHub release](https://img.shields.io/github/release/kubernetes/website.svg)](https://github.com/kubernetes/website/releases/latest)
 
 Chào mừng! Kho lưu trữ này chứa tất cả các tài nguyên cần thiết để xây dựng [trang web của Kubernetes và các tài liệu](https://kubernetes.io/). Chúng tôi rất vui vì bạn muốn đóng góp.
 
@@ -15,7 +14,7 @@ Một khi Pull Request của bạn được tạo, reviewer sẽ chịu trách n
 
 * [Bắt đầu đóng góp](https://kubernetes.io/docs/contribute/start/)
 * [Các giai đoạn thay đổi tài liệu](http://kubernetes.io/docs/contribute/intermediate#view-your-changes-locally)
-* [Sử dụng các trang templates](http://kubernetes.io/docs/contribute/style/page-templates/)
+* [Sử dụng các trang templates](https://kubernetes.io/docs/contribute/style/page-content-types/)
 * [Hướng dẫn biểu mẫu tài liệu](http://kubernetes.io/docs/contribute/style/style-guide/)
 * [Địa phương hóa tài liệu Kubernetes](https://kubernetes.io/docs/contribute/localization/)
 
@@ -26,18 +25,18 @@ Cách được đề xuất để chạy trang web Kubernetes cục bộ là dù
 
 > Nếu bạn làm việc trên môi trường Windows, bạn sẽ cần thêm môt vài công cụ mà bạn có thể cài đặt với [Chocolatey](https://chocolatey.org). `choco install make`
 
-> Nếu bạn không muốn dùng Docker để chạy trang web cục bộ, hãy xem [Chạy website cục bộ dùng Hugo](#Chạy website cục bộ dùng Hugo) dưới đây.
+> Nếu bạn không muốn dùng Docker để chạy trang web cục bộ, hãy xem [Chạy website cục bộ dùng Hugo](#chạy-website-cục-bộ-dùng-hugo) dưới đây.
 
 Nếu bạn có Docker đang [up và running](https://www.docker.com/get-started), build `kubernetes-hugo` Docker image cục bộ:
 
 ```bash
-make docker-image
+make container-image
 ```
 
 Khi image đã được built, bạn có thể chạy website cục bộ:
 
 ```bash
-make docker-serve
+make container-serve
 ```
 
 Mở trình duyệt và đến địa chỉ http://localhost:1313 để xem website. Khi bạn thay đổi các file nguồn, Hugo cập nhật website và buộc làm mới trình duyệt.

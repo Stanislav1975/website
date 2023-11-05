@@ -61,23 +61,20 @@ Markdown doesn't have strict rules about how to process lists. When we moved
 from Jekyll to Hugo, we broke some lists. To fix them, keep the following in
 mind:
 
-- Make sure you indent sub-list items **4 spaces** rather than the 2 that you
-  may be used to. Counter-intuitively, you need to indent block-level content
-  within a list item an extra 4 spaces too.
+- Make sure you indent sub-list items **2 spaces**.
 
-- To end a list and start another, you need a HTML comment block on a new line
+- To end a list and start another, you need an HTML comment block on a new line
   between the lists, flush with the left-hand border. The first list won't end
   otherwise, no matter how many blank lines you put between it and the second.
 
 ### Bullet lists
 
-- This is a list item
-* This is another list item in the same list
-- You can mix `-` and `*`
-    - To make a sub-item, indent two tabstops (4 spaces). **This is different
-      from Jekyll and Kramdown.**
-        - This is a sub-sub-item. Indent two more tabstops (4 more spaces).
-    - Another sub-item.
+- This is a list item.
+* This is another list item in the same list.
+- You can mix `-` and `*`.
+  - To make a sub-item, indent two spaces.
+    - This is a sub-sub-item. Indent two more spaces.
+  - Another sub-item.
 
 <!-- separate lists -->
 
@@ -85,48 +82,49 @@ mind:
   consecutive lists. **The HTML comment needs to be at the left margin.**
 - Bullet lists can have paragraphs or block elements within them.
 
-      Indent the content to be one tab stop beyond the text of the bullet
-      point. **This paragraph and the code block line up with the second `l` in
-      `Bullet` above.**
+  Indent the content to be the same as the first line of the bullet point.
+  **This paragraph and the code block line up with the first `B` in `Bullet`
+  above.**
 
-      ```bash
-      ls -l
-      ```
+  ```bash
+  ls -l
+  ```
 
-      - And a sub-list after some block-level content
+  - And a sub-list after some block-level content
 
 - A bullet list item can contain a numbered list.
-    1.  Numbered sub-list item 1
-    2.  Numbered sub-list item 2
+  1. Numbered sub-list item 1
+  1. Numbered sub-list item 2
 
 ### Numbered lists
 
-1.  This is a list item
-2.  This is another list item in the same list. The number you use in Markdown
-    does not necessarily correlate to the number in the final output. By
-    convention, we keep them in sync.
-3.  {{<note>}}
-    For single-digit numbered lists, using two spaces after the period makes
-    interior block-level content line up better along tab-stops.
-    {{</note>}}
+1. This is a list item
+1. This is another list item in the same list. The number you use in Markdown
+   does not necessarily correlate to the number in the final output. By
+   convention, we keep them in sync.
+
+{{<note>}}
+For single-digit numbered lists, using two spaces after the period makes
+interior block-level content line up better along tab-stops.
+{{</note>}}
 
 <!-- separate lists -->
 
-1.  This is a new list. With Hugo, you need to use a HTML comment to separate
-    two consecutive lists. **The HTML comment needs to be at the left margin.**
-2.  Numbered lists can have paragraphs or block elements within them.
+1. This is a new list. With Hugo, you need to use an HTML comment to separate
+   two consecutive lists. **The HTML comment needs to be at the left margin.**
+1. Numbered lists can have paragraphs or block elements within them.
 
-      Just indent the content to be one tab stop beyond the text of the bullet
-      point. **This paragraph and the code block line up with the `m` in
-      `Numbered` above.**
+   Indent the content to be the same as the first line of the bullet
+   point. **This paragraph and the code block line up with the `N` in
+   `Numbered` above.**
 
-      ```bash
-      ls -l
-      ```
+   ```bash
+   ls -l
+   ```
 
-    - And a sub-list after some block-level content. This is at the same
-      "level" as the paragraph and code block above, despite being indented
-      more.
+   - And a sub-list after some block-level content. This is at the same
+     "level" as the paragraph and code block above, despite being indented
+     more.
 
 ### Tab lists
 
@@ -178,13 +176,6 @@ back-ticks (code fences) for code blocks.** This allows you to specify the
 language of the enclosed code, which enables syntax highlighting. It is also more
 predictable than using indentation.
 
-{{< warning >}}
-There is one situation where you need to use indentation for code blocks: when
-the contents of the code block contain lines starting with `-` or `*` characters.
-This is due to
-[blackfriday issue #239](https://github.com/russross/blackfriday/issues/239).
-{{< /warning >}}
-
 ```
 this is a code block created by back-ticks
 ```
@@ -222,18 +213,19 @@ the `>` characters. The following example illustrates this (view the Markdown
 source for this page).
 
 ```none
-{{</* codenew file="pods/storage/gce-volume.yaml" */>}}
+{{</* alert color="warning" >}}This is a warning.{{< /alert */>}}
 ```
 
 ## Links
 
 To format a link, put the link text inside square brackets, followed by the
-link target in parentheses. [Link to Kubernetes.io](https://kubernetes.io/) or
-[Relative link to Kubernetes.io](/)
+link target in parentheses.
+
+- `[Link to Kubernetes.io](https://kubernetes.io/)` or
+- `[Relative link to Kubernetes.io](/)`
 
 You can also use HTML, but it is not preferred.
-<a href="https://kubernetes.io/">Link to Kubernetes.io</a>
-
+For example, `<a href="https://kubernetes.io/">Link to Kubernetes.io</a>`.
 
 ## Images
 
@@ -242,7 +234,7 @@ character. The square brackets contain the image's alt text. Try to always use
 alt text so that people using screen readers can get some benefit from the
 image.
 
-![pencil icon](/static/images/pencil.png)
+![pencil icon](/images/pencil.png)
 
 To specify extended attributes, such as width, title, caption, etc, use the
 <a href="https://gohugo.io/content-management/shortcodes/#figure">figure shortcode</a>,
@@ -250,18 +242,17 @@ which is preferred to using a HTML `<img>` tag. Also, if you need the image to
 also be a hyperlink, use the `link` attribute, rather than wrapping the whole
 figure in Markdown link syntax as shown below.
 
-{{< figure src="/static/images/pencil.png" title="Pencil icon" caption="Image used to illustrate the figure shortcode" width="200px" >}}
+{{< figure src="/images/pencil.png" title="Pencil icon" caption="Image used to illustrate the figure shortcode" width="200px" >}}
 
 Even if you choose not to use the figure shortcode, an image can also be a link. This
 time the pencil icon links to the Kubernetes website. Outer square brackets enclose
 the entire image tag, and the link target is in the parentheses at the end.
 
-[![pencil icon](/static/images/pencil.png)](https://kubernetes.io)
+[![pencil icon](/images/pencil.png)](https://kubernetes.io)
 
 You can also use HTML for images, but it is not preferred.
 
-<img src="/static/images/pencil.png" alt="pencil icon" />
-
+<img src="/images/pencil.png" alt="pencil icon" />
 
 ## Tables
 
@@ -295,6 +286,61 @@ tables, use HTML instead.
 </tbody>
 </table>
 
+## Visualizations with Mermaid
+
+You can use [Mermaid JS](https://mermaidjs.github.io) visualizations.
+The Mermaid JS version is specified in [/layouts/partials/head.html](https://github.com/kubernetes/website/blob/main/layouts/partials/head.html)
+
+```
+{{</* mermaid */>}}
+graph TD;
+  A-->B;
+  A-->C;
+  B-->D;
+  C-->D;
+{{</*/ mermaid */>}}
+```
+
+Produces:
+
+{{< mermaid >}}
+graph TD;
+  A-->B;
+  A-->C;
+  B-->D;
+  C-->D;
+{{</ mermaid >}}
+
+```
+{{</* mermaid */>}}
+sequenceDiagram
+    Alice ->> Bob: Hello Bob, how are you?
+    Bob-->>John: How about you John?
+    Bob--x Alice: I am good thanks!
+    Bob-x John: I am good thanks!
+    Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+
+    Bob-->Alice: Checking with John...
+    Alice->John: Yes... John, how are you?
+{{</*/ mermaid */>}}
+```
+
+Produces:
+
+{{< mermaid >}}
+sequenceDiagram
+    Alice ->> Bob: Hello Bob, how are you?
+    Bob-->>John: How about you John?
+    Bob--x Alice: I am good thanks!
+    Bob-x John: I am good thanks!
+    Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+
+    Bob-->Alice: Checking with John...
+    Alice->John: Yes... John, how are you?
+{{</ mermaid >}}
+
+You can check more [examples](https://mermaid-js.github.io/mermaid/#/examples) from the official docs.
+
 ## Sidebars and Admonitions
 
 Sidebars and admonitions provide ways to add visual importance to text. Use
@@ -314,7 +360,6 @@ A sidebar offsets text visually, but without the visual prominence of
 > ```bash
 > sudo dmesg
 > ```
->
 
 ### Admonitions
 
@@ -332,12 +377,9 @@ You can have multiple paragraphs and block-level elements inside an admonition.
 The reader should proceed with caution.
 {{< /caution >}}
 
-
 {{< warning >}}
 Warnings point out something that could cause harm if ignored.
 {{< /warning >}}
-
-
 
 ## Includes
 

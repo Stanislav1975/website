@@ -1,19 +1,19 @@
 ---
 title: StorageClass
-content_template: templates/concept
+content_type: concept
 weight: 30
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Dokumen ini mendeskripsikan konsep StorageClass yang ada pada Kubernetes.
 Sebelum lanjut membaca, sangat dianjurkan untuk memiliki pengetahuan terhadap
-[volumes](/docs/concepts/storage/volumes/) dan
-[peristent volume](/docs/concepts/storage/persistent-volumes) terlebih dahulu.
+[volumes](/id/docs/concepts/storage/volumes/) dan
+[peristent volume](/id/docs/concepts/storage/persistent-volumes) terlebih dahulu.
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Pengenalan
 
@@ -40,7 +40,7 @@ dan objek yang sudah dibuat tidak dapat diubah lagi definisinya.
 
 Administrator dapat memberikan spesifikasi StorageClass _default_ bagi
 PVC yang tidak membutuhkan kelas tertentu untuk dapat melakukan mekanisme _bind_:
-kamu dapat membaca [bagian `PersistentVolumeClaim`](/docs/concepts/storage/persistent-volumes/#class-1)
+kamu dapat membaca [bagian `PersistentVolumeClaim`](/id/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
 untuk penjelasan lebih lanjut.
 
 ```yaml
@@ -89,7 +89,7 @@ Kamu tidak dibatasi untuk hanya menggunakan _provisioner_ internal yang disediak
 pada list yang tersedia (yang memiliki nama dengan prefix "kubernetes.io" dan
 didistribusikan bersamaan dengan Kubernetes). Kamu juga dapat menjalankan dan
 mendefinisikan _provisioner_ eksternal yang merupakan program independen selama
-program tersebut menerapkan [spesifikasi](https://git.k8s.io/community/contributors/design-proposals/storage/volume-provisioning.md)
+program tersebut menerapkan [spesifikasi](https://github.com/kubernetes/design-proposals-archive/blob/main/storage/volume-provisioning.md)
 yang didefinisikan oleh Kubernetes. Penulis dari _provisioner_ eksternal Kubernetes
 memiliki kuasa penuh akan tempat dimana kode sumber yang mereka tulis, bagaimana
 mekanisme penyediaan (_provisioning_) dilakukan, serta bagaimana hal tersebut dapat dijalankan,
@@ -131,7 +131,7 @@ akan gagal apabila salah satu dari keduanya bersifat invalid.
 ### Mode Volume _Binding_
 
 _Field_ `volumeBindingMode` mengontrol kapan mekanisme [_binding_ volume dan
-_provisioning_ dinamis](/docs/concepts/storage/persistent-volumes/#provisioning)
+_provisioning_ dinamis](/id/docs/concepts/storage/persistent-volumes/#provisioning)
 harus dilakukan.
 
 Secara _default_, ketika mode `Immediate` yang mengindikasikan
@@ -148,11 +148,11 @@ dan _binding_ dari sebuah PersistentVolume hingga sebuah Pod yang menggunakan
 PersistentVolumeClaim dibuat. PersistentVolume akan dipilih atau di-_provisioning_
 sesuai dengan topologi yang dispesifikasikan oleh limitasi yang diberikan
 oleh mekanisme _scheduling_ Pod. Hal ini termasuk, tetapi tidak hanya terbatas pada,
-[persyaratan sumber daya](/docs/concepts/configuration/manage-compute-resources-container),
-[_node selector_](/docs/concepts/configuration/assign-pod-node/#nodeselector),
+[persyaratan sumber daya](/id/docs/concepts/configuration/manage-compute-resources-container),
+[_node selector_](/id/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector),
 [afinitas dan
-anti-afinitas Pod](/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity),
-serta [_taint_ dan _toleration_](/docs/concepts/configuration/taint-and-toleration).
+anti-afinitas Pod](/id/docs/concepts/scheduling-evictionassign-pod-node/#affinity-and-anti-affinity),
+serta [_taint_ dan _toleration_](/id/docs/concepts/scheduling-eviction/taint-and-toleration).
 
 Beberapa _plugin_ di bawah ini mendukung `WaitForFirstConsumer` dengan _provisioning_
 dinamis:
@@ -168,7 +168,7 @@ PersistentVolume yang terlebih dahulu dibuat:
 * [Lokal](#lokal)
 
 {{< feature-state state="beta" for_k8s_version="1.14" >}}
-[Volume-volume CSI](/docs/concepts/storage/volumes/#csi) juga didukung
+[Volume-volume CSI](/id/docs/concepts/storage/volumes/#csi) juga didukung
 dengan adanya _provisioning_ dinamis serta PV yang telah terlebih dahulu dibuat,
 meskipun demikian, akan lebih baik apabila kamu melihat dokumentasi
 untuk driver spesifik CSI untuk melihat topologi _key_ yang didukung
@@ -198,8 +198,8 @@ allowedTopologies:
 - matchLabelExpressions:
   - key: failure-domain.beta.kubernetes.io/zone
     values:
-    - us-central1-a
-    - us-central1-b
+    - us-central-1a
+    - us-central-1b
 ```
 
 ## Parameter-Parameter
@@ -373,7 +373,7 @@ parameters:
   * Distribusi volume: `volumetype: none`
 
   Untuk tipe volume apa saja yang tersedia dan berbagai opsi administrasi yang ada, kamu dapat membaca
-  [Petunjuk Administrasi](https://access.redhat.com/documentation/en-US/Red_Hat_Storage/3.1/html/Administration_Guide/part-Overview.html).
+  [Petunjuk Administrasi](https://access.redhat.com/documentation/en-us/red_hat_gluster_storage/).
 
   Untuk informasi lebih lanjut, kamu dapat membaca
   [Bagaimana Cara Mengatur Heketi](https://github.com/heketi/heketi/wiki/Setting-up-the-topology).
@@ -595,11 +595,11 @@ metadata:
 provisioner: kubernetes.io/azure-disk
 parameters:
   storageaccounttype: Standard_LRS
-  kind: Shared
+  kind: managed
 ```
 
 * `storageaccounttype`: Akun penyimpanan Azure yang ada pada tingkatan Sku. Nilai _default_-nya adalah kosong.
-* `kind`: Nilai yang mungkin adalah `shared` (default), `dedicated`, dan `managed`.
+* `kind`: Nilai yang mungkin adalah `shared`, `dedicated`, dan `managed` (default).
   Ketika `kind` yang digunakan adalah `shared`, semua disk yang tidak di-_manage_ akan
   dibuat pada beberapa akun penyimpanan yang ada pada grup sumber daya yang sama dengan klaster.
   Ketika `kind` yang digunakan adalah `dedicated`, sebuah akun penyimpanan
@@ -634,8 +634,8 @@ parameters:
   di dalam grup sumber daya yang sama dengan klaster, serta `skuName` dan `location` akan diabaikan.
 
 Selama _provision_, sebuah secret dibuat untuk menyimpan _credentials_. Jika klaster
-menggunakan konsep [RBAC](/docs/reference/access-authn-authz/rbac/) dan
-[_Roles_ Controller](/docs/reference/access-authn-authz/rbac/#controller-roles),
+menggunakan konsep [RBAC](/id/docs/reference/access-authn-authz/rbac/) dan
+[_Roles_ Controller](/id/docs/reference/access-authn-authz/rbac/#controller-roles),
 menambahkan kapabilitas `create` untuk sumber daya `secret` bagi clusterrole
 `system:controller:persistent-volume-binder`.
 
@@ -785,4 +785,4 @@ sampai _scheduling_ pod dilakukan. Hal ini dispesifikasikan oleh mode _binding_ 
 Memperlambat _binding_ volume mengizinkan _scheduler_ untuk memastikan
 batasan _scheduling_ semua pod ketika memilih PersistentVolume untuk sebuah PersistentVolumeClaim.
 
-{{% /capture %}}
+

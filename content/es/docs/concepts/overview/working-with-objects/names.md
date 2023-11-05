@@ -1,21 +1,21 @@
 ---
 title: Nombres
-content_template: templates/concept
+content_type: concept
 weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Todos los objetos de la API REST de Kubernetes se identifica de forma inequívoca mediante un Nombre y un UID.
 
 Para aquellos atributos provistos por el usuario que no son únicos, Kubernetes provee de [etiquetas](/docs/user-guide/labels) y [anotaciones](/docs/concepts/overview/working-with-objects/annotations/).
 
-Echa un vistazo al [documento de diseño de identificadores](https://git.k8s.io/community/contributors/design-proposals/architecture/identifiers.md) para información precisa acerca de las reglas sintácticas de los Nombres y UIDs.
-
-{{% /capture %}}
+Echa un vistazo al [documento de diseño de identificadores](https://git.k8s.io/design-proposals-archive/architecture/identifiers.md) para información precisa acerca de las reglas sintácticas de los Nombres y UIDs.
 
 
-{{% capture body %}}
+
+
+<!-- body -->
 
 ## Nombres
 
@@ -27,4 +27,4 @@ Por regla general, los nombres de los recursos de Kubernetes no deben exceder la
 
 {{< glossary_definition term_id="uid" length="all" >}}
 
-{{% /capture %}}
+

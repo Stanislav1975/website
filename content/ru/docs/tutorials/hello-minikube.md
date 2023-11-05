@@ -1,130 +1,159 @@
 ---
-title: Привет Minikube
-content_template: templates/tutorial
+title: Привет, Minikube
+content_type: tutorial
 weight: 5
 menu:
   main:
     title: "Начало"
     weight: 10
     post: >
-      <p>Готовы испачкать руки? Создайте простой кластер Kubernetes с запуском "Hello World" на Node.js</p>
-card: 
+      <p>Готовы приступить к делу? Создайте простой кластер Kubernetes и запустите в нём тестовое приложение.</p>
+card:
   name: tutorials
   weight: 10
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
-Это руководство покажет вам, как запустить простое Hello World Node.js приложение
-на Kubernetes используя [Minikube](/docs/getting-started-guides/minikube) и Katacoda.
-Katacoda предоставляет бесплатную, встроенную в браузер Kubernetes среду. 
+Это руководство демонстрирует, как запустить простое приложение в Kubernetes
+с помощью minikube. Для этого используется образ контейнера с NGINX, который
+выводит обратно текст всех запросов.
+
+
+## {{% heading "objectives" %}}
+
+* Развернуть простое приложение в minikube.
+* Запустить приложение.
+* Посмотреть логи приложения.
+
+## {{% heading "prerequisites" %}}
+
+
+Руководство подразумевает, что вы уже настроили `minikube`.
+См. документацию [minikube start](https://minikube.sigs.k8s.io/docs/start/) для инструкций по его установке.
+
+Вам также потребуется установить `kubectl`.
+См. [Установку и настройку kubectl](/ru/docs/tasks/tools/install-kubectl/) для инструкций по его установке.
+
+
+<!-- lessoncontent -->
+
+## Создание кластера minikube
+
+```shell
+minikube start
+```
+
+## Запуск панели (dashboard)
+
+Откройте панель Kubernetes. Это можно сделать двумя способами:
+
+{{< tabs name="dashboard" >}}
+{{% tab name="Запуск в браузере" %}}
+Откройте **новый** терминал и запустите:
+```shell
+# Запустите в новом терминале и не закрывайте его.
+minikube dashboard
+```
+
+Теперь можно вернуться к терминалу, где вы запускали `minikube start`.
 
 {{< note >}}
-Вы также можете следовать этому руководству, если вы установили [Minikube locally](/docs/tasks/tools/install-minikube/).
+Команда `dashboard` активирует дополнение dashboard и открывает прокси в веб-браузере по умолчанию.
+В этой панели можно создавать такие Kubernetes-ресурсы, как Deployment и Service.
+
+Если вы работаете в окружении с правами root, см. вкладку «Копирование URL для запуска».
+
+По умолчанию панель доступна только из внутренней виртуальной сети Kubernetes.
+Команда `dashboard` создаёт временный прокси, чтобы панель была доступна извне внутренней виртуальной сети Kubernetes.
+
+Чтобы остановить работу прокси, выполните `Ctrl+C` для завершения процесса.
+Когда команда завершит работу, панель останется запущенной внутри кластера Kubernetes.
+Вы можете снова выполнить команду `dashboard`, чтобы создать новую прокси для доступа к панели.
 {{< /note >}}
 
-{{% /capture %}}
+{{% /tab %}}
+{{% tab name="Копирование URL для запуска" %}}
 
-{{% capture objectives %}}
+Если вы не хотите, чтобы minikube запускал веб-браузер, выполните команду `dashboard` с флагом
+`--url`. В этом случае `minikube` выведет URL, который вы можете открыть в любом браузере.
 
-* Разверните hello world приложение в Minikube.
-* Запустите приложение.
-* Посмотрите логи приложения.
+Откройте **новый** терминал и запустите:
+```shell
+# Запустите в новом терминале и не закрывайте его.
+minikube dashboard --url
+```
 
-{{% /capture %}}
+Теперь можно вернуться к терминалу, где вы запускали `minikube start`.
 
-{{% capture prerequisites %}}
+{{% /tab %}}
+{{< /tabs >}}
 
-Для этого примера создан образ контейнера, собранный на основе следующих файлов:
+## Создание деплоймента
 
-{{< codenew language="js" file="minikube/server.js" >}}
+[*Под*](/docs/concepts/workloads/pods/pod/) Kubernetes — это группа из одного или более контейнеров, связанных друг с другом для удобного администрирования и организации сети. В данном руководстве под включает в себя один контейнер. Деплоймент ([*Deployment*](/docs/concepts/workloads/controllers/deployment/)) в Kubernetes проверяет здоровье пода и перезагружает контейнер пода в случае, если он прекратил работу. Деплойменты — рекомендуемый способ создания и масштабирования подов.
 
-{{< codenew language="conf" file="minikube/Dockerfile" >}}
-
-Чтобы получить больше информации по запуску команды `docker build`, ознакомьтесь с [документацией по Docker](https://docs.docker.com/engine/reference/commandline/build/).
-
-{{% /capture %}}
-
-{{% capture lessoncontent %}}
-
-## Создание кластера Minikube
-
-1. Нажмите **Запуск Терминала** 
-
-    {{< kat-button >}}
-
-    {{< note >}}Если у вас локально установлен Minikube, выполните `minikube start`.{{< /note >}}
-
-2. Откройте панель Kubernetes в браузере:
+1. Используйте команду `kubectl create` для создания деплоймента, который будет управлять подом. Под запустит контейнер с указанным Docker-образом.
 
     ```shell
-    minikube dashboard
+    # Запуск тестового образа контейнера с веб-сервером
+    kubectl create deployment hello-node --image=registry.k8s.io/e2e-test-images/agnhost:2.39 -- /agnhost netexec --http-port=8080
     ```
 
-3. Только для окружения Katacoda: В верхней части панели нажмите знак "плюс", а затем на **Select port to view on Host 1** (**Выберите порт для отображения на хосте 1**).
-
-4. Только для окружения Katacoda: введите `30000`, а затем нажмите **Display Port** (**Показать порт**).
-
-## Создание Deployment
-
-[*Под*](/docs/concepts/workloads/pods/pod/) Kubernetes - это группа из одного или более контейнеров, связанных друг с другом с целью адмистрирования и организации сети. В данном руководстве под включает в себя один контейнер. [*Deployment*](/docs/concepts/workloads/controllers/deployment/) в Kubernetes проверяет здоровье пода и перезагружает контейнер пода в случае его отказа. Deployment-ы являются рекоммендуемым способом организации создания и масштабирования подов.
-
-1. Используйте команду `kubectl create` для создание деплоймента для управления подом. Под запускает контейнер на основе предоставленного Docker образа.
-
-    ```shell
-    kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
-    ```
-
-2. Посмотреть информацию о Deployment:
+1. Посмотреть информацию о Deployment:
 
     ```shell
     kubectl get deployments
     ```
 
-    Вывод:
+    Вывод будет примерно следующим:
 
     ```shell
     NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
     hello-node   1         1         1            1           1m
     ```
 
-3. Посмотреть информацию о поде:
+1. Посмотреть информацию о поде:
 
     ```shell
     kubectl get pods
     ```
-    Вывод:
+    Вывод будет примерно следующим:
 
     ```shell
     NAME                          READY     STATUS    RESTARTS   AGE
     hello-node-5f76cf6ccf-br9b5   1/1       Running   0          1m
     ```
 
-4. Посмотреть события кластера:
+1. Посмотреть события кластера:
 
     ```shell
     kubectl get events
     ```
 
-5. Посмотреть `kubectl` конфигурацию:
+1. Посмотреть конфигурацию `kubectl`:
 
     ```shell
     kubectl config view
     ```
-  
-    {{< note >}}Больше информации о командах `kubectl` можно найти по ссылке [обзор kubectl](/docs/user-guide/kubectl-overview/).{{< /note >}}
+
+{{< note >}}
+Больше информации о командах `kubectl` см. в [обзоре kubectl](/ru/docs/reference/kubectl/).
+{{< /note >}}
 
 ## Создание сервиса
 
-По-умолчанию под доступен только при обращении по его внутреннему IP адресу внутри кластера Kubernetes. Чтобы сделать контейнер `hello-node` доступным вне виртульной сети Kubernetes, необходимо представить под как [*сервис*](/docs/concepts/services-networking/service/) Kubernetes.
+По умолчанию под доступен только при обращении по его внутреннему IP-адресу внутри кластера Kubernetes. Чтобы сделать контейнер `hello-node` доступным вне виртуальной сети Kubernetes, необходимо представить под как сервис [*Service*](/docs/concepts/services-networking/service/) Kubernetes.
 
-1. Сделать под доступным для публичной сети Интернет можно с помощью команды `kubectl expose`:
+1. Сделать под доступным для публичного интернета можно с помощью команды `kubectl expose`:
 
     ```shell
     kubectl expose deployment hello-node --type=LoadBalancer --port=8080
     ```
-  
+
     Флаг `--type=LoadBalancer` показывает, что сервис должен быть виден вне кластера.
+    
+    Код приложения в тестовом образе прослушивает только TCP-порт 8080. Если вы сделали приложение доступным по другому порту командой `kubectl expose`, клиенты не смогут подключиться к этому порту.
 
 2. Посмотреть только что созданный сервис:
 
@@ -132,7 +161,7 @@ Katacoda предоставляет бесплатную, встроенную �
     kubectl get services
     ```
 
-    Вывод:
+    Вывод будет примерно следующим:
 
     ```shell
     NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
@@ -148,15 +177,11 @@ Katacoda предоставляет бесплатную, встроенную �
     minikube service hello-node
     ```
 
-4. Только для окружения Katacoda: Нажмите на знак "Плюс", затем нажмите **Select port to view on Host 1**.
+    Откроется окно браузера, в котором запущено ваше приложение и выводится его ответ.
 
-5. Только для окружения Katacoda: Введите `30369` (порт указан рядом с `8080` в выводе сервиса), затем нажмите ???. 
+## Активация дополнений
 
-    Откроется окно браузера, в котором запущено ваше приложение и будет отображено сообщение "Hello World".
-
-## Добавление дополнений
-
-В Minikube есть набор встроенных дополнений, которые могут быть включены, выключены и открыты в локальном окружении Kubernetes.
+В minikube есть набор встроенных дополнений ({{< glossary_tooltip text="addons" term_id="addons" >}}), которые могут быть включены, выключены и открыты в локальном окружении Kubernetes.
 
 1. Отобразить текущие поддерживаемые дополнения:
 
@@ -164,9 +189,9 @@ Katacoda предоставляет бесплатную, встроенную �
     minikube addons list
     ```
 
-    Вывод:
+    Вывод будет примерно следующим:
 
-    ```shell
+    ```
     addon-manager: enabled
     dashboard: enabled
     default-storageclass: enabled
@@ -186,13 +211,13 @@ Katacoda предоставляет бесплатную, встроенную �
     storage-provisioner: enabled
     storage-provisioner-gluster: disabled
     ```
-   
+
 2. Включить дополнение, например, `metrics-server`:
 
     ```shell
     minikube addons enable metrics-server
     ```
-  
+
     Вывод:
 
     ```shell
@@ -205,7 +230,7 @@ Katacoda предоставляет бесплатную, встроенную �
     kubectl get pod,svc -n kube-system
     ```
 
-    Вывод:
+    Вывод будет примерно следующим:
 
     ```shell
     NAME                                        READY     STATUS    RESTARTS   AGE
@@ -233,40 +258,41 @@ Katacoda предоставляет бесплатную, встроенную �
     ```shell
     minikube addons disable metrics-server
     ```
-  
-    Вывод:
 
-    ```shell
+    Вывод будет примерно следующим:
+
+    ```
     metrics-server was successfully disabled
     ```
 
-## Освобождение ресурсов
+## Очистка
 
-Теперь вы можете освободить ресурсы созданного вами кластера:
+Теперь вы можете освободить ресурсы, созданные в кластере:
 
 ```shell
 kubectl delete service hello-node
 kubectl delete deployment hello-node
 ```
 
-Остановите выполнение виртуальной машины Minikube (опционально):
+Остановите кластер minikube:
 
 ```shell
 minikube stop
 ```
 
-Удалите виртуальную машину Minikube (опционально):
+Удалите виртуальную машину minikube (опционально):
 
 ```shell
 minikube delete
 ```
 
-{{% /capture %}}
+Если вы планируете использовать minikube в дальнейшем, чтобы больше узнать про Kubernetes, удалять инструмент не нужно.
 
-{{% capture whatsnext %}}
+## {{% heading "whatsnext" %}}
 
-* Больше об [объектах деплоймента](/docs/concepts/workloads/controllers/deployment/).
+
+* Руководство по _[деплою первого приложения в Kubernetes с kubectl](/ru/docs/tutorials/kubernetes-basics/deploy-app/deploy-intro/)_.
+* Больше об [объектах Deployment](/docs/concepts/workloads/controllers/deployment/).
 * Больше о [развёртывании приложения](/docs/user-guide/deploying-applications/).
-* Больше об [объектах сервиса](/docs/concepts/services-networking/service/).
+* Больше об [объектах Service](/docs/concepts/services-networking/service/).
 
-{{% /capture %}}

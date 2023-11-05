@@ -1,15 +1,15 @@
 ---
 title: Annotations
-content_template: templates/concept
-weight: 50
+content_type: concept
+weight: 60
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 You can use Kubernetes annotations to attach arbitrary non-identifying metadata
-to objects. Clients such as tools and libraries can retrieve this metadata.
-{{% /capture %}}
+to {{< glossary_tooltip text="objects" term_id="object" >}}.
+Clients such as tools and libraries can retrieve this metadata.
 
-{{% capture body %}}
+<!-- body -->
 ## Attaching metadata to objects
 
 You can use either labels or annotations to attach metadata to Kubernetes
@@ -17,7 +17,8 @@ objects. Labels can be used to select objects and to find
 collections of objects that satisfy certain conditions. In contrast, annotations
 are not used to identify and select objects. The metadata
 in an annotation can be small or large, structured or unstructured, and can
-include characters not permitted by labels.
+include characters not permitted by labels. It is possible to use labels as 
+well as annotations in the metadata of the same object.
 
 Annotations, like labels, are key/value maps:
 
@@ -29,6 +30,11 @@ Annotations, like labels, are key/value maps:
   }
 }
 ```
+
+{{<note>}}
+The keys and the values in the map must be strings. In other words, you cannot use
+numeric, boolean, list or other types for either the keys or the values.
+{{</note>}}
 
 Here are some examples of information that could be recorded in annotations:
 
@@ -69,10 +75,9 @@ If the prefix is omitted, the annotation Key is presumed to be private to the us
 
 The `kubernetes.io/` and `k8s.io/` prefixes are reserved for Kubernetes core components.
 
-For example, here’s the configuration file for a Pod that has the annotation `imageregistry: https://hub.docker.com/` :
+For example, here's a manifest for a Pod that has the annotation `imageregistry: https://hub.docker.com/` :
 
 ```yaml
-
 apiVersion: v1
 kind: Pod
 metadata:
@@ -82,16 +87,12 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx:1.7.9
+    image: nginx:1.14.2
     ports:
     - containerPort: 80
-          
 ```
 
-{{% /capture %}}
+## {{% heading "whatsnext" %}}
 
-{{% capture whatsnext %}}
-Learn more about [Labels and Selectors](/docs/concepts/overview/working-with-objects/labels/).
-{{% /capture %}}
-
-
+- Learn more about [Labels and Selectors](/docs/concepts/overview/working-with-objects/labels/).
+- Find [Well-known labels, Annotations and Taints](/docs/reference/labels-annotations-taints/)

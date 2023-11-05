@@ -1,18 +1,19 @@
 ---
 title: Rédiger une nouveau sujet
-content_template: templates/task
+content_type: task
 weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 Cette page montre comment créer un nouveau sujet pour la documentation Kubernetes.
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 Créez un fork du dépôt de la documentation de Kubernetes comme décrit dans [Commencez à contribuer](/fr/docs/contribute/start/).
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Choisir un type de page
 
@@ -107,13 +108,14 @@ Utilisez cette méthode pour inclure des exemples de fichiers YAML lorsque l'éc
 Lors de l'ajout d'un nouveau fichier d'exemple autonome, tel qu'un fichier YAML, placez le code dans l'un des sous-répertoires `<LANG>/examples/` où `<LANG>` est la langue utilisé dans votre page.
 Dans votre fichier, utilisez le shortcode `codenew` :
 
-<pre>&#123;&#123;&lt; codenew file="&lt;RELPATH&gt;/my-example-yaml&gt;" &gt;&#125;&#125;</pre>
-
+```none
+{{%/* codenew file="<RELPATH>/my-example-yaml>" */%}}
+```
 où `<RELPATH>` est le chemin vers le fichier à inclure, relatif au répertoire `examples`.
 Le shortcode Hugo suivant fait référence à un fichier YAML situé sur `/content/en/examples/pods/storage/gce-volume.yaml`.
 
 ```none
-{{</* codenew file="pods/storage/gce-volume.yaml" */>}}
+{{%/* codenew file="pods/storage/gce-volume.yaml" */%}}
 ```
 
 {{< note >}}
@@ -143,12 +145,13 @@ Pour un exemple d'un sujet qui utilise cette technique, voir [Running a Single-I
 Placez les fichiers images dans le répertoire `/images`.
 Le format d'image préféré est SVG.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * En savoir plus sur [l'utilisation des templates de pages](/docs/home/contribute/page-templates/).
 * En savoir plus sur [le staging de vos changements](/docs/home/contribute/stage-documentation-changes/).
 * En savoir plus sur [la création d'une pull request](/docs/home/contribute/create-pull-request/).
 
-{{% /capture %}}
+

@@ -1,19 +1,20 @@
 ---
 title: Affecter des ressources supplémentaires à un conteneur
-content_template: templates/task
+content_type: task
 weight: 40
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Cette page montre comment affecter des ressources supplémentaires à un conteneur.
 
 {{< feature-state state="stable" >}}
 
-{{% /capture %}}
 
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
@@ -21,10 +22,10 @@ Avant de commencer cet exercice, procédez à l'exercice en
 [Annoncer des ressources supplémentaires pour un nœud](/docs/tasks/administer-cluster/extended-resource-node/).
 Cela configurera l'un de vos nœuds pour qu'il annoncera une ressource dongle.
 
-{{% /capture %}}
 
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Affecter une ressource supplémentaire à un Pod
 
@@ -33,7 +34,7 @@ Les noms de ressources supplémentaires valides ont la forme `example.com/foo` o
 
 Voici le fichier de configuration d'un Pod qui a un seul conteneur :
 
-{{< codenew file="pods/resource/extended-resource-pod.yaml" >}}
+{{% codenew file="pods/resource/extended-resource-pod.yaml" %}}
 
 Dans le fichier de configuration, vous pouvez constater que le conteneur demande 3 dongles.
 
@@ -69,7 +70,7 @@ Requests:
 Voici le fichier de configuration d'un Pod qui a un seul conteneur. Le conteneur demande
 deux dongles.
 
-{{< codenew file="pods/resource/extended-resource-pod-2.yaml" >}}
+{{% codenew file="pods/resource/extended-resource-pod-2.yaml" %}}
 
 Kubernetes ne pourra pas satisfaire la demande de deux dongles, parce que le premier Pod
 a utilisé trois des quatre dongles disponibles.
@@ -124,9 +125,10 @@ kubectl delete pod extended-resource-demo
 kubectl delete pod extended-resource-demo-2
 ```
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 ### Pour les développeurs d'applications
 
@@ -137,4 +139,3 @@ kubectl delete pod extended-resource-demo-2
 
 * [Annoncer des ressources supplémentaires pour un nœud](/docs/tasks/administer-cluster/extended-resource-node/)
 
-{{% /capture %}}

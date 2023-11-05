@@ -2,303 +2,362 @@
 reviewers:
 - vincepri
 - bart0sh
-title: Container runtimes
-content_template: templates/concept
-weight: 10
+title: Container Runtimes
+content_type: concept
+weight: 20
 ---
-{{% capture overview %}}
-{{< feature-state for_k8s_version="v1.6" state="stable" >}}
-To run containers in Pods, Kubernetes uses a container runtime. Here are
-the installation instructions for various runtimes.
+<!-- overview -->
 
-{{% /capture %}}
+{{% dockershim-removal %}}
 
-{{% capture body %}}
+You need to install a
+{{< glossary_tooltip text="container runtime" term_id="container-runtime" >}}
+into each node in the cluster so that Pods can run there. This page outlines
+what is involved and describes related tasks for setting up nodes.
 
+Kubernetes {{< skew currentVersion >}} requires that you use a runtime that
+conforms with the
+{{< glossary_tooltip term_id="cri" text="Container Runtime Interface">}} (CRI).
 
-{{< caution >}}
-A flaw was found in the way runc handled system file descriptors when running containers.
-A malicious container could use this flaw to overwrite contents of the runc binary and
-consequently run arbitrary commands on the container host system.
+See [CRI version support](#cri-versions) for more information.
 
-Please refer to this link for more information about this issue
-[cve-2019-5736 : runc vulnerability ] (https://access.redhat.com/security/cve/cve-2019-5736)
-{{< /caution >}}
+This page provides an outline of how to use several common container runtimes with
+Kubernetes.
 
-### Applicability
+- [containerd](#containerd)
+- [CRI-O](#cri-o)
+- [Docker Engine](#docker)
+- [Mirantis Container Runtime](#mcr)
 
 {{< note >}}
-This document is written for users installing CRI onto Linux. For other operating
-systems, look for documentation specific to your platform.
+Kubernetes releases before v1.24 included a direct integration with Docker Engine,
+using a component named _dockershim_. That special direct integration is no longer
+part of Kubernetes (this removal was
+[announced](/blog/2020/12/08/kubernetes-1-20-release-announcement/#dockershim-deprecation)
+as part of the v1.20 release).
+You can read
+[Check whether Dockershim removal affects you](/docs/tasks/administer-cluster/migrating-from-dockershim/check-if-dockershim-removal-affects-you/)
+to understand how this removal might affect you. To learn about migrating from using dockershim, see
+[Migrating from dockershim](/docs/tasks/administer-cluster/migrating-from-dockershim/).
+
+If you are running a version of Kubernetes other than v{{< skew currentVersion >}},
+check the documentation for that version.
 {{< /note >}}
 
-You should execute all the commands in this guide as `root`. For example, prefix commands
-with `sudo `, or become `root` and run the commands as that user.
+<!-- body -->
+## Install and configure prerequisites
 
-### Cgroup drivers
+The following steps apply common settings for Kubernetes nodes on Linux.
 
-When systemd is chosen as the init system for a Linux distribution, the init process generates
-and consumes a root control group (`cgroup`) and acts as a cgroup manager. Systemd has a tight
-integration with cgroups and will allocate cgroups per process. It's possible to configure your
-container runtime and the kubelet to use `cgroupfs`. Using `cgroupfs` alongside systemd means
-that there will then be two different cgroup managers.
+You can skip a particular setting if you're certain you don't need it.
 
-Control groups are used to constrain resources that are allocated to processes.
-A single cgroup manager will simplify the view of what resources are being allocated
-and will by default have a more consistent view of the available and in-use resources. When we have
-two managers we end up with two views of those resources. We have seen cases in the field
-where nodes that are configured to use `cgroupfs` for the kubelet and Docker, and `systemd`
-for the rest of the processes running on the node becomes unstable under resource pressure.
+For more information, see
+[Network Plugin Requirements](/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#network-plugin-requirements)
+or the documentation for your specific container runtime.
 
-Changing the settings such that your container runtime and kubelet use `systemd` as the cgroup driver
-stabilized the system. Please note the `native.cgroupdriver=systemd` option in the Docker setup below.
+### Forwarding IPv4 and letting iptables see bridged traffic
 
-{{< caution >}}
-Changing the cgroup driver of a Node that has joined a cluster is highly unrecommended.
-If the kubelet has created Pods using the semantics of one cgroup driver, changing the container
-runtime to another cgroup driver can cause errors when trying to re-create the PodSandbox
-for such existing Pods. Restarting the kubelet may not solve such errors. The recommendation
-is to drain the Node from its workloads, remove it from the cluster and re-join it.
-{{< /caution >}}
+Execute the below mentioned instructions:
 
-## Docker
-
-On each of your machines, install Docker.
-Version 19.03.4 is recommended, but 1.13.1, 17.03, 17.06, 17.09, 18.06 and 18.09 are known to work as well.
-Keep track of the latest verified Docker version in the Kubernetes release notes.
-
-Use the following commands to install Docker on your system:
-
-{{< tabs name="tab-cri-docker-installation" >}}
-{{< tab name="Ubuntu 16.04+" codelang="bash" >}}
-# Install Docker CE
-## Set up the repository:
-### Install packages to allow apt to use a repository over HTTPS
-apt-get update && apt-get install -y \
-  apt-transport-https ca-certificates curl software-properties-common gnupg2
-
-### Add Docker’s official GPG key
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-
-### Add Docker apt repository.
-add-apt-repository \
-  "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) \
-  stable"
-
-## Install Docker CE.
-apt-get update && apt-get install -y \
-  containerd.io=1.2.10-3 \
-  docker-ce=5:19.03.4~3-0~ubuntu-$(lsb_release -cs) \
-  docker-ce-cli=5:19.03.4~3-0~ubuntu-$(lsb_release -cs)
-
-# Setup daemon.
-cat > /etc/docker/daemon.json <<EOF
-{
-  "exec-opts": ["native.cgroupdriver=systemd"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "100m"
-  },
-  "storage-driver": "overlay2"
-}
-EOF
-
-mkdir -p /etc/systemd/system/docker.service.d
-
-# Restart docker.
-systemctl daemon-reload
-systemctl restart docker
-{{< /tab >}}
-{{< tab name="CentOS/RHEL 7.4+" codelang="bash" >}}
-
-# Install Docker CE
-## Set up the repository
-### Install required packages.
-yum install -y yum-utils device-mapper-persistent-data lvm2
-
-### Add Docker repository.
-yum-config-manager --add-repo \
-  https://download.docker.com/linux/centos/docker-ce.repo
-
-## Install Docker CE.
-yum update -y && yum install -y \
-  containerd.io-1.2.10 \
-  docker-ce-19.03.4 \
-  docker-ce-cli-19.03.4
-
-## Create /etc/docker directory.
-mkdir /etc/docker
-
-# Setup daemon.
-cat > /etc/docker/daemon.json <<EOF
-{
-  "exec-opts": ["native.cgroupdriver=systemd"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "100m"
-  },
-  "storage-driver": "overlay2",
-  "storage-opts": [
-    "overlay2.override_kernel_check=true"
-  ]
-}
-EOF
-
-mkdir -p /etc/systemd/system/docker.service.d
-
-# Restart Docker
-systemctl daemon-reload
-systemctl restart docker
-{{< /tab >}}
-{{< /tabs >}}
-
-Refer to the [official Docker installation guides](https://docs.docker.com/engine/installation/)
-for more information.
-
-## CRI-O
-
-This section contains the necessary steps to install `CRI-O` as CRI runtime.
-
-Use the following commands to install CRI-O on your system:
-
-### Prerequisites
-
-```shell
-modprobe overlay
-modprobe br_netfilter
-
-# Setup required sysctl params, these persist across reboots.
-cat > /etc/sysctl.d/99-kubernetes-cri.conf <<EOF
-net.bridge.bridge-nf-call-iptables  = 1
-net.ipv4.ip_forward                 = 1
-net.bridge.bridge-nf-call-ip6tables = 1
-EOF
-
-sysctl --system
-```
-
-{{< tabs name="tab-cri-cri-o-installation" >}}
-{{< tab name="Ubuntu 16.04" codelang="bash" >}}
-
-# Install prerequisites
-apt-get update
-apt-get install -y software-properties-common
-
-add-apt-repository ppa:projectatomic/ppa
-apt-get update
-
-# Install CRI-O
-apt-get install -y cri-o-1.15
-
-{{< /tab >}}
-{{< tab name="CentOS/RHEL 7.4+" codelang="bash" >}}
-
-# Install prerequisites
-yum-config-manager --add-repo=https://cbs.centos.org/repos/paas7-crio-115-release/x86_64/os/
-
-# Install CRI-O
-yum install --nogpgcheck -y cri-o
-
-{{< /tab >}}
-{{< /tabs >}}
-
-### Start CRI-O
-
-```
-systemctl daemon-reload
-systemctl start crio
-```
-
-Refer to the [CRI-O installation guide](https://github.com/kubernetes-sigs/cri-o#getting-started)
-for more information.
-
-## Containerd
-
-This section contains the necessary steps to use `containerd` as CRI runtime.
-
-Use the following commands to install Containerd on your system:
-
-### Prerequisites
-
-```shell
-cat > /etc/modules-load.d/containerd.conf <<EOF
+```bash
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
 br_netfilter
 EOF
 
-modprobe overlay
-modprobe br_netfilter
+sudo modprobe overlay
+sudo modprobe br_netfilter
 
-# Setup required sysctl params, these persist across reboots.
-cat > /etc/sysctl.d/99-kubernetes-cri.conf <<EOF
+# sysctl params required by setup, params persist across reboots
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-iptables  = 1
-net.ipv4.ip_forward                 = 1
 net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
 EOF
 
-sysctl --system
+# Apply sysctl params without reboot
+sudo sysctl --system
 ```
 
-### Install containerd
+Verify that the `br_netfilter`, `overlay` modules are loaded by running the following commands:
 
-{{< tabs name="tab-cri-containerd-installation" >}}
-{{< tab name="Ubuntu 16.04" codelang="bash" >}}
-# Install containerd
-## Set up the repository
-### Install packages to allow apt to use a repository over HTTPS
-apt-get update && apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+```bash
+lsmod | grep br_netfilter
+lsmod | grep overlay
+```
 
-### Add Docker’s official GPG key
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+Verify that the `net.bridge.bridge-nf-call-iptables`, `net.bridge.bridge-nf-call-ip6tables`, and
+`net.ipv4.ip_forward` system variables are set to `1` in your `sysctl` config by running the following command:
 
-### Add Docker apt repository.
-add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) \
-    stable"
+```bash
+sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables net.ipv4.ip_forward
+```
 
-## Install containerd
-apt-get update && apt-get install -y containerd.io
+## cgroup drivers
 
-# Configure containerd
-mkdir -p /etc/containerd
-containerd config default > /etc/containerd/config.toml
+On Linux, {{< glossary_tooltip text="control groups" term_id="cgroup" >}}
+are used to constrain resources that are allocated to processes.
 
-# Restart containerd
-systemctl restart containerd
-{{< /tab >}}
-{{< tab name="CentOS/RHEL 7.4+" codelang="bash" >}}
-# Install containerd
-## Set up the repository
-### Install required packages
-yum install -y yum-utils device-mapper-persistent-data lvm2
+Both the {{< glossary_tooltip text="kubelet" term_id="kubelet" >}} and the
+underlying container runtime need to interface with control groups to enforce
+[resource management for pods and containers](/docs/concepts/configuration/manage-resources-containers/)
+and set resources such as cpu/memory requests and limits. To interface with control
+groups, the kubelet and the container runtime need to use a *cgroup driver*.
+It's critical that the kubelet and the container runtime use the same cgroup
+driver and are configured the same.
 
-### Add docker repository
-yum-config-manager \
-    --add-repo \
-    https://download.docker.com/linux/centos/docker-ce.repo
+There are two cgroup drivers available:
 
-## Install containerd
-yum update -y && yum install -y containerd.io
+* [`cgroupfs`](#cgroupfs-cgroup-driver)
+* [`systemd`](#systemd-cgroup-driver)
 
-# Configure containerd
-mkdir -p /etc/containerd
-containerd config default > /etc/containerd/config.toml
+### cgroupfs driver {#cgroupfs-cgroup-driver}
 
-# Restart containerd
-systemctl restart containerd
-{{< /tab >}}
+The `cgroupfs` driver is the [default cgroup driver in the kubelet](/docs/reference/config-api/kubelet-config.v1beta1).
+ When the `cgroupfs` driver is used, the kubelet and the container runtime directly interface with
+ the cgroup filesystem to configure cgroups.
+
+The `cgroupfs` driver is **not** recommended when
+[systemd](https://www.freedesktop.org/wiki/Software/systemd/) is the
+init system because systemd expects a single cgroup manager on
+the system. Additionally, if you use [cgroup v2](/docs/concepts/architecture/cgroups), use the `systemd`
+cgroup driver instead of `cgroupfs`.
+
+### systemd cgroup driver {#systemd-cgroup-driver}
+
+When [systemd](https://www.freedesktop.org/wiki/Software/systemd/) is chosen as the init
+system for a Linux distribution, the init process generates and consumes a root control group
+(`cgroup`) and acts as a cgroup manager.
+
+systemd has a tight integration with cgroups and allocates a cgroup per systemd
+unit. As a result, if you use `systemd` as the init system with the `cgroupfs`
+driver, the system gets two different cgroup managers.
+
+Two cgroup managers result in two views of the available and in-use resources in
+the system. In some cases, nodes that are configured to use `cgroupfs` for the
+kubelet and container runtime, but use `systemd` for the rest of the processes become
+unstable under resource pressure.
+
+The approach to mitigate this instability is to use `systemd` as the cgroup driver for
+the kubelet and the container runtime when systemd is the selected init system.
+
+To set `systemd` as the cgroup driver, edit the
+[`KubeletConfiguration`](/docs/tasks/administer-cluster/kubelet-config-file/)
+option of `cgroupDriver` and set it to `systemd`. For example:
+
+```yaml
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+...
+cgroupDriver: systemd
+```
+
+{{< note >}}
+Starting with v1.22 and later, when creating a cluster with kubeadm, if the user does not set
+the `cgroupDriver` field under `KubeletConfiguration`, kubeadm defaults it to `systemd`.
+{{< /note >}}
+
+In Kubernetes v1.28, with the `KubeletCgroupDriverFromCRI`
+[feature gate](/docs/reference/command-line-tools-reference/feature-gates/)
+enabled and a container runtime that supports the `RuntimeConfig` CRI RPC,
+the kubelet automatically detects the appropriate cgroup driver from the runtime,
+and ignores the `cgroupDriver` setting within the kubelet configuration.
+
+If you configure `systemd` as the cgroup driver for the kubelet, you must also
+configure `systemd` as the cgroup driver for the container runtime. Refer to
+the documentation for your container runtime for instructions. For example:
+
+*  [containerd](#containerd-systemd)
+*  [CRI-O](#cri-o)
+
+{{< caution >}}
+Changing the cgroup driver of a Node that has joined a cluster is a sensitive operation.
+If the kubelet has created Pods using the semantics of one cgroup driver, changing the container
+runtime to another cgroup driver can cause errors when trying to re-create the Pod sandbox
+for such existing Pods. Restarting the kubelet may not solve such errors.
+
+If you have automation that makes it feasible, replace the node with another using the updated
+configuration, or reinstall it using automation.
+{{< /caution >}}
+
+
+### Migrating to the `systemd` driver in kubeadm managed clusters
+
+If you wish to migrate to the `systemd` cgroup driver in existing kubeadm managed clusters,
+follow [configuring a cgroup driver](/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/).
+
+## CRI version support {#cri-versions}
+
+Your container runtime must support at least v1alpha2 of the container runtime interface.
+
+Kubernetes [starting v1.26](/blog/2022/11/18/upcoming-changes-in-kubernetes-1-26/#cri-api-removal)
+_only works_ with v1 of the CRI API. Earlier versions default
+to v1 version, however if a container runtime does not support the v1 API, the kubelet falls back to
+using the (deprecated) v1alpha2 API instead.
+
+## Container runtimes
+
+{{% thirdparty-content %}}
+
+### containerd
+
+This section outlines the necessary steps to use containerd as CRI runtime.
+
+To install containerd on your system, follow the instructions on
+[getting started with containerd](https://github.com/containerd/containerd/blob/main/docs/getting-started.md).
+Return to this step once you've created a valid `config.toml` configuration file.
+
+{{< tabs name="Finding your config.toml file" >}}
+{{% tab name="Linux" %}}
+You can find this file under the path `/etc/containerd/config.toml`.
+{{% /tab %}}
+{{% tab name="Windows" %}}
+You can find this file under the path `C:\Program Files\containerd\config.toml`.
+{{% /tab %}}
 {{< /tabs >}}
 
-### systemd
+On Linux the default CRI socket for containerd is `/run/containerd/containerd.sock`.
+On Windows the default CRI endpoint is `npipe://./pipe/containerd-containerd`.
 
-To use the `systemd` cgroup driver, set `plugins.cri.systemd_cgroup = true` in `/etc/containerd/config.toml`.
+#### Configuring the `systemd` cgroup driver {#containerd-systemd}
+
+To use the `systemd` cgroup driver in `/etc/containerd/config.toml` with `runc`, set
+
+```
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+  ...
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+    SystemdCgroup = true
+```
+
+The `systemd` cgroup driver is recommended if you use [cgroup v2](/docs/concepts/architecture/cgroups).
+
+{{< note >}}
+If you installed containerd from a package (for example, RPM or `.deb`), you may find
+that the CRI integration plugin is disabled by default.
+
+You need CRI support enabled to use containerd with Kubernetes. Make sure that `cri`
+is not included in the`disabled_plugins` list within `/etc/containerd/config.toml`;
+if you made changes to that file, also restart `containerd`.
+
+If you experience container crash loops after the initial cluster installation or after
+installing a CNI, the containerd configuration provided with the package might contain
+incompatible configuration parameters. Consider resetting the containerd configuration
+with `containerd config default > /etc/containerd/config.toml` as specified in
+[getting-started.md](https://github.com/containerd/containerd/blob/main/docs/getting-started.md#advanced-topics)
+and then set the configuration parameters specified above accordingly.
+{{< /note >}}
+
+If you apply this change, make sure to restart containerd:
+
+```shell
+sudo systemctl restart containerd
+```
+
 When using kubeadm, manually configure the
-[cgroup driver for kubelet](/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#configure-cgroup-driver-used-by-kubelet-on-control-plane-node)
+[cgroup driver for kubelet](/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/#configuring-the-kubelet-cgroup-driver).
 
-## Other CRI runtimes: frakti
+In Kubernetes v1.28, you can enable automatic detection of the
+cgroup driver as an alpha feature. See [systemd cgroup driver](#systemd-cgroup-driver)
+for more details.
 
-Refer to the [Frakti QuickStart guide](https://github.com/kubernetes/frakti#quickstart) for more information.
+#### Overriding the sandbox (pause) image {#override-pause-image-containerd}
 
-{{% /capture %}}
+In your [containerd config](https://github.com/containerd/containerd/blob/main/docs/cri/config.md) you can overwrite the
+sandbox image by setting the following config:
+
+```toml
+[plugins."io.containerd.grpc.v1.cri"]
+  sandbox_image = "registry.k8s.io/pause:3.2"
+```
+
+You might need to restart `containerd` as well once you've updated the config file: `systemctl restart containerd`.
+
+Please note, that it is a best practice for kubelet to declare the matching `pod-infra-container-image`.
+If not configured, kubelet may attempt to garbage collect the `pause` image.
+There is ongoing work in [containerd to pin the pause image](https://github.com/containerd/containerd/issues/6352)
+and not require this setting on kubelet any longer.
+
+### CRI-O
+
+This section contains the necessary steps to install CRI-O as a container runtime.
+
+To install CRI-O, follow [CRI-O Install Instructions](https://github.com/cri-o/cri-o/blob/main/install.md#readme).
+
+#### cgroup driver
+
+CRI-O uses the systemd cgroup driver per default, which is likely to work fine
+for you. To switch to the `cgroupfs` cgroup driver, either edit
+`/etc/crio/crio.conf` or place a drop-in configuration in
+`/etc/crio/crio.conf.d/02-cgroup-manager.conf`, for example:
+
+```toml
+[crio.runtime]
+conmon_cgroup = "pod"
+cgroup_manager = "cgroupfs"
+```
+
+You should also note the changed `conmon_cgroup`, which has to be set to the value
+`pod` when using CRI-O with `cgroupfs`. It is generally necessary to keep the
+cgroup driver configuration of the kubelet (usually done via kubeadm) and CRI-O
+in sync.
+
+In Kubernetes v1.28, you can enable automatic detection of the
+cgroup driver as an alpha feature. See [systemd cgroup driver](#systemd-cgroup-driver)
+for more details.
+
+For CRI-O, the CRI socket is `/var/run/crio/crio.sock` by default.
+
+#### Overriding the sandbox (pause) image {#override-pause-image-cri-o}
+
+In your [CRI-O config](https://github.com/cri-o/cri-o/blob/main/docs/crio.conf.5.md) you can set the following
+config value:
+
+```toml
+[crio.image]
+pause_image="registry.k8s.io/pause:3.6"
+```
+
+This config option supports live configuration reload to apply this change: `systemctl reload crio` or by sending
+`SIGHUP` to the `crio` process.
+
+### Docker Engine {#docker}
+
+{{< note >}}
+These instructions assume that you are using the
+[`cri-dockerd`](https://github.com/Mirantis/cri-dockerd) adapter to integrate
+Docker Engine with Kubernetes.
+{{< /note >}}
+
+1. On each of your nodes, install Docker for your Linux distribution as per
+  [Install Docker Engine](https://docs.docker.com/engine/install/#server).
+
+2. Install [`cri-dockerd`](https://github.com/Mirantis/cri-dockerd), following
+   the instructions in that source code repository.
+
+For `cri-dockerd`, the CRI socket is `/run/cri-dockerd.sock` by default.
+
+### Mirantis Container Runtime {#mcr}
+
+[Mirantis Container Runtime](https://docs.mirantis.com/mcr/20.10/overview.html) (MCR) is a commercially
+available container runtime that was formerly known as Docker Enterprise Edition.
+
+You can use Mirantis Container Runtime with Kubernetes using the open source
+[`cri-dockerd`](https://github.com/Mirantis/cri-dockerd) component, included with MCR.
+
+To learn more about how to install Mirantis Container Runtime,
+visit [MCR Deployment Guide](https://docs.mirantis.com/mcr/20.10/install.html).
+
+Check the systemd unit named `cri-docker.socket` to find out the path to the CRI
+socket.
+
+#### Overriding the sandbox (pause) image {#override-pause-image-cri-dockerd-mcr}
+
+The `cri-dockerd` adapter accepts a command line argument for
+specifying which container image to use as the Pod infrastructure container (“pause image”).
+The command line argument to use is `--pod-infra-container-image`.
+
+## {{% heading "whatsnext" %}}
+
+As well as a container runtime, your cluster will need a working
+[network plugin](/docs/concepts/cluster-administration/networking/#how-to-implement-the-kubernetes-networking-model).

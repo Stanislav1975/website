@@ -7,11 +7,11 @@ feature:
     En cas de problème, Kubernetes annulera le changement pour vous.
     Profitez d'un écosystème croissant de solutions de déploiement.
 
-content_template: templates/concept
+content_type: concept
 weight: 30
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Un _Deployment_ (déploiement en français) fournit des mises à jour déclaratives pour [Pods](/fr/docs/concepts/workloads/pods/pod/) et [ReplicaSets](/fr/docs/concepts/workloads/controllers/replicaset/).
 
@@ -23,9 +23,9 @@ Ne gérez pas les ReplicaSets appartenant à un Deployment.
 Pensez à ouvrir un ticket dans le dépot Kubernetes principal si votre cas d'utilisation n'est pas traité ci-dessous.
 {{< /note >}}
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Cas d'utilisation
 
@@ -49,7 +49,7 @@ Voici des cas d'utilisation typiques pour les déploiements:
 Voici un exemple de déploiement.
 Il crée un ReplicaSet pour faire apparaître trois pods `nginx`:
 
-{{< codenew file="controllers/nginx-deployment.yaml" >}}
+{{% codenew file="controllers/nginx-deployment.yaml" %}}
 
 Dans cet exemple:
 
@@ -89,7 +89,7 @@ Avant de commencer, assurez-vous que votre cluster Kubernetes est opérationnel.
 1. Exécutez `kubectl get deployments` pour vérifier si le déploiement a été créé.
    Si le déploiement est toujours en cours de création, la sortie est similaire à:
 
-   ```shell
+   ```
    NAME               READY   UP-TO-DATE   AVAILABLE   AGE
    nginx-deployment   0/3     0            0           1s
    ```
@@ -116,13 +116,13 @@ Avant de commencer, assurez-vous que votre cluster Kubernetes est opérationnel.
 
    ```shell
    Waiting for rollout to finish: 2 out of 3 new replicas have been updated...
-   deployment.apps/nginx-deployment successfully rolled out
+   deployment "nginx-deployment" successfully rolled out
    ```
 
 1. Exécutez à nouveau `kubectl get deployments` quelques secondes plus tard.
    La sortie est similaire à ceci:
 
-   ```text
+   ```
    NAME               READY   UP-TO-DATE   AVAILABLE   AGE
    nginx-deployment   3/3     3            3           18s
    ```
@@ -143,11 +143,11 @@ Avant de commencer, assurez-vous que votre cluster Kubernetes est opérationnel.
 1. Pour voir les labels générées automatiquement pour chaque Pod, exécutez `kubectl get pods --show-labels`.
    La sortie est similaire à ceci:
 
-   ```text
+   ```
    NAME                                READY     STATUS    RESTARTS   AGE       LABELS
-   nginx-deployment-75675f5897-7ci7o   1/1       Running   0          18s       app=nginx,pod-template-hash=3123191453
-   nginx-deployment-75675f5897-kzszj   1/1       Running   0          18s       app=nginx,pod-template-hash=3123191453
-   nginx-deployment-75675f5897-qqcnn   1/1       Running   0          18s       app=nginx,pod-template-hash=3123191453
+   nginx-deployment-75675f5897-7ci7o   1/1       Running   0          18s       app=nginx,pod-template-hash=75675f5897
+   nginx-deployment-75675f5897-kzszj   1/1       Running   0          18s       app=nginx,pod-template-hash=75675f5897
+   nginx-deployment-75675f5897-qqcnn   1/1       Running   0          18s       app=nginx,pod-template-hash=75675f5897
    ```
 
   Le ReplicaSet créé garantit qu'il y a trois pods `nginx`.
@@ -223,7 +223,7 @@ Suivez les étapes ci-dessous pour mettre à jour votre déploiement:
     ou
 
     ```text
-    deployment.apps/nginx-deployment successfully rolled out
+    deployment "nginx-deployment" successfully rolled out
     ```
 
 Obtenez plus de détails sur votre déploiement mis à jour:
@@ -285,7 +285,7 @@ Obtenez plus de détails sur votre déploiement mis à jour:
 
     La sortie est similaire à ceci:
 
-      ```text
+    ```text
     Name:                   nginx-deployment
     Namespace:              default
     CreationTimestamp:      Thu, 30 Nov 2017 10:56:25 +0000
@@ -932,7 +932,7 @@ La sortie est similaire à ceci:
 
 ```text
 Waiting for rollout to finish: 2 of 3 updated replicas are available...
-deployment.apps/nginx-deployment successfully rolled out
+deployment "nginx-deployment" successfully rolled out
 $ echo $?
 0
 ```
@@ -1222,4 +1222,4 @@ Un déploiement n'est pas suspendu par défaut lors de sa création.
 [`kubectl rolling-update`](/docs/reference/generated/kubectl/kubectl-commands#rolling-update) met à jour les pods et les ReplicationControllers de la même manière.
 Mais les déploiements sont recommandés, car ils sont déclaratifs, côté serveur et ont des fonctionnalités supplémentaires, telles que la restauration de toute révision précédente même après la mise à jour progressive..
 
-{{% /capture %}}
+

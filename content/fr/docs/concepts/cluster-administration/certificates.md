@@ -1,19 +1,19 @@
 ---
 title: Certificats
-content_template: templates/concept
+content_type: concept
 description: Certifications cluster Kubernetes
 weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Lorsque vous utilisez l'authentification par certificats client, vous pouvez générer des certificats
 manuellement grâce à `easyrsa`, `openssl` ou `cfssl`.
 
-{{% /capture %}}
 
 
-{{% capture body %}}
+
+<!-- body -->
 
 ### easyrsa
 
@@ -21,7 +21,7 @@ manuellement grâce à `easyrsa`, `openssl` ou `cfssl`.
 
 1.  Téléchargez, décompressez et initialisez la version corrigée de easyrsa3.
 
-        curl -LO https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz
+        curl -LO https://dl.k8s.io/easy-rsa/easy-rsa.tar.gz
         tar xzf easy-rsa.tar.gz
         cd easy-rsa-master/easyrsa3
         ./easyrsa init-pki
@@ -114,7 +114,7 @@ manuellement grâce à `easyrsa`, `openssl` ou `cfssl`.
 
         openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key \
         -CAcreateserial -out server.crt -days 10000 \
-        -extensions v3_ext -extfile csr.conf
+        -extensions v3_ext -extfile csr.conf -sha256
 1.  Vérifiez le certificat:
 
         openssl x509  -noout -text -in ./server.crt
@@ -245,4 +245,4 @@ Vous pouvez utiliser l’API `certificates.k8s.io` pour faire créer des
 Certificats x509 à utiliser pour l'authentification, comme documenté
 [ici](/docs/tasks/tls/managing-tls-in-a-cluster).
 
-{{% /capture %}}
+

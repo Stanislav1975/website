@@ -1,61 +1,52 @@
 ---
 title: Hello Minikube
-content_template: templates/tutorial
+content_type: tutorial
 weight: 5
 menu:
   main:
     title: "Jak zacząć?"
     weight: 10
     post: >
-      <p>Jesteś gotowy ubrudzić ręce? Zbuduj własny klaster kubernetes z działającą na nim aplikacją "Hello World" w Node.js.</p>
-card: 
+      <p>Jesteś gotowy ubrudzić ręce? Zbuduj własny klaster Kubernetes z działającą na nim przykładową aplikacją.</p>
+card:
   name: tutorials
   weight: 10
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
-Ten samouczek pokaże, jak uruchomić prostą aplikację Hello World w Node.js
-na Kubernetes przy użyciu [Minikube](/docs/setup/learning-environment/minikube) oraz Katacoda.
+Ten samouczek pokaże, jak uruchomić przykładową aplikację
+na Kubernetesie przy użyciu minikube oraz Katacoda.
 Katacoda to darmowe środowisko Kubernetes dostępne bezpośrednio z przeglądarki web.
 
 {{< note >}}
-Możesz też skorzystać z tego samouczka, jeśli już zainstalowałeś [Minikube lokalnie](/docs/tasks/tools/install-minikube/).
+Możesz też skorzystać z tego samouczka, jeśli już zainstalowałeś minikube.
+Odwiedź stronę [minikube start](https://minikube.sigs.k8s.io/docs/start/), aby dowiedzieć się, jak go zainstalować.
 {{< /note >}}
 
-{{% /capture %}}
+## {{% heading "objectives" %}}
 
-{{% capture objectives %}}
-
-* Skonfiguruj aplikację *hello world* do uruchomienia w Minikube.
+* Skonfiguruj przykładową aplikację do uruchomienia w minikube.
 * Uruchom aplikację.
 * Przejrzyj jej logi.
 
-{{% /capture %}}
+## {{% heading "prerequisites" %}}
 
-{{% capture prerequisites %}}
+W tym samouczku wykorzystamy obraz kontenera, który korzysta z NGINX, aby wyświetlić z powrotem wszystkie przychodzące zapytania.
 
-W tym samouczku wykorzystamy obraz kontenera zbudowany z następujących plików:
+<!-- lessoncontent -->
 
-{{< codenew language="js" file="minikube/server.js" >}}
+## Stwórz klaster minikube
 
-{{< codenew language="conf" file="minikube/Dockerfile" >}}
-
-Więcej informacji na temat polecenia `docker build` znajdziesz w [dokumentacji Dockera](https://docs.docker.com/engine/reference/commandline/build/).
-
-{{% /capture %}}
-
-{{% capture lessoncontent %}}
-
-## Stwórz klaster Minikube
-
-1. Kliknij w **Launch Terminal** 
+1. Kliknij w **Launch Terminal**
 
     {{< kat-button >}}
 
-    {{< note >}}Jeśli masz Minikube zainstalowane lokalnie, uruchom `minikube start`.{{< /note >}}
+    {{< note >}}
+    Jeśli masz minikube zainstalowane lokalnie, uruchom `minikube start`. Przed uruchomieniem `minikube dashboard`, otwórz okno nowego terminala, uruchom w nim `minikube dashboard` i przełącz się z powrotem do okna głównego terminala.
+    {{< /note >}}
 
-2. Otwórz panel Kubernetes w przeglądarce:
+2. Otwórz panel Kubernetesa w przeglądarce:
 
     ```shell
     minikube dashboard
@@ -65,19 +56,42 @@ Więcej informacji na temat polecenia `docker build` znajdziesz w [dokumentacji 
 
 4. Tylko w Katacoda: Wpisz `30000`i kliknij **Display Port**.
 
+{{< note >}}
+Polecenie `dashboard` uruchamia dodatek panelu i otwiera proxy w domyślnej przeglądarce.
+W panelu można tworzyć różne obiekty Kubernetesa, takie jak _Deployment_ czy _Serwis_.
+
+Jeśli pracujesz z uprawnieniami roota, skorzystaj z: [Otwieranie panelu poprzez URL](#otwieranie-panelu-poprzez-url).
+
+Panel jest domyślnie dostępny jedynie z wewnętrznej sieci Kubernetesa.
+Polecenie `dashboard` tworzy tymczasowe proxy, które udostępnia panel także poza tą wewnętrzną sieć.
+
+Aby zatrzymać proxy, wciśnij `Ctrl+C` i zakończ proces.
+Panel ciągle działa na klastrze Kubernetesa, nawet po przerwaniu działania proxy.
+Aby dostać się ponownie do panelu, trzeba stworzyć kolejne proxy poleceniem `dashboard`.
+{{< /note >}}
+
+## Otwieranie panelu poprzez URL
+
+Jeśli nie chcesz otwierać przeglądarki, uruchom panel z opcją `--url`, aby wyświetlić URL:
+
+```shell
+minikube dashboard --url
+```
+
 ## Stwórz Deployment
 
-[*Pod*](/docs/concepts/workloads/pods/pod/) w Kubernetes to grupa jednego lub wielu kontenerów połączonych ze sobą
-na potrzeby administrowania i dostępu sieci. W tym samouczku Pod zawiera tylko jeden kontener.
-[*Deployment*](/docs/concepts/workloads/controllers/deployment/) w Kubernetes monitoruje stan twojego Poda
-i restartuje należący do niego kontener, jeśli ten z jakichś powodów przestanie działać.
+[*Pod*](/docs/concepts/workloads/pods/) w Kubernetesie to grupa jednego lub wielu kontenerów
+połączonych ze sobą na potrzeby administrowania i dostępu sieci. W tym samouczku Pod
+zawiera tylko jeden kontener. [*Deployment*](/docs/concepts/workloads/controllers/deployment/)
+w Kubernetesie monitoruje stan twojego Poda
+i restartuje należące do niego kontenery, jeśli z jakichś powodów przestaną działać.
 Użycie Deploymentu to rekomendowana metoda zarządzania tworzeniem i skalowaniem Podów.
 
 1. Użyj polecenia `kubectl create` do stworzenia Deploymentu, który będzie zarządzał Podem. Pod uruchamia kontener
 wykorzystując podany obraz Dockera.
 
     ```shell
-    kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+    kubectl create deployment hello-node --image=registry.k8s.io/e2e-test-images/agnhost:2.39 -- /agnhost netexec --http-port=808
     ```
 
 2. Sprawdź stan Deploymentu:
@@ -117,14 +131,17 @@ wykorzystując podany obraz Dockera.
     ```shell
     kubectl config view
     ```
-  
-    {{< note >}}Więcej informacji na temat polecenia `kubectl` znajdziesz w [przeglądzie kubectl](/docs/user-guide/kubectl-overview/).{{< /note >}}
+
+    {{< note >}}
+    Więcej informacji na temat polecenia `kubectl` znajdziesz w [przeglądzie kubectl](/docs/reference/kubectl/).
+    {{< /note >}}
 
 ## Stwórz Serwis
 
-Domyślnie Pod jest dostępny tylko poprzez swój wewnętrzny adres IP wewnątrz klastra
-Kubernetes. Aby kontener `hello-node` był osiągalny spoza wirtualnej sieci Kubernetes,
-musisz najpierw wystawić Pod jako [*Serwis*](/docs/concepts/services-networking/service/) Kubernetes, na który można będzie dostać się z zewnątrz.
+Domyślnie Pod jest dostępny tylko poprzez swój wewnętrzny adres IP
+wewnątrz klastra Kubernetes. Aby kontener `hello-node` był osiągalny spoza
+wirtualnej sieci Kubernetesa, musisz najpierw udostępnić Pod
+jako [*Serwis*](/docs/concepts/services-networking/service/) Kubernetes.
 
 1. Udostępnij Pod w Internecie przy pomocy polecenia `kubectl expose`:
 
@@ -134,6 +151,9 @@ musisz najpierw wystawić Pod jako [*Serwis*](/docs/concepts/services-networking
 
     Opcja `--type=LoadBalancer` wskazuje, że chcesz udostępnić swój Serwis
     na zewnątrz klastra.
+
+    Aplikacja, która jest umieszczona w obrazie kontenera `registry.k8s.io/echoserver`, nasłuchuje jedynie na porcie TCP 8080. Jeśli użyłeś
+    `kubectl expose` do wystawienia innego portu, aplikacje klienckie mogą nie móc się podłączyć do tamtego innego portu.
 
 2. Sprawdź Serwis, który właśnie utworzyłeś:
 
@@ -151,7 +171,8 @@ musisz najpierw wystawić Pod jako [*Serwis*](/docs/concepts/services-networking
 
     U dostawców usług chmurowych, którzy obsługują *load balancers*,
     zostanie przydzielony zewnętrzny adres IP na potrzeby serwisu.
-    W Minikube, typ `LoadBalancer` udostępnia serwis poprzez polecenie `minikube service`.
+    W minikube, serwis typu `LoadBalancer` można udostępnić poprzez polecenie
+    `minikube service`.
 
 3. Uruchom poniższe polecenie:
 
@@ -163,11 +184,11 @@ musisz najpierw wystawić Pod jako [*Serwis*](/docs/concepts/services-networking
 
 5. Tylko w Katacoda: Wpisz `30369` (sprawdź numer portu obok `8080` w opisie Serwisu) i kliknij **Display Port**
 
-    Otworzy sie okno przeglądarki obsługującej twoją aplikację i wyświetli w nim komunikat "Hello World".
+    Otworzy sie okno przeglądarki obsługującej twoją aplikację i wyświetli odpowiedź tej aplikacji.
 
 ## Włącz dodatki
 
-Minikube ma zestaw wbudowanych dodatków, które mogą być włączane, wyłączane i otwierane w lokalnym środowisku Kubernetes.
+Narzędzie minikube dysponuje zestawem wbudowanych {{< glossary_tooltip text="dodatków" term_id="addons" >}}, które mogą być włączane, wyłączane i otwierane w lokalnym środowisku Kubernetes.
 
 1. Lista aktualnie obsługiwanych dodatków:
 
@@ -184,7 +205,6 @@ Minikube ma zestaw wbudowanych dodatków, które mogą być włączane, wyłącz
     efk: disabled
     freshpod: disabled
     gvisor: disabled
-    heapster: disabled
     helm-tiller: disabled
     ingress: disabled
     ingress-dns: disabled
@@ -198,19 +218,19 @@ Minikube ma zestaw wbudowanych dodatków, które mogą być włączane, wyłącz
     storage-provisioner-gluster: disabled
     ```
 
-2. Włącz dodatek, na przykład `heapster`:
+2. Włącz dodatek, na przykład `metrics-server`:
 
     ```shell
-    minikube addons enable heapster
+    minikube addons enable metrics-server
     ```
-  
+
     Wynik powinien wyglądać podobnie do:
 
     ```
-    heapster was successfully enabled
+    The 'metrics-server' addon is enabled
     ```
 
-3. Sprawdź Pod i Serwis, który właśnie stworzyłeś:
+3. Sprawdź Pody i Serwisy, który właśnie stworzyłeś:
 
     ```shell
     kubectl get pod,svc -n kube-system
@@ -222,7 +242,7 @@ Minikube ma zestaw wbudowanych dodatków, które mogą być włączane, wyłącz
     NAME                                        READY     STATUS    RESTARTS   AGE
     pod/coredns-5644d7b6d9-mh9ll                1/1       Running   0          34m
     pod/coredns-5644d7b6d9-pqd2t                1/1       Running   0          34m
-    pod/heapster-9jttx                          1/1       Running   0          26s
+    pod/metrics-server-67fb648c5                1/1       Running   0          26s
     pod/etcd-minikube                           1/1       Running   0          34m
     pod/influxdb-grafana-b29w8                  2/2       Running   0          26s
     pod/kube-addon-manager-minikube             1/1       Running   0          34m
@@ -231,25 +251,24 @@ Minikube ma zestaw wbudowanych dodatków, które mogą być włączane, wyłącz
     pod/kube-proxy-rnlps                        1/1       Running   0          34m
     pod/kube-scheduler-minikube                 1/1       Running   0          34m
     pod/storage-provisioner                     1/1       Running   0          34m
- 
-     NAME                           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)             AGE
-     service/heapster               ClusterIP   10.96.241.45    <none>        80/TCP              26s
-     service/kube-dns               ClusterIP   10.96.0.10      <none>        53/UDP,53/TCP       34m
-     service/monitoring-grafana     NodePort    10.99.24.54     <none>        80:30002/TCP        26s
-     service/monitoring-influxdb    ClusterIP   10.111.169.94   <none>        8083/TCP,8086/TCP   26s
 
+    NAME                           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)             AGE
+    service/metrics-server         ClusterIP   10.96.241.45    <none>        80/TCP              26s
+    service/kube-dns               ClusterIP   10.96.0.10      <none>        53/UDP,53/TCP       34m
+    service/monitoring-grafana     NodePort    10.99.24.54     <none>        80:30002/TCP        26s
+    service/monitoring-influxdb    ClusterIP   10.111.169.94   <none>        8083/TCP,8086/TCP   26s
     ```
 
-4. Wyłącz dodatek `heapster`:
+4. Wyłącz dodatek `metrics-server`:
 
     ```shell
-    minikube addons disable heapster
+    minikube addons disable metrics-server
     ```
-  
+
     Wynik powinien wyglądać podobnie do:
 
     ```
-    heapster was successfully disabled
+    metrics-server was successfully disabled
     ```
 
 ## Porządkujemy po sobie
@@ -273,12 +292,8 @@ minikube stop
 minikube delete
 ```
 
-{{% /capture %}}
-
-{{% capture whatsnext %}}
+## {{% heading "whatsnext" %}}
 
 * Dowiedz się więcej o [obiektach typu Deployment](/docs/concepts/workloads/controllers/deployment/).
-* Dowiedz się więcej o [instalowaniu aplikacji](/docs/user-guide/deploying-applications/).
+* Dowiedz się więcej o [instalowaniu aplikacji](/docs/tasks/run-application/run-stateless-application-deployment/).
 * Dowiedz się więcej o [obiektach typu Serwis](/docs/concepts/services-networking/service/).
-
-{{% /capture %}}

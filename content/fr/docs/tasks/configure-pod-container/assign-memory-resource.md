@@ -1,16 +1,17 @@
 ---
 title: Allouer des ressources mémoire aux conteneurs et aux pods
-content_template: templates/task
+content_type: task
 weight: 10
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Cette page montre comment assigner une mémoire *request* et une mémoire *limit* à un conteneur. Un conteneur est garanti d'avoir autant de mémoire qu'il le demande, mais n'est pas autorisé à consommer plus de mémoire que sa limite.
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
@@ -39,9 +40,9 @@ NAME
 v1beta1.metrics.k8s.io
 ```
 
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Créer un namespace
 
@@ -59,7 +60,7 @@ dans le manifeste des ressources du conteneur. Pour spécifier une limite de mé
 Dans cet exercice, vous créez un pod qui possède un seul conteneur. Le conteneur dispose d'une demande de mémoire de 100 MiB et une limite de mémoire de 200 MiB. Voici le fichier de configuration
 pour le Pod :
 
-{{< codenew file="pods/resource/memory-request-limit.yaml" >}}
+{{% codenew file="pods/resource/memory-request-limit.yaml" %}}
 
 La section `args` de votre fichier de configuration fournit des arguments pour le conteneur lorsqu'il démarre.
 Les arguments `"--vm-bytes", "150M"` indiquent au conteneur d'allouer 150 MiB de mémoire.
@@ -122,7 +123,7 @@ Si un conteneur terminé peut être redémarré, le kubelet le redémarre, comme
 Dans cet exercice, vous créez un Pod qui tente d'allouer plus de mémoire que sa limite.
 Voici le fichier de configuration d'un Pod qui contient un conteneur avec une demande de mémoire de 50 MiB et une limite de mémoire de 100 MiB :
 
-{{< codenew file="pods/resource/memory-request-limit-2.yaml" >}}
+{{% codenew file="pods/resource/memory-request-limit-2.yaml" %}}
 
 Dans la section `args` du fichier de configuration, vous pouvez voir que le conteneur
 tentera d'allouer 250 MiB de mémoire, ce qui est bien au-dessus de la limite de 100 MiB.
@@ -225,7 +226,7 @@ L'ordonnancement des modules est basé sur les demandes. Un Pod est schedulé po
 
 Dans cet exercice, vous allez créer un Pod dont la demande de mémoire est si importante qu'elle dépasse la capacité de la mémoire de n'importe quel nœud de votre cluster. Voici le fichier de configuration d'un Pod qui possède un seul conteneur avec une demande de 1000 GiB de mémoire, qui dépasse probablement la capacité de tous les nœuds de votre cluster.
 
-{{< codenew file="pods/resource/memory-request-limit-3.yaml" >}}
+{{% codenew file="pods/resource/memory-request-limit-3.yaml" %}}
 
 Créez le Pod :
 
@@ -303,9 +304,10 @@ Supprimez votre namespace. Ceci va supprimer tous les Pods que vous avez créés
 kubectl delete namespace mem-example
 ```
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 ### Pour les développeurs d'applications
 
@@ -329,7 +331,7 @@ kubectl delete namespace mem-example
 
 * [Configuration des quotas pour les objets API](/docs/tasks/administer-cluster/quota-api-object/)
 
-{{% /capture %}}
+
 
 
 

@@ -1,10 +1,10 @@
 ---
 title: Installer Kubernetes sur AWS avec kops
 description: Installation Kubernetes avec kops sur AWS
-content_template: templates/concept
+content_type: concept
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Cette documentation pour un démarrage rapide montre comment facilement installer un cluster Kubernetes sur AWS.
 L'outil utilisé est [`kops`](https://github.com/kubernetes/kops).
@@ -21,9 +21,9 @@ kops est un système de provisionnement dont les principes sont:
 
 Si ces principes ne vous conviennent pas, vous préférerez probablement construire votre propre cluster selon votre convenance grâce à [kubeadm](/docs/admin/kubeadm/).
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Créer un cluster
 
@@ -132,7 +132,7 @@ mais aussi `dev.example.com` ou même `example.com`. kops fonctionne avec n'impo
 Supposons que vous utilisiez `dev.example.com` comme zone hébergée. Vous créeriez cette zone hébergée en utilisant la [méthode normal](http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html), ou avec une ligne de commande telle que `aws route53 create-hosted-zone --name dev.example.com --caller-reference 1`.
 
 Vous devrez ensuite configurer vos enregistrements NS dans le domaine parent afin que vous puissiez résoudre dans ce domaine.
-Vous créeriez donc des enregistrements NS dans le domaine `example.com` pour` dev`.
+Vous créeriez donc des enregistrements NS dans le domaine `example.com` pour `dev`.
 S'il s'agit d'un nom de domaine racine, vous devrez configurer les enregistrements NS chez votre hébergeur de nom de domaine (là où vous avez acheté votre nom de domaine `example.com`).
 
 Cette étape est délicate, soyez vigilants (c’est la première cause de problèmes !). Vous pouvez vérifier que
@@ -195,7 +195,7 @@ Il applique les modifications que vous avez apportées à la configuration sur v
 
 Par exemple, après un `kops edit ig nodes`, puis un `kops update cluster --yes` pour appliquer votre configuration, parfois, vous devrez également exécuter un `kops rolling-update cluster` pour déployer la configuration immédiatement.
 
-Sans l'argument `--yes`,` kops update cluster` vous montrera un aperçu de ce qu’il va faire. C'est pratique
+Sans l'argument `--yes`, `kops update cluster` vous montrera un aperçu de ce qu’il va faire. C'est pratique
 pour les clusters de production !
 
 ### Explorer d'autres composants additionnels (add-ons)
@@ -211,12 +211,13 @@ Reportez-vous à la [liste des add-ons] (/docs/concepts/cluster-administration/a
 * Channel Slack: [#kops-users] (https://kubernetes.slack.com/messages/kops-users/)
 * [Problèmes GitHub] (https://github.com/kubernetes/kops/issues)
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * En apprendre davantages sur les [concepts](/docs/concepts/) Kubernetes et [`kubectl`](/docs/user-guide/kubectl-overview/).
 * En savoir plus sur les [utilisations avancées](https://github.com/kubernetes/kops) de `kops`.
 * Pour les bonnes pratiques et les options de configuration avancées de `kops` se référer à la [documentation](https://github.com/kubernetes/kops)
 
-{{% /capture %}}
+

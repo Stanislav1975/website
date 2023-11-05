@@ -5,7 +5,6 @@ title: Validate node setup
 weight: 30
 ---
 
-{{< toc >}}
 
 ## Node Conformance Test
 
@@ -14,30 +13,23 @@ verification and functionality test for a node. The test validates whether the
 node meets the minimum requirements for Kubernetes; a node that passes the test
 is qualified to join a Kubernetes cluster.
 
-## Limitations
-
-In Kubernetes version 1.5, node conformance test has the following limitations:
-
-* Node conformance test only supports Docker as the container runtime.
-
 ## Node Prerequisite
 
 To run node conformance test, a node must satisfy the same prerequisites as a
 standard Kubernetes node. At a minimum, the node should have the following
 daemons installed:
 
-* Container Runtime (Docker)
+* CRI-compatible container runtimes such as  Docker, Containerd and CRI-O
 * Kubelet
 
 ## Running Node Conformance Test
 
 To run the node conformance test, perform the following steps:
-
-1. Point your Kubelet to localhost `--api-servers="http://localhost:8080"`,
-because the test framework starts a local master to test Kubelet. There are some
-other Kubelet flags you may care:
-  * `--pod-cidr`: If you are using `kubenet`, you should specify an arbitrary CIDR
-    to Kubelet, for example `--pod-cidr=10.180.0.0/24`.
+1. Work out the value of the `--kubeconfig` option for the kubelet; for example:
+   `--kubeconfig=/var/lib/kubelet/config.yaml`.
+    Because the test framework starts a local control plane to test the kubelet,
+    use `http://localhost:8080` as the URL of the API server.
+    There are some other kubelet command line parameters you may want to use:
   * `--cloud-provider`: If you are using `--cloud-provider=gce`, you should
     remove the flag to run the test.
 
@@ -48,7 +40,7 @@ other Kubelet flags you may care:
 # $LOG_DIR is the test output path.
 sudo docker run -it --rm --privileged --net=host \
   -v /:/rootfs -v $CONFIG_DIR:$CONFIG_DIR -v $LOG_DIR:/var/result \
-  k8s.gcr.io/node-test:0.2
+  registry.k8s.io/node-test:0.2
 ```
 
 ## Running Node Conformance Test for Other Architectures
@@ -71,7 +63,7 @@ regular expression of tests you want to run.
 sudo docker run -it --rm --privileged --net=host \
   -v /:/rootfs:ro -v $CONFIG_DIR:$CONFIG_DIR -v $LOG_DIR:/var/result \
   -e FOCUS=MirrorPod \ # Only run MirrorPod test
-  k8s.gcr.io/node-test:0.2
+  registry.k8s.io/node-test:0.2
 ```
 
 To skip specific tests, overwrite the environment variable `SKIP` with the
@@ -81,7 +73,7 @@ regular expression of tests you want to skip.
 sudo docker run -it --rm --privileged --net=host \
   -v /:/rootfs:ro -v $CONFIG_DIR:$CONFIG_DIR -v $LOG_DIR:/var/result \
   -e SKIP=MirrorPod \ # Run all conformance tests but skip MirrorPod test
-  k8s.gcr.io/node-test:0.2
+  registry.k8s.io/node-test:0.2
 ```
 
 Node conformance test is a containerized version of [node e2e test](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-node/e2e-node-tests.md).

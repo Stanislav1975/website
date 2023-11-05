@@ -1,27 +1,17 @@
 ---
-title: Wspierane wersje dokumentacji Kubernetesa
-content_template: templates/concept
+title: Dostępne wersje dokumentacji
+content_type: custom
+layout: supported-versions
 card:
   name: about
   weight: 10
-  title: Wspierane wersje dokumentacji
+  title: Dostępne wersje dokumentacji
+  
 ---
-
-{{% capture overview %}}
 
 Ten serwis zawiera dokumentację do bieżącej i czterech poprzednich wersji Kubernetesa.
 
-{{% /capture %}}
-
-{{% capture body %}}
-
-## Bieżąca wersja
-
-Bieżąca wersja to
-[{{< param "version" >}}](/).
-
-## Poprzednie wersje
-
-{{< versions-other >}}
-
-{{% /capture %}}
+Dostępność dokumentacji obejmującej konkretną wersję Kubernetesa nie oznacza automatycznie,
+że dana wersja Kubernetesa jest ciągle aktywnie wspierana.
+Zajrzyj do dokumentu [Support period](/releases/patch-releases/#support-period), aby dowiedzieć się,
+do kiedy objęte wsparciem są poszczególne wersje Kubernetesa.

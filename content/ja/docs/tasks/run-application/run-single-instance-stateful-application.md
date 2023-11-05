@@ -1,35 +1,37 @@
 ---
 title: 単一レプリカのステートフルアプリケーションを実行する
-content_template: templates/tutorial
+content_type: tutorial
 weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 このページでは、PersistentVolumeとDeploymentを使用して、Kubernetesで単一レプリカのステートフルアプリケーションを実行する方法を説明します。アプリケーションはMySQLです。
 
-{{% /capture %}}
 
 
-{{% capture objectives %}}
+
+## {{% heading "objectives" %}}
+
 
 * 自身の環境のディスクを参照するPersistentVolumeを作成します。
 * MySQLのDeploymentを作成します。
 * MySQLをDNS名でクラスター内の他のPodに公開します。
 
-{{% /capture %}}
 
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 * {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
 * {{< include "default-storage-class-prereqs.md" >}}
 
-{{% /capture %}}
 
 
-{{% capture lessoncontent %}}
+
+<!-- lessoncontent -->
 
 ## MySQLをデプロイする
 
@@ -40,8 +42,8 @@ Kubernetes Deploymentを作成し、PersistentVolumeClaimを使用して既存�
 
 注：パスワードはYAMLファイル内に定義されており、これは安全ではありません。安全な解決策については[Kubernetes Secret](/docs/concepts/configuration/secret/)を参照してください 。
 
-{{< codenew file="application/mysql/mysql-deployment.yaml" >}}
-{{< codenew file="application/mysql/mysql-pv.yaml" >}}
+{{% codenew file="application/mysql/mysql-deployment.yaml" %}}
+{{% codenew file="application/mysql/mysql-pv.yaml" %}}
 
 1. YAMLファイルに記述されたPVとPVCをデプロイします。
 
@@ -163,19 +165,20 @@ PersistentVolumeを手動でプロビジョニングした場合は、Persistent
 動的プロビジョニング機能を使用した場合は、PersistentVolumeClaimを削除すれば、自動的にPersistentVolumeも削除されます。
 一部の動的プロビジョナー(EBSやPDなど)は、PersistentVolumeを削除すると同時に下層にあるリソースも解放します。
 
-{{% /capture %}}
 
 
-{{% capture whatsnext %}}
 
-* [Deploymentオブジェクト](/docs/concepts/workloads/controllers/deployment/)についてもっと学ぶ
+## {{% heading "whatsnext" %}}
 
-* [アプリケーションのデプロイ](/docs/user-guide/deploying-applications/)についてもっと学ぶ
+
+* [Deploymentオブジェクト](/ja/docs/concepts/workloads/controllers/deployment/)についてもっと学ぶ
+
+* [アプリケーションのデプロイ](/ja/docs/tasks/run-application/run-stateless-application-deployment/)についてもっと学ぶ
 
 * [kubectl runのドキュメント](/docs/reference/generated/kubectl/kubectl-commands/#run)
 
 * [Volumes](/docs/concepts/storage/volumes/)と[Persistent Volumes](/docs/concepts/storage/persistent-volumes/)
 
-{{% /capture %}}
+
 
 

@@ -5,18 +5,18 @@ feature:
   description: >
     Montez automatiquement le système de stockage de votre choix, que ce soit à partir du stockage local, d'un fournisseur de cloud public tel que <a href="https://cloud.google.com/storage/">GCP</a> ou <a href="https://aws.amazon.com/products/storage/">AWS</a>, ou un système de stockage réseau tel que NFS, iSCSI, Gluster, Ceph, Cinder ou Flocker.
 
-content_template: templates/concept
+content_type: concept
 weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Ce document décrit l'état actuel de `PersistentVolumes` dans Kubernetes.
 Une connaissance des [volumes](/fr/docs/concepts/storage/volumes/) est suggérée.
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Introduction
 
@@ -192,7 +192,7 @@ spec:
       path: /any/path/it/will/be/replaced
   containers:
   - name: pv-recycler
-    image: "k8s.gcr.io/busybox"
+    image: "registry.k8s.io/busybox"
     command: ["/bin/sh", "-c", "test -e /scrub && rm -rf /scrub/..?* /scrub/.[!.]* /scrub/*  && test -z \"$(ls -A /scrub)\" || exit 1"]
     volumeMounts:
     - name: vol
@@ -203,7 +203,7 @@ Cependant, le chemin particulier spécifié dans la partie `volumes` du template
 
 ### Redimensionnement des PVC
 
-{{< feature-state for_k8s_version="v1.11" state="beta" >}}
+{{< feature-state for_k8s_version="v1.24" state="stable" >}}
 
 La prise en charge du redimensionnement des PersistentVolumeClaims (PVCs) est désormais activée par défaut.
 Vous pouvez redimensionner les types de volumes suivants:
@@ -242,7 +242,7 @@ Au lieu de cela, un volume existant est redimensionné.
 
 #### Redimensionnement de volume CSI
 
-{{< feature-state for_k8s_version="v1.16" state="beta" >}}
+{{< feature-state for_k8s_version="v1.24" state="stable" >}}
 
 La prise en charge du redimensionnement des volumes CSI est activée par défaut, mais elle nécessite également un pilote CSI spécifique pour prendre en charge le redimensionnement des volumes.
 Reportez-vous à la documentation du pilote CSI spécifique pour plus d'informations.
@@ -334,6 +334,11 @@ spec:
     server: 172.17.0.2
 ```
 
+{{< note >}}
+Des logiciels additionnels supportant un type de montage de volume pourraient être nécessaires afin d'utiliser un PersistentVolume depuis un cluster.
+Dans l'exemple d'un PersistentVolume de type NFS, le logiciel additionnel `/sbin/mount.nfs` est requis pour permettre de monter des systèmes de fichiers de type NFS.
+{{< /note >}}
+
 ### Capacité
 
 Généralement, un PV aura une capacité de stockage spécifique.
@@ -375,7 +380,7 @@ Dans la CLI, les modes d'accès sont abrégés comme suit:
   Par exemple, un GCEPersistentDisk peut être monté en tant que ReadWriteOnce par un seul nœud ou ReadOnlyMany par plusieurs nœuds, mais pas en même temps.
 
 | Volume Plugin        | ReadWriteOnce    | ReadOnlyMany     | ReadWriteMany                                    |
-|-:--------------------|-:-:--------------|-:-:--------------|-:-:----------------------------------------------|
+| :-: | :-: | :-: | :-: |
 | AWSElasticBlockStore | &#x2713;         | -                | -                                                |
 | AzureFile            | &#x2713;         | &#x2713;         | &#x2713;                                         |
 | AzureDisk            | &#x2713;         | -                | -                                                |
@@ -406,7 +411,7 @@ Un PV sans `storageClassName` n'a pas de classe et ne peut être lié qu'à des 
 Dans le passé, l'annotation `volume.beta.kubernetes.io/storage-class` a été utilisé à la place de l'attribut `storageClassName`.
 Cette annotation fonctionne toujours; cependant, il deviendra complètement obsolète dans une future version de Kubernetes.
 
-### Politique de récupration
+### Politique de récupération
 
 Les politiques de récupération actuelles sont:
 
@@ -753,4 +758,4 @@ Si vous écrivez des templates de configuration ou des exemples qui s'exécutent
     De nombreux environnements de cluster ont une `StorageClass` par défaut installée, où les administrateurs peuvent créer leur propre `StorageClass` par défaut.
 * Dans votre outillage, surveillez les PVCs qui ne sont pas liés après un certain temps et signalez-le à l'utilisateur, car cela peut indiquer que le cluster n'a pas de support de stockage dynamique (auquel cas l'utilisateur doit créer un PV correspondant) ou que le cluster n'a aucun système de stockage (auquel cas l'utilisateur ne peut pas déployer de configuration nécessitant des PVCs).
 
-{{% /capture %}}
+

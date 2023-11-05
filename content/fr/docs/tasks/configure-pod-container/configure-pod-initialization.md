@@ -1,21 +1,22 @@
 ---
 title: Configurer l'initialisation du pod
-content_template: templates/task
+content_type: task
 weight: 130
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 Cette page montre comment utiliser un Init conteneur pour initialiser un Pod avant de lancer un conteneur d'application.
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Créer un Pod qui a un Init Container
 
@@ -23,7 +24,7 @@ Dans cet exercice, vous allez créer un Pod qui a un conteneur d'application et 
 
 Voici le fichier de configuration du Pod :
 
-{{< codenew file="pods/init-containers.yaml" >}}
+{{% codenew file="pods/init-containers.yaml" %}}
 
 Dans le fichier de configuration, vous pouvez voir que le Pod a un Volume que le conteneur d'initialisation et le conteneur d'application partagent.
 
@@ -71,16 +72,17 @@ La sortie montre que nginx sert la page web qui a été écrite par le conteneur
       <p>Kubernetes is open source giving you the freedom to take advantage ...</p>
       ...
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * Pour en savoir plus sur
 [communiquer entre conteneurs fonctionnant dans le même Pod](/docs/tasks/access-application-cluster/communicate-containers-same-pod-shared-volume/).
 * Pour en savoir plus sur [Init Conteneurs](/docs/concepts/workloads/pods/init-containers/).
 * Pour en savoir plus sur [Volumes](/docs/concepts/storage/volumes/).
-* Pour en savoir plus sur [Débogage des Init Conteneurs](/docs/tasks/debug-application-cluster/debug-init-containers/)
+* Pour en savoir plus sur [Débogage des Init Conteneurs](/docs/tasks/debug/debug-application/debug-init-containers/)
 
-{{% /capture %}}
+
 
 

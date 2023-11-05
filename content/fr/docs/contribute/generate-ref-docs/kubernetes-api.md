@@ -1,16 +1,17 @@
 ---
 title: Génération de documentation de référence pour l'API Kubernetes
 description: Génération documentation référence API Kubernetes
-content_template: templates/task
+content_type: task
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Cette page montre comment mettre à jour les documents de référence générés automatiquement pour l'API Kubernetes.
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 Vous devez avoir ces outils installés:
 
@@ -25,9 +26,9 @@ Vous devez savoir comment créer une pull request dans un dépôt GitHub.
 Généralement, cela implique la création d'un fork du dépôt.
 Pour plus d'informations, voir [Créer une Pull Request de documentation](/docs/home/contribute/create-pull-request/) et [GitHub Standard Fork & Pull Request Workflow](https://gist.github.com/Chaser324/ce0505fbed06b947d962).
 
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Généralités
 
@@ -121,7 +122,7 @@ On branch master
 
 ### Valider votre fichier édité
 
-Exécutez `git add` et ` git commit` pour valider les modifications que vous avez apportées jusqu'à présent.
+Exécutez `git add` et `git commit` pour valider les modifications que vous avez apportées jusqu'à présent.
 Dans l'étape suivante, vous ferez un deuxième commit.
 Il est important de séparer vos modifications en deux commits.
 
@@ -134,7 +135,6 @@ hack/update-generated-swagger-docs.sh
 hack/update-swagger-spec.sh
 hack/update-openapi-spec.sh
 hack/update-generated-protobuf.sh
-hack/update-api-reference-docs.sh
 ```
 
 Exécutez `git status` pour voir ce qui a été généré.
@@ -143,8 +143,6 @@ Exécutez `git status` pour voir ce qui a été généré.
 On branch master
 ...
     modified:   api/openapi-spec/swagger.json
-    modified:   api/swagger-spec/apps_v1.json
-    modified:   docs/api-reference/apps/v1/definitions.html
     modified:   staging/src/k8s.io/api/apps/v1/generated.proto
     modified:   staging/src/k8s.io/api/apps/v1/types.go
     modified:   staging/src/k8s.io/api/apps/v1/types_swagger_doc_generated.go
@@ -154,7 +152,7 @@ Voir le contenu de `api/openapi-spec/swagger.json` pour vous assurer que la faut
 Par exemple, vous pouvez exécuter `git diff -a api/openapi-spec/swagger.json`.
 Ceci est important, car `swagger.json` sera l’entrée de la seconde étape du processus de génération de doc.
 
-Exécutez `git add` et ` git commit` pour valider vos modifications.
+Exécutez `git add` et `git commit` pour valider vos modifications.
 Vous avez maintenant deux validations: une avec le fichier `types.go` édité et une avec les spécifications OpenAPI générées et les fichiers associés.
 Gardez ces deux commits séparés.
 C'est-à-dire, ne faites pas un squash de vos commits.
@@ -327,12 +325,13 @@ Continuez à surveiller votre pull request jusqu'à ce qu'elle ait été mergée
 
 Quelques minutes après que votre pull request soit fusionnée, vos modifications seront visibles dans la [documentation de référence publiée](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/).
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * [Génération de documents de référence pour les composants et les outils Kubernetes](/docs/home/contribute/generated-reference/kubernetes-components/)
 * [Génération de documentation de référence pour les commandes kubectl](/docs/home/contribute/generated-reference/kubectl/)
 * [Génération de documentation de référence pour l'API de fédération Kubernetes](/docs/home/contribute/generated-reference/federation-api/)
 
-{{% /capture %}}
+

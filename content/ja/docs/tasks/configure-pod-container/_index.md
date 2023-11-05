@@ -1,5 +1,6 @@
 ---
 title: "Podとコンテナの設定"
-weight: 20
+description: Podとコンテナの一般的な設定のタスクを行います。
+weight: 30
 ---
 

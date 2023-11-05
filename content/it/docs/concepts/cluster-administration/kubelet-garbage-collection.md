@@ -1,21 +1,21 @@
 ---
-
+draft: True
 title: Configurazione della raccolta dati kubelet
-content_template: templates/concept
+content_type: concept
 weight: 70
 ---
 
-{{% capture overview %}}
-La garbage collection è una funzione utile di kubelet che pulisce le immagini inutilizzate e i contenitori inutilizzati. 
-Kubelet eseguirà la raccolta dei rifiuti per i contenitori ogni minuto e la raccolta dei dati inutili per le immagini 
+<!-- overview -->
+La garbage collection è una funzione utile di kubelet che pulisce le immagini inutilizzate e i contenitori inutilizzati.
+Kubelet eseguirà la raccolta dei rifiuti per i contenitori ogni minuto e la raccolta dei dati inutili per le immagini
 ogni cinque minuti.
 
-Gli strumenti di garbage collection esterni non sono raccomandati in quanto questi strumenti possono potenzialmente 
+Gli strumenti di garbage collection esterni non sono raccomandati in quanto questi strumenti possono potenzialmente
 interrompere il comportamento di kubelet rimuovendo i contenitori che si prevede esistano.
-{{% /capture %}}
 
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Image Collection
 
@@ -23,29 +23,29 @@ Kubernetes gestisce il ciclo di vita di tutte le immagini tramite imageManager, 
 di consulente.
 
 La politica per la raccolta dei rifiuti delle immagini prende in considerazione due fattori:
-`HighThresholdPercent` e` LowThresholdPercent`. Utilizzo del disco al di sopra della soglia alta
+`HighThresholdPercent` e `LowThresholdPercent`. Utilizzo del disco al di sopra della soglia alta
 attiverà la garbage collection. La garbage collection cancellerà le immagini utilizzate meno di recente fino al minimo
 soglia è stata soddisfatta.
 
 La politica per la raccolta dei rifiuti delle immagini prende in considerazione due fattori:
-`HighThresholdPercent` e` LowThresholdPercent`. Utilizzo del disco al di sopra della soglia alta
+`HighThresholdPercent` e `LowThresholdPercent`. Utilizzo del disco al di sopra della soglia alta
 attiverà la garbage collection. La garbage collection cancellerà le immagini utilizzate meno di recente fino al minimo
 soglia è stata soddisfatta.
 
 ## Container Collection
 
-La politica per i contenitori di garbage collection considera tre variabili definite dall'utente. `MinAge` è l'età minima 
-in cui un contenitore può essere raccolto dalla spazzatura. `MaxPerPodContainer` è il numero massimo di contenitori morti 
-ogni singolo la coppia pod (UID, nome contenitore) può avere. `MaxContainers` è il numero massimo di contenitori morti 
-totali. Queste variabili possono essere disabilitate individualmente impostando `MinAge` a zero e impostando `MaxPerPodContainer` 
+La politica per i contenitori di garbage collection considera tre variabili definite dall'utente. `MinAge` è l'età minima
+in cui un contenitore può essere raccolto dalla spazzatura. `MaxPerPodContainer` è il numero massimo di contenitori morti
+ogni singolo la coppia pod (UID, nome contenitore) può avere. `MaxContainers` è il numero massimo di contenitori morti
+totali. Queste variabili possono essere disabilitate individualmente impostando `MinAge` a zero e impostando `MaxPerPodContainer`
 e `MaxContainers` rispettivamente a meno di zero.
 
-Kubelet agirà su contenitori non identificati, cancellati o al di fuori dei limiti impostati dalle bandiere 
-precedentemente menzionate. I contenitori più vecchi saranno generalmente rimossi per primi. `MaxPerPodContainer` 
-e `MaxContainer` possono potenzialmente entrare in conflitto l'uno con l'altro in situazioni in cui il mantenimento del 
-numero massimo di contenitori per pod (`MaxPerPodContainer`) non rientra nell'intervallo consentito di contenitori morti 
-globali (` MaxContainers`). `MaxPerPodContainer` verrebbe regolato in questa situazione: uno scenario peggiore sarebbe 
-quello di eseguire il downgrade di` MaxPerPodContainer` su 1 e rimuovere i contenitori più vecchi. Inoltre, i 
+Kubelet agirà su contenitori non identificati, cancellati o al di fuori dei limiti impostati dalle bandiere
+precedentemente menzionate. I contenitori più vecchi saranno generalmente rimossi per primi. `MaxPerPodContainer`
+e `MaxContainer` possono potenzialmente entrare in conflitto l'uno con l'altro in situazioni in cui il mantenimento del
+numero massimo di contenitori per pod (`MaxPerPodContainer`) non rientra nell'intervallo consentito di contenitori morti
+globali (`MaxContainers`). `MaxPerPodContainer` verrebbe regolato in questa situazione: uno scenario peggiore sarebbe
+quello di eseguire il downgrade di `MaxPerPodContainer` su 1 e rimuovere i contenitori più vecchi. Inoltre, i
 contenitori di proprietà dei pod che sono stati cancellati vengono rimossi una volta che sono più vecchi di "MinAge".
 
 I contenitori che non sono gestiti da Kubelet non sono soggetti alla garbage collection del contenitore.
@@ -83,18 +83,19 @@ Compreso:
 
 | Bandiera esistente | Nuova bandiera | Motivazione
 | ------------- | -------- | --------- |
-| `--image-gc-high-threshold` | `--eviction-hard` o` --eviction-soft` | i segnali di sfratto esistenti possono innescare la garbage collection delle immagini |
+| `--image-gc-high-threshold` | `--eviction-hard` o `--eviction-soft` | i segnali di sfratto esistenti possono innescare la garbage collection delle immagini |
 | `--image-gc-low-threshold` | `--eviction-minimum-reclaim` | i reclami di sfratto ottengono lo stesso comportamento |
 | `--maximum-dead-containers` | | deprecato una volta che i vecchi log sono memorizzati al di fuori del contesto del contenitore |
 | `--maximum-dead-containers-per-container` | | deprecato una volta che i vecchi log sono memorizzati al di fuori del contesto del contenitore |
 | `--minimum-container-ttl-duration` | | deprecato una volta che i vecchi log sono memorizzati al di fuori del contesto del contenitore |
-| `--low-diskspace-threshold-mb` | `--eviction-hard` o` eviction-soft` | lo sfratto generalizza le soglie del disco ad altre risorse |
+| `--low-diskspace-threshold-mb` | `--eviction-hard` o `eviction-soft` | lo sfratto generalizza le soglie del disco ad altre risorse |
 | `--outofdisk-transition-frequency` | `--eviction-pressure-transition-period` | lo sfratto generalizza la transizione della pressione del disco verso altre risorse |
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 Vedi [Configurazione della gestione delle risorse esterne](/docs/tasks/administration-cluster/out-of-resource/) per maggiori dettagli.
 
-{{% /capture %}}
+

@@ -1,19 +1,20 @@
 ---
 title: Allouer des ressources CPU aux conteneurs et aux pods
-content_template: templates/task
+content_type: task
 weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Cette page montre comment assigner une *demande* (request en anglais) de CPU et une *limite* de CPU à un conteneur.
 Un conteneur est garanti d'avoir autant de CPU qu'il le demande, mais n'est pas autorisé à utiliser plus de CPU que sa limite.
 
 
-{{% /capture %}}
 
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
@@ -43,10 +44,10 @@ NAME
 v1beta1.metrics.k8s.io
 ```
 
-{{% /capture %}}
 
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Créer un namespace
 
@@ -63,7 +64,7 @@ dans le manifeste des ressources du conteneur. Pour spécifier une limite de CPU
 
 Dans cet exercice, vous allez créer un Pod qui a un seul conteneur. Le conteneur a une demande de 0.5 CPU et une limite de 1 CPU. Voici le fichier de configuration du Pod :
 
-{{< codenew file="pods/resource/cpu-request-limit.yaml" >}}
+{{% codenew file="pods/resource/cpu-request-limit.yaml" %}}
 
 La section `args` du fichier de configuration fournit des arguments pour le conteneur lorsqu'il démarre. L'argument `-cpus "2"` demande au conteneur d'utiliser 2 CPUs.
 
@@ -96,7 +97,7 @@ resources:
     cpu: 500m
 ```
 
-Utilisez `kubectl top` pour récupérer les métriques du pod :
+Utilisez `kubectl top` pour récupérer les métriques du Pod :
 
 ```shell
 kubectl top pod cpu-demo --namespace=cpu-example
@@ -113,7 +114,7 @@ cpu-demo                    974m         <something>
 Souvenez-vous qu'en réglant `-cpu "2"`, vous avez configuré le conteneur pour faire en sorte qu'il utilise 2 CPU, mais que le conteneur ne peut utiliser qu'environ 1 CPU. L'utilisation du CPU du conteneur est entravée, car le conteneur tente d'utiliser plus de ressources CPU que sa limite.
 
 {{< note >}}
-Une autre explication possible de la la restriction du CPU est que le Nœud pourrait ne pas avoir
+Une autre explication possible de la restriction du CPU est que le Nœud pourrait ne pas avoir
 suffisamment de ressources CPU disponibles. Rappelons que les conditions préalables à cet exercice exigent que chacun de vos Nœuds doit avoir au moins 1 CPU.
 Si votre conteneur fonctionne sur un nœud qui n'a qu'un seul CPU, le conteneur ne peut pas utiliser plus que 1 CPU, quelle que soit la limite de CPU spécifiée pour le conteneur.
 {{< /note >}}
@@ -146,7 +147,7 @@ L'ordonnancement des pods est basé sur les demandes. Un Pod est prévu pour se 
 Dans cet exercice, vous allez créer un Pod qui a une demande de CPU si importante qu'elle dépassera la capacité de n'importe quel nœud de votre cluster. Voici le fichier de configuration d'un Pod
 qui a un seul conteneur. Le conteneur nécessite 100 CPU, ce qui est susceptible de dépasser la capacité de tous les nœuds de votre cluster.
 
-{{< codenew file="pods/resource/cpu-request-limit-2.yaml" >}}
+{{% codenew file="pods/resource/cpu-request-limit-2.yaml" %}}
 
 Créez le Pod :
 
@@ -211,7 +212,7 @@ vous pouvez utiliser efficacement les ressources CPU disponibles sur les Nœuds 
 En gardant une demande faible de CPU de pod, vous donnez au Pod une bonne chance d'être ordonnancé.
 En ayant une limite CPU supérieure à la demande de CPU, vous accomplissez deux choses :
 
-* Le Pod peut avoir des pics d'activité où il utilise les ressources CPU qui se sont déjà disponible.
+* Le Pod peut avoir des pics d'activité où il utilise les ressources CPU qui sont déjà disponibles.
 * La quantité de ressources CPU qu'un Pod peut utiliser pendant une pic d'activité est limitée à une quantité raisonnable.
 
 ## Nettoyage
@@ -222,9 +223,10 @@ Supprimez votre namespace :
 kubectl delete namespace cpu-example
 ```
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 
 ### Pour les développeurs d'applications
@@ -249,7 +251,7 @@ kubectl delete namespace cpu-example
 
 * [Configuration des quotas pour les objets API](/docs/tasks/administer-cluster/quota-api-object/)
 
-{{% /capture %}}
+
 
 
 

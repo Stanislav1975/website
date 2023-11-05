@@ -5,7 +5,7 @@ weight: 10
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="pl">
 
 <body>
 
@@ -29,7 +29,7 @@ weight: 10
 
             <div class="col-md-8">
                 <h2>Pody Kubernetes</h2>
-                <p>Po stworzeniu Deploymentu w Module <a href="/pl/docs/tutorials/kubernetes-basics/deploy-intro/">2</a>, Kubernetes stworzył <b>Pod</b>, który "przechowuje" instancję Twojej aplikacji. Pod jest obiektem abstrakcyjnym Kubernetes, który reprezentuje grupę jednego bądź wielu kontenerów (takich jak Docker lub rkt) wraz ze wspólnymi zasobami dla tych kontenerów. Zasobami mogą być:</p>
+                <p>Po stworzeniu Deploymentu w Module <a href="/pl/docs/tutorials/kubernetes-basics/deploy-app/deploy-intro/">2</a>, Kubernetes stworzył <b>Pod</b>, który "przechowuje" instancję Twojej aplikacji. Pod jest obiektem abstrakcyjnym Kubernetes, który reprezentuje grupę jednego bądź wielu kontenerów (jak np. Docker) wraz ze wspólnymi zasobami dla tych kontenerów. Zasobami mogą być:</p>
                 <ul>
                     <li>Współdzielona przestrzeń dyskowa, np. Volumes</li>
                     <li>Zasoby sieciowe, takie jak unikatowy adres IP klastra</li>
@@ -51,7 +51,7 @@ weight: 10
                 </div>
                 <div class="content__box content__box_fill">
                         <p><i>
-                            Pod to grupa jednego lub wielu kontenerów aplikacji (takich, jak Docker czy rkt) zawierający współdzielony storage (volumes), adres IP i informacje, jak mają być uruchamiane.
+                            Pod to grupa jednego lub wielu kontenerów aplikacji (jak np. Docker) zawierających współdzieloną przestrzeń dyskową (volumes), adres IP i informacje, jak mają być uruchamiane.
                         </i></p>
                 </div>
             </div>
@@ -74,12 +74,12 @@ weight: 10
         <div class="row">
             <div class="col-md-8">
                 <h2>Węzły</h2>
-                <p>Pod jest uruchamiany na <b>węźle <em>(Node)</em></b>. Węzeł jest maszyną roboczą, fizyczną lub wirtualną, w zależności od klastra. Każdy z węzłów jest zarządzany przez węzeł główny <em>(Master)</em>. Węzeł może zawierać wiele podów. Kubernetes master automatycznie zleca uruchomienie podów na różnych węzłach w ramach klastra. Automatyczne zlecanie uruchomienia bierze pod uwagę zasoby dostępne na każdym z węzłów.</p>
+                <p>Pod jest uruchamiany na <b>węźle <em>(Node)</em></b>. Węzeł jest maszyną roboczą, fizyczną lub wirtualną, w zależności od klastra. Każdy z węzłów jest zarządzany przez warstwę sterowania <em>(Control Plane)</em>. Węzeł może zawierać wiele podów. Warstwa sterowania Kubernetesa automatycznie zleca uruchomienie podów na różnych węzłach w ramach klastra. Automatyczne zlecanie uruchomienia bierze pod uwagę zasoby dostępne na każdym z węzłów.</p>
 
                 <p>Na każdym węźle Kubernetes działają co najmniej:</p>
                 <ul>
-                    <li>Kubelet, proces odpowiedzialny za komunikację pomiędzy Kubernetes Master i węzłami; zarządza podami i kontenerami działającymi na maszynie.</li>
-                    <li>Proces wykonawczy kontenera (przykładowo Docker czy rkt), który zajmuje się pobraniem obrazu dla kontenera z repozytorium, rozpakowaniem kontenera i uruchomieniem aplikacji.</li>
+                    <li>Kubelet, proces odpowiedzialny za komunikację pomiędzy warstwą sterowania Kubernetesa i węzłami; zarządza podami i kontenerami działającymi na maszynie.</li>
+                    <li>Proces wykonawczy kontenera (np. Docker), który zajmuje się pobraniem obrazu dla kontenera z repozytorium, rozpakowaniem kontenera i uruchomieniem aplikacji.</li>
                 </ul>
 
             </div>
@@ -108,7 +108,7 @@ weight: 10
         <div class="row">
             <div class="col-md-8">
                 <h2>Rozwiązywanie problemów przy pomocy kubectl</h2>
-                <p>W module <a href="/pl/docs/tutorials/kubernetes-basics/deploy-intro/">2</a> używałeś narzędzia Kubectl. W module 3 będziemy go nadal używać, aby wydobyć informacje na temat zainstalowanych aplikacji i środowiska, w jakim działają. Najczęstsze operacje przeprowadzane są przy pomocy następujących poleceń kubectl:</p>
+                <p>W module <a href="/pl/docs/tutorials/kubernetes-basics/deploy-app/deploy-intro/">2</a> używałeś narzędzia Kubectl. W module 3 będziemy go nadal używać, aby wydobyć informacje na temat zainstalowanych aplikacji i środowiska, w jakim działają. Najczęstsze operacje przeprowadzane są przy pomocy następujących poleceń kubectl:</p>
                 <ul>
                     <li><b>kubectl get</b> - wyświetl informacje o zasobach</li>
                     <li><b>kubectl describe</b> - pokaż szczegółowe informacje na temat konkretnego zasobu</li>

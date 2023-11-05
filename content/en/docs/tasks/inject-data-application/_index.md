@@ -1,5 +1,6 @@
 ---
 title: "Inject Data Into Applications"
-weight: 30
+description: Specify configuration and other data for the Pods that run your workload.
+weight: 70
 ---
 

@@ -1,38 +1,36 @@
 ---
 title: Documentation Style Guide
 linktitle: Style guide
-content_template: templates/concept
-weight: 10
-card:
-  name: contribute
-  weight: 20
-  title: Documentation Style Guide
+content_type: concept
+weight: 40
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 This page gives writing style guidelines for the Kubernetes documentation.
 These are guidelines, not rules. Use your best judgment, and feel free to
 propose changes to this document in a pull request.
 
-For additional information on creating new content for the Kubernetes 
-documentation, read the [Documentation Content 
-Guide](/docs/contribute/style/content-guide/) and follow the instructions on 
-[using page templates](/docs/contribute/style/page-templates/) and [creating a 
-documentation pull request](/docs/contribute/start/#improve-existing-content).
+For additional information on creating new content for the Kubernetes
+documentation, read the [Documentation Content Guide](/docs/contribute/style/content-guide/).
 
-{{% /capture %}}
+Changes to the style guide are made by SIG Docs as a group. To propose a change
+or addition, [add it to the agenda](https://bit.ly/sig-docs-agenda) for an upcoming
+SIG Docs meeting, and attend the meeting to participate in the discussion.
 
-{{% capture body %}}
+<!-- body -->
 
 {{< note >}}
-Kubernetes documentation uses [Blackfriday Markdown Renderer](https://github.com/russross/blackfriday) along with a few [Hugo Shortcodes](/docs/home/contribute/includes/) to support glossary entries, tabs,
-and representing feature state.
+Kubernetes documentation uses
+[Goldmark Markdown Renderer](https://github.com/yuin/goldmark)
+with some adjustments along with a few
+[Hugo Shortcodes](/docs/contribute/style/hugo-shortcodes/) to support
+glossary entries, tabs, and representing feature state.
 {{< /note >}}
 
 ## Language
 
 Kubernetes documentation has been translated into multiple languages
-(see [Localization READMEs](https://github.com/kubernetes/website/blob/master/README.md#localization-readmemds)).
+(see [Localization READMEs](https://github.com/kubernetes/website/blob/main/README.md#localization-readmemds)).
 
 The way of localizing the docs for a different language is described in [Localizing Kubernetes Documentation](/docs/contribute/localization/).
 
@@ -42,40 +40,42 @@ The English-language documentation uses U.S. English spelling and grammar.
 
 ## Documentation formatting standards
 
-### Use camel case for API objects
+### Use upper camel case for API objects
 
-When you refer to an API object, use the same uppercase and lowercase letters
-that are used in the actual object name. Typically, the names of API
-objects use
-[camel case](https://en.wikipedia.org/wiki/Camel_case).
+When you refer specifically to interacting with an API object, use
+[UpperCamelCase](https://en.wikipedia.org/wiki/Camel_case), also known as
+Pascal case. You may see different capitalization, such as "configMap",
+in the [API Reference](/docs/reference/kubernetes-api/). When writing
+general documentation, it's better to use upper camel case, calling it "ConfigMap" instead.
 
-Don't split the API object name into separate words. For example, use
-PodTemplateList, not Pod Template List.
+When you are generally discussing an API object, use
+[sentence-style capitalization](https://docs.microsoft.com/en-us/style-guide/text-formatting/using-type/use-sentence-style-capitalization).
 
-Refer to API objects without saying "object," unless omitting "object"
-leads to an awkward construction.
+The following examples focus on capitalization. For more information about formatting
+API object names, review the related guidance on [Code Style](#code-style-inline-code).
 
-{{< table caption = "Do and Don't - API objects" >}}
+{{< table caption = "Do and Don't - Use Pascal case for API objects" >}}
 Do | Don't
 :--| :-----
-The Pod has two containers. | The pod has two containers. 
-The Deployment is responsible for ... | The Deployment object is responsible for ...
-A PodList is a list of Pods. | A Pod List is a list of pods.
-The two ContainerPorts ... | The two ContainerPort objects ... 
-The two ContainerStateTerminated objects ... | The two ContainerStateTerminateds ... 
+The HorizontalPodAutoscaler resource is responsible for ... | The Horizontal pod autoscaler is responsible for ...
+A PodList object is a list of pods. | A Pod List object is a list of pods.
+The Volume object contains a `hostPath` field. | The volume object contains a hostPath field.
+Every ConfigMap object is part of a namespace. | Every configMap object is part of a namespace.
+For managing confidential data, consider using the Secret API. | For managing confidential data, consider using the secret API.
 {{< /table >}}
-
 
 ### Use angle brackets for placeholders
 
 Use angle brackets for placeholders. Tell the reader what a placeholder
-represents.
+represents, for example:
 
-1. Display information about a Pod:
+Display information about a pod:
 
-        kubectl describe pod <pod-name> -n <namespace>
+```shell
+kubectl describe pod <pod-name> -n <namespace>
+```
 
-    If the namespace of the pod is `default`, you can omit the '-n' parameter.
+If the namespace of the pod is `default`, you can omit the '-n' parameter.
 
 ### Use bold for user interface elements
 
@@ -83,11 +83,11 @@ represents.
 Do | Don't
 :--| :-----
 Click **Fork**. | Click "Fork".
-Select **Other**. | Select "Other". 
+Select **Other**. | Select "Other".
 {{< /table >}}
 
 ### Use italics to define or introduce new terms
- 
+
 {{< table caption = "Do and Don't - Use italics for new terms" >}}
 Do | Don't
 :--| :-----
@@ -102,7 +102,7 @@ Do | Don't
 :--| :-----
 Open the `envars.yaml` file. | Open the envars.yaml file.
 Go to the `/docs/tutorials` directory. | Go to the /docs/tutorials directory.
-Open the `/_data/concepts.yaml` file. | Open the /_data/concepts.yaml file.
+Open the `/_data/concepts.yaml` file. | Open the /\_data/concepts.yaml file.
 {{< /table >}}
 
 ### Use the international standard for punctuation inside quotes
@@ -116,25 +116,29 @@ The copy is called a "fork". | The copy is called a "fork."
 
 ## Inline code formatting
 
-### Use code style for inline code and commands
+### Use code style for inline code, commands, and API objects {#code-style-inline-code}
 
 For inline code in an HTML document, use the `<code>` tag. In a Markdown
-document, use the backtick (`).
+document, use the backtick (`` ` ``).
 
-{{< table caption = "Do and Don't - Use code style for inline code and commands" >}}
+{{< table caption = "Do and Don't - Use code style for inline code, commands, and API objects" >}}
 Do | Don't
 :--| :-----
-The `kubectl run`command creates a Deployment. | The "kubectl run" command creates a Deployment.
+The `kubectl run` command creates a `Pod`. | The "kubectl run" command creates a pod.
+The kubelet on each node acquires a `Lease`… | The kubelet on each node acquires a lease…
+A `PersistentVolume` represents durable storage… | A Persistent Volume represents durable storage…
 For declarative management, use `kubectl apply`. | For declarative management, use "kubectl apply".
-Enclose code samples with triple backticks. `(```)`| Enclose code samples with any other syntax.
-Use single backticks to enclose inline code. For example, `var example = true`. | Use two asterisks (**) or an underscore (_) to enclose inline code. For example, **var example = true**.
+Enclose code samples with triple backticks. (\`\`\`)| Enclose code samples with any other syntax.
+Use single backticks to enclose inline code. For example, `var example = true`. | Use two asterisks (`**`) or an underscore (`_`) to enclose inline code. For example, **var example = true**.
 Use triple backticks before and after a multi-line block of code for fenced code blocks. | Use multi-line blocks of code to create diagrams, flowcharts, or other illustrations.
 Use meaningful variable names that have a context. | Use variable names such as 'foo','bar', and 'baz' that are not meaningful and lack context.
-Remove trailing spaces in the code. | Add trailing spaces in the code, where these are important, because the screen reader will read out the spaces as well. 
+Remove trailing spaces in the code. | Add trailing spaces in the code, where these are important, because the screen reader will read out the spaces as well.
 {{< /table >}}
 
 {{< note >}}
-The website supports syntax highlighting for code samples, but specifying a language is optional. Syntax highlighting in the code block should conform to the [contrast guidelines.](https://www.w3.org/WAI/WCAG21/quickref/?versions=2.0&showtechniques=141%2C143#contrast-minimum)
+The website supports syntax highlighting for code samples, but specifying a language
+is optional. Syntax highlighting in the code block should conform to the
+[contrast guidelines.](https://www.w3.org/WAI/WCAG21/quickref/?versions=2.0&showtechniques=141%2C143#contrast-minimum)
 {{< /note >}}
 
 ### Use code style for object field names and namespaces
@@ -144,7 +148,7 @@ Do | Don't
 :--| :-----
 Set the value of the `replicas` field in the configuration file. | Set the value of the "replicas" field in the configuration file.
 The value of the `exec` field is an ExecAction object. | The value of the "exec" field is an ExecAction object.
-Run the process as a Daemonset in the `kube-system` namespace. | Run the process as a Daemonset in the kube-system namespace.
+Run the process as a DaemonSet in the `kube-system` namespace. | Run the process as a DaemonSet in the kube-system namespace.
 {{< /table >}}
 
 ### Use code style for Kubernetes command tool and component names
@@ -183,10 +187,48 @@ For field values of type string or integer, use normal style without quotation m
 Do | Don't
 :--| :-----
 Set the value of `imagePullPolicy` to Always. | Set the value of `imagePullPolicy` to "Always".
-Set the value of `image` to nginx:1.8. | Set the value of `image` to `nginx:1.8`.
+Set the value of `image` to nginx:1.16. | Set the value of `image` to `nginx:1.16`.
 Set the value of the `replicas` field to 2. | Set the value of the `replicas` field to `2`.
-{{< /table >}} 
+{{< /table >}}
 
+## Referring to Kubernetes API resources
+
+This section talks about how we reference API resources in the documentation.
+
+### Clarification about "resource"
+
+Kubernetes uses the word "resource" to refer to API resources, such as `pod`,
+`deployment`, and so on. We also use "resource" to talk about CPU and memory
+requests and limits. Always refer to API resources as "API resources" to avoid
+confusion with CPU and memory resources.
+
+### When to use Kubernetes API terminologies
+
+The different Kubernetes API terminologies are:
+
+- Resource type: the name used in the API URL (such as `pods`, `namespaces`)
+- Resource: a single instance of a resource type (such as `pod`, `secret`)
+- Object: a resource that serves as a "record of intent". An object is a desired
+  state for a specific part of your cluster, which the Kubernetes control plane tries to maintain.
+
+Always use "resource" or "object" when referring to an API resource in docs.
+For example, use "a `Secret` object" over just "a `Secret`".
+
+### API resource names
+
+Always format API resource names using [UpperCamelCase](https://en.wikipedia.org/wiki/Camel_case),
+also known as PascalCase, and code formatting.
+
+For inline code in an HTML document, use the `<code>` tag. In a Markdown document, use the backtick (`` ` ``).
+
+Don't split an API object name into separate words. For example, use `PodTemplateList`, not Pod Template List.
+
+For more information about PascalCase and code formatting, please review the related guidance on
+[Use upper camel case for API objects](/docs/contribute/style/style-guide/#use-upper-camel-case-for-api-objects)
+and [Use code style for inline code, commands, and API objects](/docs/contribute/style/style-guide/#code-style-inline-code).
+
+For more information about Kubernetes API terminologies, please review the related
+guidance on [Kubernetes API terminology](/docs/reference/using-api/api-concepts/#standard-api-terminology).
 
 ## Code snippet formatting
 
@@ -196,33 +238,42 @@ Set the value of the `replicas` field to 2. | Set the value of the `replicas` fi
 Do | Don't
 :--| :-----
 kubectl get pods | $ kubectl get pods
-{{< /table >}} 
-
+{{< /table >}}
 
 ### Separate commands from output
 
-Verify that the Pod is running on your chosen node:
+Verify that the pod is running on your chosen node:
 
-    kubectl get pods --output=wide
+```shell
+kubectl get pods --output=wide
+```
 
 The output is similar to this:
 
-    NAME     READY     STATUS    RESTARTS   AGE    IP           NODE
-    nginx    1/1       Running   0          13s    10.200.0.4   worker0
+```console
+NAME     READY     STATUS    RESTARTS   AGE    IP           NODE
+nginx    1/1       Running   0          13s    10.200.0.4   worker0
+```
 
 ### Versioning Kubernetes examples
 
-Code examples and configuration examples that include version information should be consistent with the accompanying text.
+Code examples and configuration examples that include version information should
+be consistent with the accompanying text.
 
-If the information is version specific, the Kubernetes version needs to be defined in the `prerequisites` section of the [Task template](/docs/contribute/style/page-templates/#task-template) or the [Tutorial template] (/docs/contribute/style/page-templates/#tutorial-template). Once the page is saved, the `prerequisites` section is shown as **Before you begin**.
+If the information is version specific, the Kubernetes version needs to be defined
+in the `prerequisites` section of the [Task template](/docs/contribute/style/page-content-types/#task)
+or the [Tutorial template](/docs/contribute/style/page-content-types/#tutorial).
+Once the page is saved, the `prerequisites` section is shown as **Before you begin**.
 
-To specify the Kubernetes version for a task or tutorial page, include `min-kubernetes-server-version` in the front matter of the page.
+To specify the Kubernetes version for a task or tutorial page, include
+`min-kubernetes-server-version` in the front matter of the page.
 
 If the example YAML is in a standalone file, find and review the topics that include it as a reference.
 Verify that any topics using the standalone YAML have the appropriate version information defined.
 If a stand-alone YAML file is not referenced from any topics, consider deleting it instead of updating it.
 
-For example, if you are writing a tutorial that is relevant to Kubernetes version 1.8, the front-matter of your markdown file should look something like:
+For example, if you are writing a tutorial that is relevant to Kubernetes version 1.8,
+the front-matter of your markdown file should look something like:
 
 ```yaml
 ---
@@ -251,31 +302,34 @@ Kubernetes | Kubernetes should always be capitalized.
 Docker | Docker should always be capitalized.
 SIG Docs | SIG Docs rather than SIG-DOCS or other variations.
 On-premises | On-premises or On-prem rather than On-premise or other variations.
-{{< /table >}} 
+{{< /table >}}
 
 ## Shortcodes
 
-Hugo [Shortcodes](https://gohugo.io/content-management/shortcodes) help create different rhetorical appeal levels. Our documentation supports three different shortcodes in this category: **Note** {{</* note */>}}, **Caution** {{</* caution */>}}, and **Warning** {{</* warning */>}}.
+Hugo [Shortcodes](https://gohugo.io/content-management/shortcodes) help create
+different rhetorical appeal levels. Our documentation supports three different
+shortcodes in this category: **Note** `{{</* note */>}}`,
+**Caution** `{{</* caution */>}}`, and **Warning** `{{</* warning */>}}`.
 
 1. Surround the text with an opening and closing shortcode.
 
 2. Use the following syntax to apply a style:
 
-    ```
-    {{</* note */>}}
-    No need to include a prefix; the shortcode automatically provides one. (Note:, Caution:, etc.)
-    {{</* /note */>}}
-    ```
+   ```none
+   {{</* note */>}}
+   No need to include a prefix; the shortcode automatically provides one. (Note:, Caution:, etc.)
+   {{</* /note */>}}
+   ```
 
-The output is:
+   The output is:
 
-{{< note >}}
-The prefix you choose is the same text for the tag.
-{{< /note >}}
+   {{< note >}}
+   The prefix you choose is the same text for the tag.
+   {{< /note >}}
 
 ### Note
 
-Use {{</* note */>}} to highlight a tip or a piece of information that may be helpful to know.
+Use `{{</* note */>}}` to highlight a tip or a piece of information that may be helpful to know.
 
 For example:
 
@@ -291,7 +345,7 @@ The output is:
 You can _still_ use Markdown inside these callouts.
 {{< /note >}}
 
-You can use a {{</* note */>}} in a list:
+You can use a `{{</* note */>}}` in a list:
 
 ```
 1. Use the note shortcode in a list
@@ -323,7 +377,7 @@ The output is:
 
 ### Caution
 
-Use {{</* caution */>}} to call attention to an important piece of information to avoid pitfalls.
+Use `{{</* caution */>}}` to call attention to an important piece of information to avoid pitfalls.
 
 For example:
 
@@ -341,7 +395,7 @@ The callout style only applies to the line directly above the tag.
 
 ### Warning
 
-Use {{</* warning */>}} to indicate danger or a piece of information that is crucial to follow.
+Use `{{</* warning */>}}` to indicate danger or a piece of information that is crucial to follow.
 
 For example:
 
@@ -356,29 +410,6 @@ The output is:
 {{< warning >}}
 Beware.
 {{< /warning >}}
-
-### Katacoda Embedded Live Environment
-
-This button lets users run Minikube in their browser using the [Katacoda Terminal](https://www.katacoda.com/embed/panel). 
-It lowers the barrier of entry by allowing users to use Minikube with one click instead of going through the complete 
-Minikube and Kubectl installation process locally.
-
-The Embedded Live Environment is configured to run `minikube start` and lets users complete tutorials in the same window 
-as the documentation.
-
-{{< caution >}}
-The session is limited to 15 minutes.
-{{< /caution >}}
-
-For example:
-
-```
-{{</* kat-button */>}}
-```
-
-The output is: 
-
-{{< kat-button >}}
 
 ## Common Shortcode Issues
 
@@ -401,13 +432,14 @@ The output is:
 
 1. Prepare the batter, and pour into springform pan.
 
-    {{< note >}}Grease the pan for best results.{{< /note >}}
+   {{< note >}}Grease the pan for best results.{{< /note >}}
 
 1. Bake for 20-25 minutes or until set.
 
 ### Include Statements
 
-Shortcodes inside include statements will break the build. You must insert them in the parent document, before and after you call the include. For example:
+Shortcodes inside include statements will break the build. You must insert them
+in the parent document, before and after you call the include. For example:
 
 ```
 {{</* note */>}}
@@ -415,23 +447,42 @@ Shortcodes inside include statements will break the build. You must insert them 
 {{</* /note */>}}
 ```
 
-
 ## Markdown elements
 
 ### Line breaks
-Use a single newline to separate block-level content like headings, lists, images, code blocks, and others. The exception is second-level headings, where it should be two newlines. Second-level headings follow the first-level (or the title) without any preceding paragraphs or texts. A two line spacing helps visualize the overall structure of content in a code editor better.
 
-### Headings
-People accessing this documentation may use a screen reader or other assistive technology (AT). [Screen readers](https://en.wikipedia.org/wiki/Screen_reader) are linear output devices, they output items on a page one at a time. If there is a lot of content on a page, you can use headings to give the page an internal structure. A good page structure helps all readers to easily navigate the page or filter topics of interest.
+Use a single newline to separate block-level content like headings, lists, images,
+code blocks, and others. The exception is second-level headings, where it should
+be two newlines. Second-level headings follow the first-level (or the title) without
+any preceding paragraphs or texts. A two line spacing helps visualize the overall
+structure of content in a code editor better.
+
+Manually wrap paragraphs in the Markdown source when appropriate. Since the git
+tool and the GitHub website generate file diffs on a line-by-line basis,
+manually wrapping long lines helps the reviewers to easily find out the changes
+made in a PR and provide feedback. It also helps the downstream localization
+teams where people track the upstream changes on a per-line basis.  Line
+wrapping can happen at the end of a sentence or a punctuation character, for
+example. One exception to this is that a Markdown link or a shortcode is
+expected to be in a single line.
+
+### Headings and titles {#headings}
+
+People accessing this documentation may use a screen reader or other assistive technology (AT).
+[Screen readers](https://en.wikipedia.org/wiki/Screen_reader) are linear output devices,
+they output items on a page one at a time. If there is a lot of content on a page, you can
+use headings to give the page an internal structure. A good page structure helps all readers
+to easily navigate the page or filter topics of interest.
 
 {{< table caption = "Do and Don't - Headings" >}}
 Do | Don't
 :--| :-----
 Update the title in the front matter of the page or blog post. | Use first level heading, as Hugo automatically converts the title in the front matter of the page into a first-level heading.
 Use ordered headings to provide a meaningful high-level outline of your content. | Use headings level 4 through 6, unless it is absolutely necessary. If your content is that detailed, it may need to be broken into separate articles.
-Use pound or hash signs (#) for non-blog post content. | Use underlines (--- or ===) to designate first-level headings.
-Use sentence case for headings. For example, **Extend kubectl with plugins** | Use title case for headings. For example, **Extend Kubectl With Plugins**
-{{< /table >}} 
+Use pound or hash signs (`#`) for non-blog post content. | Use underlines (`---` or `===`) to designate first-level headings.
+Use sentence case for headings in the page body. For example, **Extend kubectl with plugins** | Use title case for headings in the page body. For example, **Extend Kubectl With Plugins**
+Use title case for the page title in the front matter. For example, `title: Kubernetes API Server Bypass Risks` | Use sentence case for page titles in the front matter. For example, don't use `title: Kubernetes API server bypass risks`
+{{< /table >}}
 
 ### Paragraphs
 
@@ -439,40 +490,52 @@ Use sentence case for headings. For example, **Extend kubectl with plugins** | U
 Do | Don't
 :--| :-----
 Try to keep paragraphs under 6 sentences. | Indent the first paragraph with space characters. For example, ⋅⋅⋅Three spaces before a paragraph will indent it.
-Use three hyphens (---) to create a horizontal rule. Use horizontal rules for breaks in paragraph content. For example, a change of scene in a story, or a shift of topic within a section. | Use horizontal rules for decoration. 
-{{< /table >}} 
+Use three hyphens (`---`) to create a horizontal rule. Use horizontal rules for breaks in paragraph content. For example, a change of scene in a story, or a shift of topic within a section. | Use horizontal rules for decoration.
+{{< /table >}}
 
 ### Links
 
 {{< table caption = "Do and Don't - Links" >}}
 Do | Don't
 :--| :-----
-Write hyperlinks that give you context for the content they link to. For example: Certain ports are open on your machines. See <a href="#check-required-ports">Check required ports</a> for more details. | Use ambiguous terms such as “click here”. For example: Certain ports are open on your machines. See <a href="#check-required-ports">here</a> for more details.
+Write hyperlinks that give you context for the content they link to. For example: Certain ports are open on your machines. See <a href="#check-required-ports">Check required ports</a> for more details. | Use ambiguous terms such as "click here". For example: Certain ports are open on your machines. See <a href="#check-required-ports">here</a> for more details.
 Write Markdown-style links: `[link text](URL)`. For example: `[Hugo shortcodes](/docs/contribute/style/hugo-shortcodes/#table-captions)` and the output is [Hugo shortcodes](/docs/contribute/style/hugo-shortcodes/#table-captions). | Write HTML-style links: `<a href="/media/examples/link-element-example.css" target="_blank">Visit our tutorial!</a>`, or create links that open in new tabs or windows. For example: `[example website](https://example.com){target="_blank"}`
-{{< /table >}} 
-
+{{< /table >}}
 
 ### Lists
-Group items in a list that are related to each other and need to appear in a specific order or to indicate a correlation between multiple items. When a screen reader comes across a list—whether it is an ordered or unordered list—it will be announced to the user that there is a group of list items. The user can then use the arrow keys to move up and down between the various items in the list.
-Website navigation links can also be marked up as list items; after all they are nothing but a group of related links.
 
- - End each item in a list with a period if one or more items in the list are complete sentences. For the sake of consistency, normally either all items or none should be complete sentences.
- 
-   {{< note >}} Ordered lists that are part of an incomplete introductory sentence can be in lowercase and punctuated as if each item was a part of the introductory sentence.{{< /note >}}
-   
- - Use the number one (1.) for ordered lists.
- 
- - Use (+), (* ), or (-) for unordered lists.
- 
- - Leave a blank line after each list. 
- 
- - Indent nested lists with four spaces (for example, ⋅⋅⋅⋅). 
- 
- - List items may consist of multiple paragraphs. Each subsequent paragraph in a list item must be indented by either four spaces or one tab.
+Group items in a list that are related to each other and need to appear in a specific
+order or to indicate a correlation between multiple items. When a screen reader comes
+across a list—whether it is an ordered or unordered list—it will be announced to the
+user that there is a group of list items. The user can then use the arrow keys to move
+up and down between the various items in the list. Website navigation links can also be
+marked up as list items; after all they are nothing but a group of related links.
+
+- End each item in a list with a period if one or more items in the list are complete
+  sentences. For the sake of consistency, normally either all items or none should be complete sentences.
+
+  {{< note >}}
+  Ordered lists that are part of an incomplete introductory sentence can be in lowercase
+  and punctuated as if each item was a part of the introductory sentence.
+  {{< /note >}}
+
+- Use the number one (`1.`) for ordered lists.
+
+- Use (`+`), (`*`), or (`-`) for unordered lists.
+
+- Leave a blank line after each list.
+
+- Indent nested lists with four spaces (for example, ⋅⋅⋅⋅).
+
+- List items may consist of multiple paragraphs. Each subsequent paragraph in a list
+  item must be indented by either four spaces or one tab.
 
 ### Tables
 
-The semantic purpose of a data table is to present tabular data. Sighted users can quickly scan the table but a screen reader goes through line by line. A table caption is used to create a descriptive title for a data table. Assistive technologies (AT) use the HTML table caption element to identify the table contents to the user within the page structure.
+The semantic purpose of a data table is to present tabular data. Sighted users can
+quickly scan the table but a screen reader goes through line by line. A table caption
+is used to create a descriptive title for a data table. Assistive technologies (AT)
+use the HTML table caption element to identify the table contents to the user within the page structure.
 
 - Add table captions using [Hugo shortcodes](/docs/contribute/style/hugo-shortcodes/#table-captions) for tables.
 
@@ -486,8 +549,7 @@ This section contains suggested best practices for clear, concise, and consisten
 Do | Don't
 :--| :-----
 This command starts a proxy. | This command will start a proxy.
- {{< /table >}} 
-
+ {{< /table >}}
 
 Exception: Use future or past tense if it is required to convey the correct
 meaning.
@@ -499,8 +561,7 @@ Do | Don't
 :--| :-----
 You can explore the API using a browser. | The API can be explored using a browser.
 The YAML file specifies the replica count. | The replica count is specified in the YAML file.
-{{< /table >}}  
-
+{{< /table >}}
 
 Exception: Use passive voice if active voice leads to an awkward construction.
 
@@ -512,9 +573,9 @@ Use simple and direct language. Avoid using unnecessary phrases, such as saying 
 Do | Don't
 :--| :-----
 To create a ReplicaSet, ... | In order to create a ReplicaSet, ...
-See the configuration file. | Please see the configuration file. 
-View the Pods. | With this next command, we'll view the Pods.
-{{< /table >}}  
+See the configuration file. | Please see the configuration file.
+View the pods. | With this next command, we'll view the pods.
+{{< /table >}}
 
 ### Address the reader as "you"
 
@@ -522,9 +583,8 @@ View the Pods. | With this next command, we'll view the Pods.
 Do | Don't
 :--| :-----
 You can create a Deployment by ... | We'll create a Deployment by ...
-In the preceding output, you can see... | In the preceding output, we can see ... 
-{{< /table >}}  
-
+In the preceding output, you can see... | In the preceding output, we can see ...
+{{< /table >}}
 
 ### Avoid Latin phrases
 
@@ -535,8 +595,7 @@ Do | Don't
 :--| :-----
 For example, ... | e.g., ...
 That is, ...| i.e., ...
-{{< /table >}}   
-
+{{< /table >}}
 
 Exception: Use "etc." for et cetera.
 
@@ -552,9 +611,8 @@ Do | Don't
 :--| :-----
 Version 1.4 includes ... | In version 1.4, we have added ...
 Kubernetes provides a new feature for ... | We provide a new feature ...
-This page teaches you how to use Pods. | In this page, we are going to learn about Pods.
-{{< /table >}}   
-
+This page teaches you how to use pods. | In this page, we are going to learn about pods.
+{{< /table >}}
 
 ### Avoid jargon and idioms
 
@@ -565,14 +623,17 @@ Do | Don't
 :--| :-----
 Internally, ... | Under the hood, ...
 Create a new cluster. | Turn up a new cluster.
-{{< /table >}}   
-
+{{< /table >}}
 
 ### Avoid statements about the future
 
 Avoid making promises or giving hints about the future. If you need to talk about
 an alpha feature, put the text under a heading that identifies it as alpha
 information.
+
+An exception to this rule is documentation about announced deprecations
+targeting removal in future versions. One example of documentation like this
+is the [Deprecated API migration guide](/docs/reference/using-api/deprecation-guide/).
 
 ### Avoid statements that will soon be out of date
 
@@ -583,17 +644,31 @@ considered new in a few months.
 Do | Don't
 :--| :-----
 In version 1.4, ... | In the current version, ...
-The Federation feature provides ... | The new Federation feature provides ... 
-{{< /table >}}  
+The Federation feature provides ... | The new Federation feature provides ...
+{{< /table >}}
 
+### Avoid words that assume a specific level of understanding
 
-{{% /capture %}}
+Avoid words such as "just", "simply", "easy", "easily", or "simple". These words do not add value.
 
-{{% capture whatsnext %}}
+{{< table caption = "Do and Don't - Avoid insensitive words" >}}
+Do | Don't
+:--| :-----
+Include one command in ... | Include just one command in ...
+Run the container ... | Simply run the container ...
+You can remove ... | You can easily remove ...
+These steps ... | These simple steps ...
+{{< /table >}}
+
+### EditorConfig file
+The Kubernetes project maintains an EditorConfig file that sets common style preferences in text editors
+such as VS Code. You can use this file if you want to ensure that your contributions are consistent with
+the rest of the project. To view the file, refer to
+[`.editorconfig`](https://github.com/kubernetes/website/blob/main/.editorconfig) in the repository root.
+
+## {{% heading "whatsnext" %}}
 
 * Learn about [writing a new topic](/docs/contribute/style/write-new-topic/).
-* Learn about [using page templates](/docs/contribute/style/page-templates/).
-* Learn about [staging your changes](/docs/contribute/stage-documentation-changes/)
-* Learn about [creating a pull request](/docs/contribute/start/#submit-a-pull-request/).
-
-{{% /capture %}}
+* Learn about [using page templates](/docs/contribute/style/page-content-types/).
+* Learn about [custom hugo shortcodes](/docs/contribute/style/hugo-shortcodes/).
+* Learn about [creating a pull request](/docs/contribute/new-content/open-a-pr/).

@@ -1,6 +1,6 @@
 ---
 title: Halo Minikube
-content_template: templates/tutorial
+content_type: tutorial
 weight: 5
 menu:
   main:
@@ -13,38 +13,40 @@ card:
   weight: 10
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
-Tutorial ini menunjukkan bagaimana caranya menjalankan aplikasi sederhana Node.js Halo Dunia di Kubernetes, dengan [Minikube](/docs/getting-started-guides/minikube) dan Katacoda.
+Tutorial ini menunjukkan bagaimana caranya menjalankan aplikasi sederhana Node.js Halo Dunia di Kubernetes, dengan [`minikube`](/docs/getting-started-guides/minikube) dan Katacoda.
 Katacoda menyediakan <i>environment</i> Kubernetes secara gratis di dalam browser.
 
 {{< note >}}
-Kamupun bisa mengikuti tutorial ini kalau sudah instalasi [Minikube di lokal](/docs/tasks/tools/install-minikube/) kamu.
+Kamupun bisa mengikuti tutorial ini kalau sudah instalasi minikube di lokal. Silakan lihat [memulai `minikube`](https://minikube.sigs.k8s.io/docs/start/) untuk instruksi instalasi.
 {{< /note >}}
 
-{{% /capture %}}
 
-{{% capture objectives %}}
 
-* Deploy aplikasi halo dunia pada Minikube.
+## {{% heading "objectives" %}}
+
+
+* Deploy aplikasi halo dunia pada minikube.
 * Jalankan aplikasinya.
 * Melihat log aplikasi.
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 Tutorial ini menyediakan image Kontainer yang dibuat melalui barisan kode berikut:
 
-{{< codenew language="js" file="minikube/server.js" >}}
+{{% codenew language="js" file="minikube/server.js" %}}
 
-{{< codenew language="conf" file="minikube/Dockerfile" >}}
+{{% codenew language="conf" file="minikube/Dockerfile" %}}
 
 Untuk info lebih lanjut tentang perintah `docker build`, baca [dokumentasi Docker](https://docs.docker.com/engine/reference/commandline/build/).
 
-{{% /capture %}}
 
-{{% capture lessoncontent %}}
+
+<!-- lessoncontent -->
 
 ## Membuat sebuah klaster Minikube
 
@@ -52,7 +54,7 @@ Untuk info lebih lanjut tentang perintah `docker build`, baca [dokumentasi Docke
 
     {{< kat-button >}}
 
-    {{< note >}}Kalau kamu memilih instalasi Minikube secara lokal,  jalankan `minikube start`.{{< /note >}}
+    {{< note >}}Kalau kamu memilih instalasi minikube secara lokal, jalankan `minikube start`.{{< /note >}}
 
 2. Buka dasbor Kubernetes di dalam browser:
 
@@ -66,16 +68,16 @@ Untuk info lebih lanjut tentang perintah `docker build`, baca [dokumentasi Docke
 
 ## Membuat sebuah Deployment
 
-Sebuah Kubernetes [*Pod*](/docs/concepts/workloads/pods/pod/) adalah kumpulan dari satu atau banyak Kontainer,
+Sebuah Kubernetes [*Pod*](/id/docs/concepts/workloads/pods/pod/) adalah kumpulan dari satu atau banyak Kontainer,
 saling terhubung untuk kebutuhan administrasi dan jaringan. Pod dalam tutorial ini hanya punya satu Kontainer. Sebuah Kubernetes
-[*Deployment*](/docs/concepts/workloads/controllers/deployment/) selalu memeriksa kesehatan
+[*Deployment*](/id/docs/concepts/workloads/controllers/deployment/) selalu memeriksa kesehatan
 Pod kamu dan melakukan <i>restart</i> saat Kontainer di dalam Pod tersebut mati. Deployment adalah cara jitu untuk membuat dan mereplikasi Pod.
 
 1. Gunakan perintah `kubectl create` untuk membuat Deployment yang dapat mengatur Pod.
 Pod menjalankan Kontainer sesuai dengan image Docker yang telah diberikan.
 
     ```shell
-    kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+    kubectl create deployment hello-node --image=registry.k8s.io/echoserver:1.4
     ```
 
 2. Lihat Deployment:
@@ -120,7 +122,7 @@ Pod menjalankan Kontainer sesuai dengan image Docker yang telah diberikan.
 ## Membuat sebuah Servis
 
 Secara <i>default</i>, Pod hanya bisa diakses melalui alamat IP internal di dalam klaster Kubernetes.
-Supaya Kontainer `hello-node` bisa diakses dari luar jaringan virtual Kubernetes, kamu harus ekspos Pod sebagai [*Servis*](/docs/concepts/services-networking/service/) Kubernetes.
+Supaya Kontainer `hello-node` bisa diakses dari luar jaringan virtual Kubernetes, kamu harus ekspos Pod sebagai [*Servis*](/id/docs/concepts/services-networking/service/) Kubernetes.
 
 1. Ekspos Pod pada internet publik menggunakan perintah `kubectl expose`:
 
@@ -145,7 +147,7 @@ Supaya Kontainer `hello-node` bisa diakses dari luar jaringan virtual Kubernetes
     ```
 
     Untuk penyedia cloud yang memiliki <i>load balancer</i>, sebuah alamat IP eksternal akan disediakan untuk mengakses Servis tersebut.
-    Pada Minikube, tipe `LoadBalancer` membuat Servis tersebut dapat diakses melalui perintah `minikube service`.
+    Pada minikube, tipe `LoadBalancer` membuat Servis tersebut dapat diakses melalui perintah `minikube service`.
 
 3. Jalankan perintah berikut:
 
@@ -161,7 +163,7 @@ Supaya Kontainer `hello-node` bisa diakses dari luar jaringan virtual Kubernetes
 
 ## Aktifkan addons
 
-Minikube punya beberapa <i>addons</i> yang bisa diaktifkan, dinon-aktifkan, maupun dibuka di dalam <i>environment</i> Kubernetes lokal.
+Perangkat minikube meliputi sekumpulan {{< glossary_tooltip text="addons" term_id="addons" >}} bawaan yang bisa diaktifkan, dinonaktifkan, maupun dibuka di dalam <i>environment</i> Kubernetes lokal.
 
 1. Daftar <i>addons</i> yang ada saat ini:
 
@@ -247,24 +249,25 @@ kubectl delete service hello-node
 kubectl delete deployment hello-node
 ```
 
-Kamu juga boleh mematikan mesin virtual (VM) untuk Minikube:
+Kamu juga boleh mematikan mesin virtual atau _virtual machine_ (VM) untuk minikube:
 
 ```shell
 minikube stop
 ```
 
-Kamu juga boleh menghapus Minikube VM:
+Kamu juga boleh menghapus minikube VM:
 
 ```shell
 minikube delete
 ```
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
 
-* Pelajari lebih lanjut tentang [Deployment](/docs/concepts/workloads/controllers/deployment/).
+## {{% heading "whatsnext" %}}
+
+
+* Pelajari lebih lanjut tentang [Deployment](/id/docs/concepts/workloads/controllers/deployment/).
 * Pelajari lebih lanjut tentang [Deploy aplikasi](/docs/user-guide/deploying-applications/).
-* Pelajari lebih lanjut tentang [Servis](/docs/concepts/services-networking/service/).
+* Pelajari lebih lanjut tentang [Servis](/id/docs/concepts/services-networking/service/).
 
-{{% /capture %}}
+

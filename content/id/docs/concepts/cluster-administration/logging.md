@@ -1,19 +1,19 @@
 ---
 title: Arsitektur Logging
-content_template: templates/concept
+content_type: concept
 weight: 60
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Log aplikasi dan sistem dapat membantu kamu untuk memahami apa yang terjadi di dalam klaster kamu. Log berguna untuk mengidentifikasi dan menyelesaikan masalah serta memonitor aktivitas klaster. Hampir semua aplikasi modern mempunyai sejenis mekanisme log sehingga hampir semua mesin kontainer didesain untuk mendukung suatu mekanisme _logging_. Metode _logging_ yang paling mudah untuk aplikasi dalam bentuk kontainer adalah menggunakan _standard output_ dan _standard error_.
 
 Namun, fungsionalitas bawaan dari mesin kontainer atau _runtime_ biasanya tidak cukup memadai sebagai solusi log. Contohnya, jika sebuah kontainer gagal, sebuah pod dihapus, atau suatu _node_ mati, kamu biasanya tetap menginginkan untuk mengakses log dari aplikasimu. Oleh sebab itu, log sebaiknya berada pada penyimpanan dan _lifecyle_ yang terpisah dari node, pod, atau kontainer. Konsep ini dinamakan sebagai _logging_ pada level klaster. _Logging_ pada level klaster ini membutuhkan _backend_ yang terpisah untuk menyimpan, menganalisis, dan mengkueri log. Kubernetes tidak menyediakan solusi bawaan untuk penyimpanan data log, namun kamu dapat mengintegrasikan beragam solusi _logging_ yang telah ada ke dalam klaster Kubernetes kamu.
 
-{{% /capture %}}
 
 
-{{% capture body %}}
+
+<!-- body -->
 
 Arsitektur _logging_ pada level klaster yang akan dijelaskan berikut mengasumsikan bahwa sebuah _logging backend_ telah tersedia baik di dalam maupun di luar klastermu. Meskipun kamu tidak tertarik menggunakan _logging_ pada level klaster, penjelasan tentang bagaimana log disimpan dan ditangani pada node di bawah ini mungkin dapat berguna untukmu.
 
@@ -21,7 +21,7 @@ Arsitektur _logging_ pada level klaster yang akan dijelaskan berikut mengasumsik
 
 Pada bagian ini, kamu dapat melihat contoh tentang dasar _logging_ pada Kubernetes yang mengeluarkan data pada _standard output_. Demonstrasi berikut ini menggunakan sebuah [spesifikasi pod](/examples/debug/counter-pod.yaml) dengan kontainer yang akan menuliskan beberapa teks ke _standard output_ tiap detik.
 
-{{< codenew file="debug/counter-pod.yaml" >}}
+{{% codenew file="debug/counter-pod.yaml" %}}
 
 Untuk menjalankan pod ini, gunakan perintah berikut:
 
@@ -52,7 +52,7 @@ Kamu dapat menambahkan parameter `--previous` pada perintah `kubectl logs` untuk
 
 ![Node-level _logging_](/images/docs/user-guide/logging/logging-node-level.png)
 
-Semua hal yang ditulis oleh aplikasi dalam kontainer ke `stdout` dan `stderr` akan ditangani dan diarahkan ke suatu tempat oleh mesin atau _engine_ kontainer. Contohnya,mesin kontainer Docker akan mengarahkan kedua aliran tersebut ke [suatu _logging driver_](https://docs.docker.com/engine/admin/logging/overview), yang akan dikonfigurasi pada Kubernetes untuk menuliskan ke dalam file dalam format json.
+Semua hal yang ditulis oleh aplikasi dalam kontainer ke `stdout` dan `stderr` akan ditangani dan diarahkan ke suatu tempat oleh mesin atau _engine_ kontainer. Contohnya,mesin kontainer Docker akan mengarahkan kedua aliran tersebut ke [suatu _logging driver_](https://docs.docker.com/engine/admin/logging/overview), yang akan dikonfigurasi pada Kubernetes untuk menuliskan ke dalam berkas dalam format json.
 
 {{< note >}}
 _Logging driver_ json dari Docker memperlakukan tiap baris sebagai pesan yang terpisah. Saat menggunakan _logging driver_ Docker, tidak ada dukungan untuk menangani pesan _multi-line_. Kamu harus menangani pesan _multi-line_ pada level agen log atau yang lebih tinggi.
@@ -126,13 +126,13 @@ Dengan menggunakan cara ini kamu dapat memisahkan aliran log dari bagian-bagian 
 
 Sebagai contoh, sebuah pod berjalan pada satu kontainer tunggal, dan kontainer menuliskan ke dua berkas log yang berbeda, dengan dua format yang berbeda pula. Berikut ini _file_ konfigurasi untuk Pod:
 
-{{< codenew file="admin/logging/two-files-counter-pod.yaml" >}}
+{{% codenew file="admin/logging/two-files-counter-pod.yaml" %}}
 
 Hal ini akan menyulitkan untuk mengeluarkan log dalam format yang berbeda pada aliran log yang sama, meskipun kamu dapat me-_redirect_ keduanya ke `stdout` dari kontainer.  Sebagai gantinya, kamu dapat menggunakan dua buah kontainer _sidecar_. Tiap kontainer _sidecar_ dapat membaca suatu berkas log tertentu dari _shared volume_ kemudian mengarahkan log ke `stdout`-nya sendiri.
 
 Berikut _file_ konfigurasi untuk pod yang memiliki dua buah kontainer _sidecard_:
 
-{{< codenew file="admin/logging/two-files-counter-pod-streaming-sidecar.yaml" >}}
+{{% codenew file="admin/logging/two-files-counter-pod-streaming-sidecar.yaml" %}}
 
 Saat kamu menjalankan pod ini, kamu dapat mengakses tiap aliran log secara terpisah dengan menjalankan perintah berikut:
 
@@ -173,9 +173,9 @@ Menggunakan agen _logging_ di dalam kontainer _sidecar_ dapat berakibat pengguna
 {{< /note >}}
 
 Sebagai contoh, kamu dapat menggunakan [Stackdriver](/docs/tasks/debug-application-cluster/logging-stackdriver/),
-yang menggunakan fluentd sebagai agen _logging_. Berikut ini dua _file_ konfigurasi yang dapat kamu pakai untuk mengimplementasikan cara ini. _File_ yang pertama berisi sebuah [ConfigMap](/docs/tasks/configure-pod-container/configure-pod-configmap/) untuk mengonfigurasi fluentd.
+yang menggunakan fluentd sebagai agen _logging_. Berikut ini dua _file_ konfigurasi yang dapat kamu pakai untuk mengimplementasikan cara ini. _File_ yang pertama berisi sebuah [ConfigMap](/id/docs/tasks/configure-pod-container/configure-pod-configmap/) untuk mengonfigurasi fluentd.
 
-{{< codenew file="admin/logging/fluentd-sidecar-config.yaml" >}}
+{{% codenew file="admin/logging/fluentd-sidecar-config.yaml" %}}
 
 {{< note >}}
 Konfigurasi fluentd berada diluar cakupan artikel ini. Untuk informasi lebih lanjut tentang cara mengonfigurasi fluentd, silakan lihat [dokumentasi resmi fluentd ](http://docs.fluentd.org/).
@@ -183,7 +183,7 @@ Konfigurasi fluentd berada diluar cakupan artikel ini. Untuk informasi lebih lan
 
 _File_ yang kedua mendeskripsikan sebuah pod yang memiliki kontainer _sidecar_ yang menjalankan fluentd. Pod ini melakukan _mount_ sebuah volume yang akan digunakan fluentd untuk mengambil data konfigurasinya.
 
-{{< codenew file="admin/logging/two-files-counter-pod-agent-sidecar.yaml" >}}
+{{% codenew file="admin/logging/two-files-counter-pod-agent-sidecar.yaml" %}}
 
 Setelah beberapa saat, kamu akan mendapati pesan log pada _interface_ Stackdriver.
 
@@ -195,4 +195,4 @@ Ingat, ini hanya contoh saja dan kamu dapat mengganti fluentd dengan agen _loggi
 
 Kamu dapat mengimplementasikan klaster-level _logging_ dengan mengekspos atau mengeluarkan log langsung dari tiap aplikasi; namun cara implementasi mekanisme _logging_ tersebut diluar cakupan dari Kubernetes.
 
-{{% /capture %}}
+

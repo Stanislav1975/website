@@ -1,25 +1,26 @@
 ---
 title: Configurer la qualité de service pour les pods
-content_template: templates/task
+content_type: task
 weight: 30
 ---
 
 
-{{% capture overview %}}
+<!-- overview -->
 
 Cette page montre comment configurer les Pods pour qu'ils soient affectés à des classes particulières de qualité de service (QoS). Kubernetes utilise des classes de QoS pour prendre des décisions concernant l'ordonnancement et les évictions des pods.
 
-{{% /capture %}}
 
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
-{{% /capture %}}
 
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Les Classes de QoS
 
@@ -47,7 +48,7 @@ Pour qu'un Pod reçoive une classe de QoS Guaranteed :
 Ci-dessous le fichier de configuration d'un Pod qui a un seul conteneur.
 Le conteneur dispose d'une limite de mémoire et d'une demande de mémoire, tous deux égaux à 200 MiB. Le conteneur a également une limite CPU et une demande CPU, toutes deux égales à 700 milliCPU :
 
-{{< codenew file="pods/qos/qos-pod.yaml" >}}
+{{% codenew file="pods/qos/qos-pod.yaml" %}}
 
 Créez le Pod :
 
@@ -74,7 +75,8 @@ spec:
       requests:
         cpu: 700m
         memory: 200Mi
-...
+  ...
+status:
   qosClass: Guaranteed
 ```
 
@@ -97,7 +99,7 @@ Un Pod reçoit une classe QoS de Burstable si :
 
 Voici le fichier de configuration d'un pod qui a un seul conteneur. Le conteneur a une limite de mémoire de 200 MiB et une demande de mémoire de 100 MiB.
 
-{{< codenew file="pods/qos/qos-pod-2.yaml" >}}
+{{% codenew file="pods/qos/qos-pod-2.yaml" %}}
 
 Créez le Pod :
 
@@ -123,7 +125,8 @@ spec:
         memory: 200Mi
       requests:
         memory: 100Mi
-...
+  ...
+status:
   qosClass: Burstable
 ```
 
@@ -140,7 +143,7 @@ avoir des limites ou des demandes de mémoire ou de CPU.
 
 Voici le fichier de configuration d'un Pod qui a un seul conteneur. Le conteneur n'a pas des limites ou des demandes de mémoire ou de CPU :
 
-{{< codenew file="pods/qos/qos-pod-3.yaml" >}}
+{{% codenew file="pods/qos/qos-pod-3.yaml" %}}
 
 Créez le Pod :
 
@@ -162,6 +165,7 @@ spec:
     ...
     resources: {}
   ...
+status:
   qosClass: BestEffort
 ```
 
@@ -177,7 +181,7 @@ kubectl delete pod qos-demo-3 --namespace=qos-example
 Voici le fichier de configuration d'un Pod qui a deux conteneurs. Un conteneur spécifie une
 demande de mémoire de 200 MiB. L'autre conteneur ne spécifie aucune demande ou limite.
 
-{{< codenew file="pods/qos/qos-pod-4.yaml" >}}
+{{% codenew file="pods/qos/qos-pod-4.yaml" %}}
 
 Notez que le pod répond aux critères de la classe QoS Burstable. En d'autres termes, il ne répond pas aux exigences de la classe de qualité de service Guaranteed, et l'un de ses conteneurs dispose d'une demande de mémoire.
 
@@ -207,6 +211,7 @@ spec:
     name: qos-demo-4-ctr-2
     resources: {}
     ...
+status:
   qosClass: Burstable
 ```
 
@@ -224,9 +229,10 @@ Supprimez votre namespace.
 kubectl delete namespace qos-example
 ```
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 
 ### Pour les développeurs d'applications
@@ -251,7 +257,7 @@ kubectl delete namespace qos-example
 * [Configuration du quota de pods pour un Namespace](/docs/tasks/administer-cluster/quota-pod-namespace/)
 
 * [Configuration des quotas pour les objets API](/docs/tasks/administer-cluster/quota-api-object/)
-{{% /capture %}}
+
 
 
 

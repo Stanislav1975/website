@@ -1,17 +1,17 @@
 ---
 title: Init Containers
-content_template: templates/concept
+content_type: concept
 weight: 40
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 Cette page fournit une vue d'ensemble des _conteneurs d'initialisation_ (init containers) : des conteneurs spécialisés qui s'exécutent avant les conteneurs d'application dans un {{< glossary_tooltip text="Pod" term_id="pod" >}}.
 Les init containers peuvent contenir des utilitaires ou des scripts d'installation qui ne sont pas présents dans une image d'application.
 
 Vous pouvez spécifier des init containers dans la spécification du Pod à côté du tableau `containers` (qui décrit les conteneurs d'application)
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Comprendre les init containers
 
@@ -69,7 +69,7 @@ Voici plusieurs idées pour utiliser les init containers :
 * Attendre qu'un {{< glossary_tooltip text="Service" term_id="service">}} soit créé,
   en utilisant une commande shell d'une ligne telle que :
   ```shell
-  for i in {1..100}; do sleep 1; if dig myservice; then exit 0; fi; done; exit 1
+  for i in {1..100}; do sleep 1; if nslookup myservice; then exit 0; fi; done; exit 1
   ```
 
 * Enregistrer ce Pod à un serveur distant depuis l'API downward avec une commande telle que :
@@ -102,7 +102,7 @@ kind: Pod
 metadata:
   name: myapp-pod
   labels:
-    app: myapp
+    app.kubernetes.io/name: MyApp
 spec:
   containers:
   - name: myapp-container
@@ -111,10 +111,10 @@ spec:
   initContainers:
   - name: init-myservice
     image: busybox:1.28
-    command: ['sh', '-c', 'until nslookup myservice; do echo "En attente de myservice"; sleep 2; done;']
+    command: ['sh', '-c', "until nslookup myservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo en attente de myservice; sleep 2; done"]
   - name: init-mydb
     image: busybox:1.28
-    command: ['sh', '-c', 'until nslookup mydb; do echo "En attente de mydb"; sleep 2; done;']
+    command: ['sh', '-c', "until nslookup mydb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo en attente de mydb; sleep 2; done"]
 ```
 
 Les fichiers YAML suivants résument les services `mydb` et `myservice` :
@@ -167,7 +167,7 @@ kubectl describe -f myapp.yaml
 Name:          myapp-pod
 Namespace:     default
 [...]
-Labels:        app=myapp
+Labels:        app.kubernetes.io/name=MyApp
 Status:        Pending
 [...]
 Init Containers:
@@ -318,12 +318,13 @@ redémarrage du conteneur d'application.
 * Le conteneur d'infrastructure Pod est redémarré. Ceci est peu commun et serait effectué par une personne ayant un accès root aux nœuds.
 * Tous les conteneurs dans un Pod sont terminés tandis que `restartPolicy` est configurée à "Always", ce qui force le redémarrage, et l'enregistrement de complétion du init container a été perdu à cause d'une opération de garbage collection (récupération de mémoire).
 
-{{% /capture %}}
 
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * Lire à propos de la [création d'un Pod ayant un init container](/docs/tasks/configure-pod-container/configure-pod-initialization/#creating-a-pod-that-has-an-init-container)
-* Apprendre à [debugger les init containers](/docs/tasks/debug-application-cluster/debug-init-containers/)
+* Apprendre à [debugger les init containers](/docs/tasks/debug/debug-application/debug-init-containers/)
 
-{{% /capture %}}
+

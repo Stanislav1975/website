@@ -3,35 +3,31 @@ title: Extend kubectl with plugins
 reviewers:
 - juanvallejo
 - soltysh
-description: With kubectl plugins, you can extend the functionality of the kubectl command by adding new subcommands.
-content_template: templates/task
+description: Extend kubectl by creating and installing kubectl plugins.
+content_type: task
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 This guide demonstrates how to install and write extensions for [kubectl](/docs/reference/kubectl/kubectl/). By thinking of core `kubectl` commands as essential building blocks for interacting with a Kubernetes cluster, a cluster administrator can think
 of plugins as a means of utilizing these building blocks to create more complex behavior. Plugins extend `kubectl` with new sub-commands, allowing for new and custom features not included in the main distribution of `kubectl`.
 
-{{% /capture %}}
-
-{{% capture prerequisites %}}
+## {{% heading "prerequisites" %}}
 
 You need to have a working `kubectl` binary installed.
 
-{{% /capture %}}
-
-{{% capture steps %}}
+<!-- steps -->
 
 ## Installing kubectl plugins
 
-A plugin is nothing more than a standalone executable file, whose name begins with `kubectl-`. To install a plugin, simply move its executable file to anywhere on your `PATH`.
+A plugin is a standalone executable file, whose name begins with `kubectl-`. To install a plugin, move its executable file to anywhere on your `PATH`.
 
 You can also discover and install kubectl plugins available in the open source
 using [Krew](https://krew.dev/). Krew is a plugin manager maintained by
 the Kubernetes SIG CLI community.
 
 {{< caution >}}
-Kubectl plugins available via the Krew [plugin index](https://index.krew.dev/)
+Kubectl plugins available via the Krew [plugin index](https://krew.sigs.k8s.io/plugins/)
 are not audited for security. You should install and run third-party plugins at your
 own risk, since they are arbitrary programs running on your machine.
 {{< /caution >}}
@@ -45,7 +41,7 @@ A warning will also be included for any valid plugin files that overlap each oth
 
 You can use [Krew](https://krew.dev/) to discover and install `kubectl`
 plugins from a community-curated
-[plugin index](https://index.krew.dev/).
+[plugin index](https://krew.sigs.k8s.io/plugins/).
 
 #### Limitations
 
@@ -59,9 +55,9 @@ You can write a plugin in any programming language or script that allows you to 
 
 There is no plugin installation or pre-loading required. Plugin executables receive
 the inherited environment from the `kubectl` binary.
-A plugin determines which command path it wishes to implement based on its name. For
-example, a plugin wanting to provide a new command `kubectl foo`, would simply be named
-`kubectl-foo`, and live somewhere in your `PATH`.
+A plugin determines which command path it wishes to implement based on its name.
+For example, a plugin named `kubectl-foo` provides a command `kubectl foo`. You must
+install the plugin executable somewhere in your `PATH`.
 
 ### Example plugin
 
@@ -87,32 +83,34 @@ echo "I am a plugin named kubectl-foo"
 
 ### Using a plugin
 
-To use the above plugin, simply make it executable:
+To use a plugin, make the plugin executable:
 
-```
+```shell
 sudo chmod +x ./kubectl-foo
 ```
 
 and place it anywhere in your `PATH`:
 
-```
+```shell
 sudo mv ./kubectl-foo /usr/local/bin
 ```
 
 You may now invoke your plugin as a `kubectl` command:
 
-```
+```shell
 kubectl foo
 ```
+
 ```
 I am a plugin named kubectl-foo
 ```
 
 All args and flags are passed as-is to the executable:
 
-```
+```shell
 kubectl foo version
 ```
+
 ```
 1.0.0
 ```
@@ -123,6 +121,7 @@ All environment variables are also passed as-is to the executable:
 export KUBECONFIG=~/.kube/config
 kubectl foo config
 ```
+
 ```
 /home/<user>/.kube/config
 ```
@@ -130,6 +129,7 @@ kubectl foo config
 ```shell
 KUBECONFIG=/etc/kube/config kubectl foo config
 ```
+
 ```
 /etc/kube/config
 ```
@@ -152,7 +152,7 @@ An older kubectl plugin mechanism provided environment variables such as `KUBECT
 kubectl plugins must parse and validate all of the arguments passed to them.
 See [using the command line runtime package](#using-the-command-line-runtime-package) for details of a Go library aimed at plugin authors.
 
-Here are some additional cases where users invoke your plugin while providing additional flags and arguments. This builds upon the the `kubectl-foo-bar-baz` plugin from the scenario above.
+Here are some additional cases where users invoke your plugin while providing additional flags and arguments. This builds upon the `kubectl-foo-bar-baz` plugin from the scenario above.
 
 If you run `kubectl foo bar baz arg1 --flag=value arg2`, kubectl's plugin mechanism will first try to find the plugin with the longest possible name, which in this case
 would be `kubectl-foo-bar-baz-arg1`. Upon not finding that plugin, kubectl then treats the last dash-separated value as an argument (`arg1` in this case), and attempts to find the next longest possible name, `kubectl-foo-bar-baz`.
@@ -353,7 +353,7 @@ package it, distribute it and deliver updates to your users.
 distribute your plugins. This way, you use a single packaging format for all
 target platforms (Linux, Windows, macOS etc) and deliver updates to your users.
 Krew also maintains a [plugin
-index](https://index.krew.dev/) so that other people can
+index](https://krew.sigs.k8s.io/plugins/) so that other people can
 discover your plugin and install it.
 
 
@@ -364,7 +364,7 @@ on Linux, Chocolatey on Windows, and Homebrew on macOS. Any package
 manager will be suitable if it can place new executables placed somewhere
 in the user's `PATH`.
 As a plugin author, if you pick this option then you also have the burden
-of updating your kubectl plugin’s distribution package across multiple
+of updating your kubectl plugin's distribution package across multiple
 platforms for each release.
 
 ### Source code {#distributing-source-code}
@@ -375,9 +375,7 @@ set up a build environment (if it needs compiling), and deploy the plugin.
 If you also make compiled packages available, or use Krew, that will make
 installs easier.
 
-{{% /capture %}}
-
-{{% capture whatsnext %}}
+## {{% heading "whatsnext" %}}
 
 * Check the Sample CLI Plugin repository for a
   [detailed example](https://github.com/kubernetes/sample-cli-plugin) of a
@@ -385,5 +383,3 @@ installs easier.
   In case of any questions, feel free to reach out to the
   [SIG CLI team](https://github.com/kubernetes/community/tree/master/sig-cli).
 * Read about [Krew](https://krew.dev/), a package manager for kubectl plugins.
-
-{{% /capture %}}

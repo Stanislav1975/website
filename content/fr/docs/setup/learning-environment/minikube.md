@@ -1,16 +1,16 @@
 ---
 title: Installer Kubernetes avec Minikube
-content_template: templates/concept
+content_type: concept
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Minikube est un outil facilitant l’exécution locale de Kubernetes.
 Minikube exécute un cluster Kubernetes à nœud unique dans une machine virtuelle (VM) de votre ordinateur portable pour les utilisateurs qui souhaitent essayer Kubernetes ou le développer au quotidien.
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Fonctionnalités de Minikube
 
@@ -48,15 +48,15 @@ Suivez les étapes ci-dessous pour commencer et explorer Minikube.
     Starting local Kubernetes cluster...
     ```
 
-    Pour plus d'informations sur le démarrage de votre cluster avec une version spécifique de Kubernetes, une machine virtuelle ou un environnement de conteneur, voir [Démarrage d'un cluster].(#starting-a-cluster).
+    Pour plus d'informations sur le démarrage de votre cluster avec une version spécifique de Kubernetes, une machine virtuelle ou un environnement de conteneur, voir [Démarrage d'un cluster](#starting-a-cluster).
 
 2. Vous pouvez maintenant interagir avec votre cluster à l'aide de kubectl.
-   Pour plus d'informations, voir [Interagir avec votre cluster.](#interacting-with-your-cluster).
+   Pour plus d'informations, voir [Interagir avec votre cluster](#interacting-with-your-cluster).
 
     Créons un déploiement Kubernetes en utilisant une image existante nommée `echoserver`, qui est un serveur HTTP, et exposez-la sur le port 8080 à l’aide de `--port`.
 
     ```shell
-    kubectl create deployment hello-minikube --image=k8s.gcr.io/echoserver:1.10
+    kubectl create deployment hello-minikube --image=registry.k8s.io/echoserver:1.10
     ```
 
     Le résultat est similaire à ceci:
@@ -218,10 +218,10 @@ Pour revenir à ce contexte, exécutez la commande suivante: `kubectl config use
 #### Spécifier la version de Kubernetes
 
 Vous pouvez spécifier la version de Kubernetes pour Minikube à utiliser en ajoutant la chaîne `--kubernetes-version` à la commande `minikube start`.
-Par exemple, pour exécuter la version {{< param "fullversion" >}}, procédez comme suit:
+Par exemple, pour exécuter la version {{< skew currentPatchVersion >}}, procédez comme suit:
 
 ```shell
-minikube start --kubernetes-version {{< param "fullversion" >}}
+minikube start --kubernetes-version v{{< skew currentPatchVersion >}}
 ```
 
 #### Spécification du pilote de machine virtuelle
@@ -235,16 +235,16 @@ minikube start --vm-driver=<nom_du_pilote>
 
 Minikube prend en charge les pilotes suivants:
 {{< note >}}
-Voir [DRIVERS](https://git.k8s.io/minikube/docs/drivers.md) pour plus de détails sur les pilotes pris en charge et comment installer les plugins.
+Voir [DRIVERS](https://minikube.sigs.k8s.io/docs/drivers/) pour plus de détails sur les pilotes pris en charge et comment installer les plugins.
 {{< /note >}}
 
 * virtualbox
 * vmwarefusion
-* kvm2 ([installation du pilote](https://git.k8s.io/minikube/docs/drivers.md#kvm2-driver))
-* hyperkit ([installation du pilote](https://git.k8s.io/minikube/docs/drivers.md#hyperkit-driver))
-* hyperv ([installation du pilote](https://github.com/kubernetes/minikube/blob/master/docs/drivers.md#hyperv-driver))
+* kvm2 ([installation du pilote](https://minikube.sigs.k8s.io/docs/drivers/#kvm2-driver))
+* hyperkit ([installation du pilote](https://minikube.sigs.k8s.io/docs/drivers/#hyperkit-driver))
+* hyperv ([installation du pilote](https://minikube.sigs.k8s.io/docs/drivers/#hyperv-driver))
 Notez que l'adresse IP ci-dessous est dynamique et peut changer. Il peut être récupéré avec `minikube ip`.
-* vmware ([installation du pilote](https://github.com/kubernetes/minikube/blob/master/docs/drivers.md#vmware-unified-driver)) (VMware unified driver)
+* vmware ([installation du pilote](https://minikube.sigs.k8s.io/docs/drivers/#vmware-unified-driver)) (VMware unified driver)
 * none (Exécute les composants Kubernetes sur l’hôte et non sur une machine virtuelle. Il n'est pas recommandé d'exécuter le pilote none sur des postes de travail personnels. L'utilisation de ce pilote nécessite Docker ([docker installer](https://docs.docker.com/install/linux/docker-ce/ubuntu/)) et un environnement Linux)
 
 #### Démarrage d'un cluster sur des exécutions de conteneur alternatives
@@ -527,7 +527,5 @@ Pour plus d'informations sur Minikube, voir la [proposition](https://git.k8s.io/
 
 Les contributions, questions et commentaires sont les bienvenus et sont encouragés !
 Les développeurs de minikube sont dans le canal #minikube du [Slack](https://kubernetes.slack.com) de Kubernetes (recevoir une invitation [ici](http://slack.kubernetes.io/)).
-Nous avons également la liste de diffusion [kubernetes-dev Google Groupes](https://groups.google.com/forum/#!forum/kubernetes-dev).
+Nous avons également la liste de diffusion [dev@kubernetes Google Groupes](https://groups.google.com/a/kubernetes.io/g/dev/).
 Si vous publiez sur la liste, veuillez préfixer votre sujet avec "minikube:".
-
-{{% /capture %}}

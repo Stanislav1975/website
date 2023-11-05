@@ -1,5 +1,6 @@
 ---
 title: "Run Applications"
-weight: 40
+description: Run and manage both stateless and stateful applications.
+weight: 80
 ---
 

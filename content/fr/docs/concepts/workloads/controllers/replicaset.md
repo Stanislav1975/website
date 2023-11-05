@@ -1,17 +1,17 @@
 ---
 title: ReplicaSet
-content_template: templates/concept
+content_type: concept
 weight: 10
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Un ReplicaSet (ensemble de réplicas en français) a pour but de maintenir un ensemble stable de Pods à un moment donné.
 Cet objet est souvent utilisé pour garantir la disponibilité d'un certain nombre identique de Pods.
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Comment un ReplicaSet fonctionne
 
@@ -41,7 +41,7 @@ utilisez plutôt un déploiement et définissez votre application dans la sectio
 
 ## Exemple
 
-{{< codenew file="controllers/frontend.yaml" >}}
+{{% codenew file="controllers/frontend.yaml" %}}
 
 Enregistrer ce manifeste dans `frontend.yaml` et le soumettre à un cluster Kubernetes va créer le ReplicaSet défini et les pods qu’il gère.
 
@@ -145,7 +145,7 @@ labels correspondant au sélecteur de l’un de vos ReplicaSets. Car un ReplicaS
 
 Prenez l'exemple précédent de ReplicaSet, ainsi que les pods spécifiés dans le manifeste suivant :
 
-{{< codenew file="pods/pod-rs.yaml" >}}
+{{% codenew file="pods/pod-rs.yaml" %}}
 
 Ces pods n’ayant pas de contrôleur (ni d’objet) en tant que référence propriétaire, ils correspondent au sélecteur de du ReplicaSet frontend, ils seront donc immédiatement acquis par ce ReplicaSet.
 
@@ -214,7 +214,7 @@ Un ReplicaSet a également besoin de [`.spec` section](https://git.k8s.io/commun
 L'attribut `.spec.template` est un [modèle de pod](/docs/concepts/workloads/Pods/pod-overview/#pod-templates) qui requiert d'avoir des labels. Dans notre exemple `frontend.yaml`, nous avons un label : `tier: frontend`.
 Il faut faire attention à ne pas avoir des selecteurs que d'autres controllers utilisent, afin d'éviter que le ReplicaSet n'adopte ce pod.
 
-Pour le champ [restart policy](/docs/concepts/workloads/Pods/pod-lifecycle/#restart-policy),
+Pour le champ [restart policy](/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy),
 `.spec.template.spec.restartPolicy`, la seule valeur autorisée est `Always`, qui est la valeur par défaut.
 
 ### Sélecteur de Pod
@@ -258,7 +258,7 @@ curl -X DELETE  'localhost:8080/apis/extensions/v1beta1/namespaces/default/repli
 
 ### Supprimer juste un ReplicaSet
 
-Vous pouvez supprimer un ReplicaSet sans affecter ses pods à l’aide de [`kubectl delete`](/docs/reference/generated/kubectl/kubectl-commands#delete) avec l'option `--cascade=false`.
+Vous pouvez supprimer un ReplicaSet sans affecter ses pods à l’aide de [`kubectl delete`](/docs/reference/generated/kubectl/kubectl-commands#delete) avec l'option `--cascade=orphan`.
 Lorsque vous utilisez l'API REST ou la bibliothèque `client-go`, vous devez définir `propagationPolicy` sur `Orphan`.
 Par exemple :
 ```shell
@@ -291,7 +291,7 @@ Un ReplicaSet peut également être une cible pour
 Un ReplicaSet peut être mis à l'échelle automatiquement par un HPA. Voici un exemple HPA qui cible
 le ReplicaSet que nous avons créé dans l'exemple précédent.
 
-{{< codenew file="controllers/hpa-rs.yaml" >}}
+{{% codenew file="controllers/hpa-rs.yaml" %}}
 
 Enregistrer ce manifeste dans `hpa-rs.yaml` et le soumettre à un cluster Kubernetes devrait
 créer le HPA défini qui scale automatiquement le ReplicaSet cible en fonction de l'utilisation du processeur
@@ -342,4 +342,4 @@ Les deux servent le même objectif et se comportent de la même manière, à la 
 les exigences de sélecteur décrites dans le [labels user guide](/docs/concepts/overview/working-with-objects/labels/#label-selectors).
 En tant que tels, les ReplicaSets sont préférés aux ReplicationControllers.
 
-{{% /capture %}}
+

@@ -14,12 +14,12 @@ spec:
   # These containers are run during pod initialization
   initContainers:
   - name: install
-    image: busybox
+    image: busybox:1.28
     command:
     - wget
     - "-O"
     - "/work-dir/index.html"
-    - http://kubernetes.io
+    - http://info.cern.ch
     volumeMounts:
     - name: workdir
       mountPath: "/work-dir"

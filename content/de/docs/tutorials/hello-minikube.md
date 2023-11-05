@@ -1,6 +1,6 @@
 ---
 title: Hallo Minikube
-content_template: templates/tutorial
+content_type: tutorial
 weight: 5
 menu:
   main:
@@ -13,7 +13,7 @@ card:
   weight: 10
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Dieses Tutorial zeigt Ihnen, wie Sie eine einfache "Hallo Welt" Node.js-Anwendung auf Kubernetes mit [Minikube](/docs/getting-started-guides/minikube) und Katacoda ausführen.
 Katacoda bietet eine kostenlose Kubernetes-Umgebung im Browser.
@@ -22,29 +22,31 @@ Katacoda bietet eine kostenlose Kubernetes-Umgebung im Browser.
 Sie können dieses Tutorial auch verwenden, wenn Sie [Minikube lokal](/docs/tasks/tools/install-minikube/) installiert haben.
 {{< /note >}}
 
-{{% /capture %}}
 
-{{% capture objectives %}}
+
+## {{% heading "objectives" %}}
+
 
 * Stellen Sie eine Hallo-Welt-Anwendung für Minikube bereit.
 * Führen Sie die App aus.
 * Betrachten Sie die Log Dateien.
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 Dieses Lernprogramm enthält ein aus den folgenden Dateien erstelltes Container-Image:
 
-{{< codenew language="js" file="minikube/server.js" >}}
+{{% codenew language="js" file="minikube/server.js" %}}
 
-{{< codenew language="conf" file="minikube/Dockerfile" >}}
+{{% codenew language="conf" file="minikube/Dockerfile" %}}
 
 Weitere Informationen zum `docker build` Befehl, lesen Sie die [Docker Dokumentation](https://docs.docker.com/engine/reference/commandline/build/).
 
-{{% /capture %}}
 
-{{% capture lessoncontent %}}
+
+<!-- lessoncontent -->
 
 ## Erstellen Sie einen Minikube-Cluster
 
@@ -75,7 +77,7 @@ Deployments sind die empfohlene Methode zum Verwalten der Erstellung und Skalier
 Der Pod führt einen Container basierend auf dem bereitgestellten Docker-Image aus.
 
     ```shell
-    kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+    kubectl create deployment hello-node --image=registry.k8s.io/echoserver:1.4
     ```
 
 2. Anzeigen des Deployments:
@@ -103,7 +105,7 @@ Der Pod führt einen Container basierend auf dem bereitgestellten Docker-Image a
     hello-node-5f76cf6ccf-br9b5   1/1       Running   0          1m
     ```
 
-4. Cluster Events anzigen:
+4. Cluster Events anzeigen:
 
     ```shell
     kubectl get events
@@ -260,12 +262,13 @@ Löschen Sie optional die Minikube-VM:
 minikube delete
 ```
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * Lernen Sie mehr über [Bereitstellungsobjekte](/docs/concepts/workloads/controllers/deployment/).
 * Lernen Sie mehr über [Anwendungen bereitstellen](/docs/user-guide/deploying-applications/).
 * Lernen Sie mehr über [Serviceobjekte](/docs/concepts/services-networking/service/).
 
-{{% /capture %}}
+

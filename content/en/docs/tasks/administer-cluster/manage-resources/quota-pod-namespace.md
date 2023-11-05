@@ -1,28 +1,30 @@
 ---
 title: Configure a Pod Quota for a Namespace
-content_template: templates/task
+content_type: task
 weight: 60
+description: >-
+  Restrict how many Pods you can create within a namespace.
 ---
 
 
-{{% capture overview %}}
+<!-- overview -->
 
 This page shows how to set a quota for the total number of Pods that can run
-in a namespace. You specify quotas in a
-[ResourceQuota](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/#resourcequota-v1-core)
+in a {{< glossary_tooltip text="Namespace" term_id="namespace" >}}. You specify quotas in a
+[ResourceQuota](/docs/reference/kubernetes-api/policy-resources/resource-quota-v1/)
 object.
 
-{{% /capture %}}
 
 
-{{% capture prerequisites %}}
 
-{{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
-
-{{% /capture %}}
+## {{% heading "prerequisites" %}}
 
 
-{{% capture steps %}}
+{{< include "task-tutorial-prereqs.md" >}}
+
+You must have access to create namespaces in your cluster.
+
+<!-- steps -->
 
 ## Create a namespace
 
@@ -35,9 +37,9 @@ kubectl create namespace quota-pod-example
 
 ## Create a ResourceQuota
 
-Here is the configuration file for a ResourceQuota object:
+Here is an example manifest for a ResourceQuota:
 
-{{< codenew file="admin/resource/quota-pod.yaml" >}}
+{{% code_sample file="admin/resource/quota-pod.yaml" %}}
 
 Create the ResourceQuota:
 
@@ -65,11 +67,12 @@ status:
     pods: "0"
 ```
 
-Here is the configuration file for a Deployment:
+Here is an example manifest for a {{< glossary_tooltip term_id="deployment" >}}:
 
-{{< codenew file="admin/resource/quota-pod-deployment.yaml" >}}
+{{% code_sample file="admin/resource/quota-pod-deployment.yaml" %}}
 
-In the configuration file, `replicas: 3` tells Kubernetes to attempt to create three Pods, all running the same application.
+In that manifest, `replicas: 3` tells Kubernetes to attempt to create three new Pods, all
+running the same application.
 
 Create the Deployment:
 
@@ -84,7 +87,7 @@ kubectl get deployment pod-quota-demo --namespace=quota-pod-example --output=yam
 ```
 
 The output shows that even though the Deployment specifies three replicas, only two
-Pods were created because of the quota.
+Pods were created because of the quota you defined earlier:
 
 ```yaml
 spec:
@@ -94,10 +97,17 @@ spec:
 status:
   availableReplicas: 2
 ...
-lastUpdateTime: 2017-07-07T20:57:05Z
+lastUpdateTime: 2021-04-02T20:57:05Z
     message: 'unable to create pods: pods "pod-quota-demo-1650323038-" is forbidden:
       exceeded quota: pod-demo, requested: pods=1, used: pods=2, limited: pods=2'
 ```
+
+### Choice of resource
+
+In this task you have defined a ResourceQuota that limited the total number of Pods, but
+you could also limit the total number of other kinds of object. For example, you
+might decide to limit how many {{< glossary_tooltip text="CronJobs" term_id="cronjob" >}}
+that can live in a single namespace.
 
 ## Clean up
 
@@ -107,21 +117,22 @@ Delete your namespace:
 kubectl delete namespace quota-pod-example
 ```
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 ### For cluster administrators
 
-* [Configure Default Memory Requests and Limits for a Namespace](/docs/tasks/administer-cluster/memory-default-namespace/)
+* [Configure Default Memory Requests and Limits for a Namespace](/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/)
 
-* [Configure Default CPU Requests and Limits for a Namespace](/docs/tasks/administer-cluster/cpu-default-namespace/)
+* [Configure Default CPU Requests and Limits for a Namespace](/docs/tasks/administer-cluster/manage-resources/cpu-default-namespace/)
 
-* [Configure Minimum and Maximum Memory Constraints for a Namespace](/docs/tasks/administer-cluster/memory-constraint-namespace/)
+* [Configure Minimum and Maximum Memory Constraints for a Namespace](/docs/tasks/administer-cluster/manage-resources/memory-constraint-namespace/)
 
-* [Configure Minimum and Maximum CPU Constraints for a Namespace](/docs/tasks/administer-cluster/cpu-constraint-namespace/)
+* [Configure Minimum and Maximum CPU Constraints for a Namespace](/docs/tasks/administer-cluster/manage-resources/cpu-constraint-namespace/)
 
-* [Configure Memory and CPU Quotas for a Namespace](/docs/tasks/administer-cluster/quota-memory-cpu-namespace/)
+* [Configure Memory and CPU Quotas for a Namespace](/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/)
 
 * [Configure Quotas for API Objects](/docs/tasks/administer-cluster/quota-api-object/)
 
@@ -133,7 +144,7 @@ kubectl delete namespace quota-pod-example
 
 * [Configure Quality of Service for Pods](/docs/tasks/configure-pod-container/quality-service-pod/)
 
-{{% /capture %}}
+
 
 
 
